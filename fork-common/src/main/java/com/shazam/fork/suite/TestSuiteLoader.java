@@ -38,7 +38,11 @@ public class TestSuiteLoader {
     private final DexFileExtractor dexFileExtractor;
     private final TestClassMatcher testClassMatcher;
 
-    public TestSuiteLoader(File instrumentationApkFile, DexFileExtractor dexFileExtractor, TestClassMatcher testClassMatcher) {
+    public TestSuiteLoader(File instrumentationApkFile,
+                           DexFileExtractor dexFileExtractor,
+                           TestClassMatcher testClassMatcher,
+                           String includedAnnotation,
+                           String excludedAnnotation) {
         this.instrumentationApkFile = instrumentationApkFile;
         this.dexFileExtractor = dexFileExtractor;
         this.testClassMatcher = testClassMatcher;
