@@ -10,6 +10,7 @@
 
 package com.shazam.fork.suite;
 
+import com.google.common.base.Strings;
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
 import org.jf.dexlib.*;
@@ -37,6 +38,8 @@ public class TestSuiteLoader {
     private final File instrumentationApkFile;
     private final DexFileExtractor dexFileExtractor;
     private final TestClassMatcher testClassMatcher;
+    private final List<String> includedAnnotations;
+    private final List<String> excludedAnnotations;
 
     public TestSuiteLoader(File instrumentationApkFile,
                            DexFileExtractor dexFileExtractor,
@@ -46,6 +49,15 @@ public class TestSuiteLoader {
         this.instrumentationApkFile = instrumentationApkFile;
         this.dexFileExtractor = dexFileExtractor;
         this.testClassMatcher = testClassMatcher;
+        this.includedAnnotations = parseAnnotations(includedAnnotation);
+        this.excludedAnnotations = parseAnnotations(excludedAnnotation);
+    }
+
+    private List<String> parseAnnotations(String annotations) {
+        if (Strings.isNullOrEmpty(annotations)) return emptyList();
+        return Arrays.stream(annotations.split(","))
+                .map(s -> "L" + s.replace('.', '/').trim() + ';')
+                .collect(toList());
     }
 
     public Collection<TestCaseEvent> loadTestSuite() throws NoTestCasesFoundException {
