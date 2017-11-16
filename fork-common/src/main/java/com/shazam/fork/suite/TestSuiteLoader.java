@@ -82,14 +82,28 @@ public class TestSuiteLoader {
             return emptyList();
         }
 
+        if (isClassExcluded(classDefItem)) {
+            return emptyList();
+        }
+
         List<TestCaseEvent> testCaseEvents = new ArrayList<>();
         for (AnnotationDirectoryItem.MethodAnnotation method : annotationDirectoryItem.getMethodAnnotations()) {
             stream(method.annotationSet.getAnnotations())
                     .filter(annotation -> TEST_ANNOTATION.equals(stringType(annotation)))
+                    .filter(this::isMethodIncluded)
                     .map(annotation -> convertToTestCaseEvent(classDefItem, annotationDirectoryItem, method))
                     .forEach(testCaseEvents::add);
         }
         return testCaseEvents;
+    }
+
+    private boolean isClassExcluded(ClassDefItem classDefItem) {
+        AnnotationItem[] annotations = classDefItem.getAnnotations().getClassAnnotations().getAnnotations();
+        return !included(annotations) || excluded(annotations);
+    }
+
+    private boolean isMethodIncluded(AnnotationItem annotation) {
+        return included(annotation) && !excluded(annotation);
     }
 
     @Nonnull
@@ -167,6 +181,22 @@ public class TestSuiteLoader {
             return false;
         }
         return containsAnnotation(IGNORE_ANNOTATION, classAnnotations.getAnnotations());
+    }
+
+    private boolean included(AnnotationItem... annotations) {
+        if (includedAnnotations.isEmpty()) {
+            return true;
+        }
+        return includedAnnotations.stream()
+                .anyMatch(included -> containsAnnotation(included, annotations));
+    }
+
+    private boolean excluded(AnnotationItem... annotations) {
+        if (excludedAnnotations.isEmpty()) {
+            return false;
+        }
+        return excludedAnnotations.stream()
+                .anyMatch(included -> containsAnnotation(included, annotations));
     }
 
     private boolean containsAnnotation(String comparisonAnnotation, AnnotationItem... annotations) {
