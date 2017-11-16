@@ -77,6 +77,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     String excludedAnnotation
 
+    String includedAnnotation
+
     @TaskAction
     void runFork() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
@@ -102,6 +104,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withPoolingStrategy(poolingStrategy)
                 .withAutoGrantPermissions(autoGrantPermissions)
                 .withExcludedAnnotation(excludedAnnotation)
+                .withIncludedAnnotation(includedAnnotation)
                 .build();
 
         boolean success = new Fork(configuration).run()
