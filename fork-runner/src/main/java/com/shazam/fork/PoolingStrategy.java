@@ -14,6 +14,7 @@ import groovy.lang.Closure;
 public class PoolingStrategy {
     public Boolean splitTablets;
     public Boolean eachDevice;
+    public Boolean common;
     public ComputedPooling computed;
     public ManualPooling manual;
 

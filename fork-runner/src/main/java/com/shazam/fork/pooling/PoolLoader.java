@@ -81,6 +81,10 @@ public class PoolLoader {
             return new EveryoneGetsAPoolLoader();
         }
 
+        if(poolingStrategy.common != null && poolingStrategy.common){
+            return new CommonDevicePoolLoader();
+        }
+
         throw new NoPoolLoaderConfiguredException("Could not determine which how to load pools to use based on your configuration");
     }
 }

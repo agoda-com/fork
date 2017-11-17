@@ -23,7 +23,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -361,13 +363,13 @@ public class Configuration {
                 poolingStrategy = new PoolingStrategy();
                 poolingStrategy.eachDevice = true;
             } else {
-                long selectedStrategies = asList(
+                long selectedStrategies = Stream.of(
                         poolingStrategy.eachDevice,
                         poolingStrategy.splitTablets,
                         poolingStrategy.computed,
-                        poolingStrategy.manual)
-                        .stream()
-                        .filter(p -> p != null)
+                        poolingStrategy.manual,
+                        poolingStrategy.common)
+                        .filter(Objects::nonNull)
                         .count();
                 if (selectedStrategies > Defaults.STRATEGY_LIMIT) {
                     throw new IllegalArgumentException("You have selected more than one strategies in configuration. " +
