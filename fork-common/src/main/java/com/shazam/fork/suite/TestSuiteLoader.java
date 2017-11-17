@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
+import static com.shazam.fork.suite.AnnotationParser.parseAnnotation;
 import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
@@ -50,15 +51,8 @@ public class TestSuiteLoader {
         this.instrumentationApkFile = instrumentationApkFile;
         this.dexFileExtractor = dexFileExtractor;
         this.testClassMatcher = testClassMatcher;
-        this.includedAnnotations = parseAnnotations(includedAnnotation);
-        this.excludedAnnotations = parseAnnotations(excludedAnnotation);
-    }
-
-    private List<String> parseAnnotations(String annotations) {
-        if (Strings.isNullOrEmpty(annotations)) return emptyList();
-        return Arrays.stream(annotations.split(","))
-                .map(s -> "L" + s.replace('.', '/').trim() + ';')
-                .collect(toList());
+        this.includedAnnotations = parseAnnotation().apply(includedAnnotation);
+        this.excludedAnnotations = parseAnnotation().apply(excludedAnnotation);
     }
 
     public Collection<TestCaseEvent> loadTestSuite() throws NoTestCasesFoundException {
