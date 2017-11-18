@@ -72,42 +72,48 @@ public class TestSuiteLoader {
 
     @Nonnull
     private List<TestCaseEvent> convertClassToTestCaseEvents(ClassDefItem classDefItem) {
-        AnnotationDirectoryItem annotationDirectory = classDefItem.getAnnotations();
-        if (annotationDirectory == null) {
+        boolean classIncluded = false;
+        AnnotationDirectoryItem annotationDirectoryItem = classDefItem.getAnnotations();
+        if (annotationDirectoryItem == null) {
             return emptyList();
         }
 
-        AnnotationSetItem annotationSet = annotationDirectory.getClassAnnotations();
-        if (annotationSet != null) {
-            AnnotationItem[] annotations = annotationSet.getAnnotations();
+        AnnotationSetItem classSet = annotationDirectoryItem.getClassAnnotations();
+        if (classSet != null) {
+            AnnotationItem[] annotations = classSet.getAnnotations();
             if (isClassExcluded(annotations)) {
                 return emptyList();
+            } else {
+                classIncluded = true;
             }
         }
 
-        return parseMethods(classDefItem, annotationDirectory);
+        return parseMethods(classDefItem, annotationDirectoryItem, classIncluded);
     }
 
-    private List<TestCaseEvent> parseMethods(ClassDefItem classDefItem, AnnotationDirectoryItem annotationDirectory) {
+    private List<TestCaseEvent> parseMethods(ClassDefItem classDefItem, AnnotationDirectoryItem annotationDirectory, boolean classIncluded) {
         return annotationDirectory.getMethodAnnotations()
                 .stream()
-                .flatMap(method -> parseTestCaseEvents(classDefItem, annotationDirectory, method))
+                .flatMap(method -> parseTestCaseEvents(classDefItem, annotationDirectory, method, classIncluded))
                 .collect(toList());
     }
 
-    private Stream<TestCaseEvent> parseTestCaseEvents(ClassDefItem classDefItem, AnnotationDirectoryItem annotationDirectoryItem, AnnotationDirectoryItem.MethodAnnotation methodAnnotation) {
+    private Stream<TestCaseEvent> parseTestCaseEvents(ClassDefItem classDefItem,
+                                                      AnnotationDirectoryItem annotationDirectoryItem,
+                                                      AnnotationDirectoryItem.MethodAnnotation methodAnnotation,
+                                                      boolean classIncluded) {
         return stream(methodAnnotation.annotationSet.getAnnotations())
                 .filter(annotation -> TEST_ANNOTATION.equals(stringType(annotation)))
-                .filter(this::isMethodIncluded)
+                .filter(item -> isMethodIncluded(item, classIncluded))
                 .map(annotation -> convertToTestCaseEvent(classDefItem, annotationDirectoryItem, methodAnnotation));
+    }
+
+    private boolean isMethodIncluded(AnnotationItem a, boolean classIncluded) {
+        return classIncluded || included(a) && !excluded(a);
     }
 
     private boolean isClassExcluded(AnnotationItem... annotations) {
         return !included(annotations) || excluded(annotations);
-    }
-
-    private boolean isMethodIncluded(AnnotationItem... annotations) {
-        return !excluded(annotations);
     }
 
     @Nonnull

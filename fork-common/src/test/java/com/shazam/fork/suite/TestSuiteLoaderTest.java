@@ -28,6 +28,7 @@ import static com.shazam.fork.io.FakeDexFileExtractor.fakeDexFileExtractor;
 import static com.shazam.fork.io.Files.convertFileToDexFile;
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.suite.FakeTestClassMatcher.fakeTestClassMatcher;
+import static com.shazam.fork.suite.TestSuiteLoaderTestUtils.sameTestEventAs;
 import static com.shazam.shazamcrest.MatcherAssert.assertThat;
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static java.util.Arrays.asList;
@@ -93,7 +94,8 @@ public class TestSuiteLoaderTest {
                 sameTestEventAs("firstTestMethod", "com.shazam.forktest.ClassWithNoIgnoredMethodsTest", false),
                 sameTestEventAs("secondTestMethod", "com.shazam.forktest.ClassWithNoIgnoredMethodsTest", false),
                 sameTestEventAs("nonIgnoredTestMethod", "com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", false),
-                sameTestEventAs("ignoredTestMethod", "com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", true)));
+                sameTestEventAs("ignoredTestMethod", "com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", true),
+                sameTestEventAs("methodOfAnCustomTestAnnotation1TestClass","com.shazam.forktest.CustomTestAnnotation1ClassTest",false)));
     }
 
     @SuppressWarnings("unchecked")
@@ -123,18 +125,5 @@ public class TestSuiteLoaderTest {
                 sameTestEventAs("methodWithUnmatchedKey", testClass, singlePropertyMap)));
     }
 
-    @Nonnull
-    private Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, Map<String, String> properties) {
-        return sameBeanAs(newTestCase(testMethod, testClass, false, emptyList(), properties));
-    }
 
-    @Nonnull
-    private Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, boolean isIgnored) {
-        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, emptyList(), emptyMap()));
-    }
-
-    @Nonnull
-    private Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, boolean isIgnored, List<String> permissions) {
-        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, permissions, emptyMap()));
-    }
 }
