@@ -76,13 +76,13 @@ public class TestSuiteLoader {
         if (annotationDirectory == null) {
             return emptyList();
         }
+
         AnnotationSetItem annotationSet = annotationDirectory.getClassAnnotations();
-        if (annotationSet == null) {
-            return emptyList();
-        }
-        AnnotationItem[] annotations = annotationSet.getAnnotations();
-        if (isClassExcluded(annotations)) {
-            return emptyList();
+        if (annotationSet != null) {
+            AnnotationItem[] annotations = annotationSet.getAnnotations();
+            if (isClassExcluded(annotations)) {
+                return emptyList();
+            }
         }
 
         return parseMethods(classDefItem, annotationDirectory);
