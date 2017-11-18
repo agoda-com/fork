@@ -10,6 +10,7 @@
 
 package com.shazam.fork.suite;
 
+import com.google.common.base.Strings;
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
 import org.jf.dexlib.*;
@@ -21,8 +22,10 @@ import org.jf.dexlib.EncodedValue.StringEncodedValue;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
+import static com.shazam.fork.suite.AnnotationParser.parseAnnotation;
 import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
@@ -37,11 +40,19 @@ public class TestSuiteLoader {
     private final File instrumentationApkFile;
     private final DexFileExtractor dexFileExtractor;
     private final TestClassMatcher testClassMatcher;
+    private final List<String> includedAnnotations;
+    private final List<String> excludedAnnotations;
 
-    public TestSuiteLoader(File instrumentationApkFile, DexFileExtractor dexFileExtractor, TestClassMatcher testClassMatcher) {
+    public TestSuiteLoader(File instrumentationApkFile,
+                           DexFileExtractor dexFileExtractor,
+                           TestClassMatcher testClassMatcher,
+                           String includedAnnotation,
+                           String excludedAnnotation) {
         this.instrumentationApkFile = instrumentationApkFile;
         this.dexFileExtractor = dexFileExtractor;
         this.testClassMatcher = testClassMatcher;
+        this.includedAnnotations = parseAnnotation().apply(includedAnnotation);
+        this.excludedAnnotations = parseAnnotation().apply(excludedAnnotation);
     }
 
     public Collection<TestCaseEvent> loadTestSuite() throws NoTestCasesFoundException {
@@ -61,19 +72,42 @@ public class TestSuiteLoader {
 
     @Nonnull
     private List<TestCaseEvent> convertClassToTestCaseEvents(ClassDefItem classDefItem) {
-        AnnotationDirectoryItem annotationDirectoryItem = classDefItem.getAnnotations();
-        if (annotationDirectoryItem == null) {
+        AnnotationDirectoryItem annotationDirectory = classDefItem.getAnnotations();
+        if (annotationDirectory == null) {
+            return emptyList();
+        }
+        AnnotationSetItem annotationSet = annotationDirectory.getClassAnnotations();
+        if (annotationSet == null) {
+            return emptyList();
+        }
+        AnnotationItem[] annotations = annotationSet.getAnnotations();
+        if (isClassExcluded(annotations)) {
             return emptyList();
         }
 
-        List<TestCaseEvent> testCaseEvents = new ArrayList<>();
-        for (AnnotationDirectoryItem.MethodAnnotation method : annotationDirectoryItem.getMethodAnnotations()) {
-            stream(method.annotationSet.getAnnotations())
-                    .filter(annotation -> TEST_ANNOTATION.equals(stringType(annotation)))
-                    .map(annotation -> convertToTestCaseEvent(classDefItem, annotationDirectoryItem, method))
-                    .forEach(testCaseEvents::add);
-        }
-        return testCaseEvents;
+        return parseMethods(classDefItem, annotationDirectory);
+    }
+
+    private List<TestCaseEvent> parseMethods(ClassDefItem classDefItem, AnnotationDirectoryItem annotationDirectory) {
+        return annotationDirectory.getMethodAnnotations()
+                .stream()
+                .flatMap(method -> parseTestCaseEvents(classDefItem, annotationDirectory, method))
+                .collect(toList());
+    }
+
+    private Stream<TestCaseEvent> parseTestCaseEvents(ClassDefItem classDefItem, AnnotationDirectoryItem annotationDirectoryItem, AnnotationDirectoryItem.MethodAnnotation methodAnnotation) {
+        return stream(methodAnnotation.annotationSet.getAnnotations())
+                .filter(annotation -> TEST_ANNOTATION.equals(stringType(annotation)))
+                .filter(this::isMethodIncluded)
+                .map(annotation -> convertToTestCaseEvent(classDefItem, annotationDirectoryItem, methodAnnotation));
+    }
+
+    private boolean isClassExcluded(AnnotationItem... annotations) {
+        return !included(annotations) || excluded(annotations);
+    }
+
+    private boolean isMethodIncluded(AnnotationItem... annotations) {
+        return !excluded(annotations);
     }
 
     @Nonnull
@@ -151,6 +185,23 @@ public class TestSuiteLoader {
             return false;
         }
         return containsAnnotation(IGNORE_ANNOTATION, classAnnotations.getAnnotations());
+    }
+
+
+    private boolean included(AnnotationItem... annotations) {
+        if (includedAnnotations.isEmpty()) {
+            return true;
+        }
+        return includedAnnotations.stream()
+                .anyMatch(included -> containsAnnotation(included, annotations));
+    }
+
+    private boolean excluded(AnnotationItem... annotations) {
+        if (excludedAnnotations.isEmpty()) {
+            return false;
+        }
+        return excludedAnnotations.stream()
+                .anyMatch(excluded -> containsAnnotation(excluded, annotations));
     }
 
     private boolean containsAnnotation(String comparisonAnnotation, AnnotationItem... annotations) {

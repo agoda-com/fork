@@ -99,6 +99,11 @@ public class ForkConfiguration {
      */
     public String excludedAnnotation;
 
+    /**
+     * Filter test run to tests without given annotation
+     */
+    public String includedAnnotation;
+
     public void poolingStrategy(Closure<?> poolingStrategyClosure) {
         poolingStrategy = new PoolingStrategy();
         poolingStrategyClosure.setDelegate(poolingStrategy);

@@ -21,6 +21,10 @@ public class TestSuiteLoaderInjector {
     private TestSuiteLoaderInjector() {}
 
     public static TestSuiteLoader testSuiteLoader() {
-        return new TestSuiteLoader(configuration().getInstrumentationApk(), dexFileExtractor(), testClassMatcher());
+        return new TestSuiteLoader(configuration().getInstrumentationApk(),
+                dexFileExtractor(),
+                testClassMatcher(),
+                configuration().getIncludedAnnotation(),
+                configuration().getExcludedAnnotation());
     }
 }

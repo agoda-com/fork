@@ -59,6 +59,7 @@ public class Configuration {
     private final PoolingStrategy poolingStrategy;
     private final boolean autoGrantPermissions;
     private final String excludedAnnotation;
+    private final String includedAnnotation;
 
     private ApplicationInfo applicationInfo;
 
@@ -84,6 +85,7 @@ public class Configuration {
         poolingStrategy = builder.poolingStrategy;
         autoGrantPermissions = builder.autoGrantPermissions;
         this.excludedAnnotation = builder.excludedAnnotation;
+        this.includedAnnotation = builder.includedAnnotation;
         this.applicationInfo = builder.applicationInfo;
     }
 
@@ -184,6 +186,10 @@ public class Configuration {
         return excludedAnnotation;
     }
 
+    public String getIncludedAnnotation() {
+        return includedAnnotation;
+    }
+
     public ApplicationInfo getApplicationInfo() {
         return applicationInfo;
     }
@@ -210,6 +216,7 @@ public class Configuration {
         private PoolingStrategy poolingStrategy;
         private boolean autoGrantPermissions;
         private String excludedAnnotation;
+        private String includedAnnotation;
         private ApplicationInfo applicationInfo;
 
         public static Builder configuration() {
@@ -303,6 +310,11 @@ public class Configuration {
 
         public Builder withExcludedAnnotation(String excludedAnnotation) {
             this.excludedAnnotation = excludedAnnotation;
+            return this;
+        }
+
+        public Builder withIncludedAnnotation(String includedAnnotation) {
+            this.includedAnnotation = includedAnnotation;
             return this;
         }
 
