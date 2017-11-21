@@ -101,6 +101,7 @@ public class ForkCli {
                     .withAutoGrantPermissions(forkConfiguration.autoGrantPermissions)
                     .withExcludedAnnotation(forkConfiguration.excludedAnnotation)
                     .withIncludedAnnotation(forkConfiguration.includedAnnotation)
+                    .withSortingStrategy(forkConfiguration.sortingStrategy)
                     .build();
 
             Fork fork = new Fork(configuration);

@@ -104,6 +104,17 @@ public class ForkConfiguration {
      */
     public String includedAnnotation;
 
+    /**
+     * TODO
+     */
+    public SortingStrategy sortingStrategy;
+
+    public void sortingStrategy(Closure<?> sortingStrategyClosure){
+        sortingStrategy = new SortingStrategy();
+        sortingStrategyClosure.setDelegate(sortingStrategy);
+        sortingStrategyClosure.call();
+    }
+
     public void poolingStrategy(Closure<?> poolingStrategyClosure) {
         poolingStrategy = new PoolingStrategy();
         poolingStrategyClosure.setDelegate(poolingStrategy);

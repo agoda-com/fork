@@ -15,6 +15,7 @@ package com.shazam.fork.gradle
 import com.shazam.fork.Configuration
 import com.shazam.fork.Fork
 import com.shazam.fork.PoolingStrategy
+import com.shazam.fork.SortingStrategy
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.InputFile
@@ -79,6 +80,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     String includedAnnotation
 
+    SortingStrategy sortingStrategy
+
     @TaskAction
     void runFork() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
@@ -105,6 +108,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withAutoGrantPermissions(autoGrantPermissions)
                 .withExcludedAnnotation(excludedAnnotation)
                 .withIncludedAnnotation(includedAnnotation)
+                .withSortingStrategy(sortingStrategy)
                 .build();
 
         boolean success = new Fork(configuration).run()

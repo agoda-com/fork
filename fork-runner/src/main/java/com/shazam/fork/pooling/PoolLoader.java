@@ -15,7 +15,6 @@ import com.shazam.fork.PoolingStrategy;
 import com.shazam.fork.device.DeviceLoader;
 import com.shazam.fork.model.Devices;
 import com.shazam.fork.model.Pool;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
