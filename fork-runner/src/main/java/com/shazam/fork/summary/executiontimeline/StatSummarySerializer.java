@@ -57,8 +57,7 @@ public class StatSummarySerializer {
     }
 
     private TestMetric getTestMetric(TestExecution execution) {
-        return Optional
-                .ofNullable(testHistoryManager.getTestHistory(execution.getTest()))
+        return testHistoryManager.getTestHistory(execution.getTest())
                 .map(TestHistory::getTestMetric)
                 .orElse(new TestMetric(0.0, 0.0));
     }
