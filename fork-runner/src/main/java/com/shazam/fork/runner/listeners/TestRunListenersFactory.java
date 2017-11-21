@@ -17,6 +17,7 @@ import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.ProgressReporter;
+import com.shazam.fork.stat.TestExecutionReporter;
 import com.shazam.fork.system.io.FileManager;
 
 import java.io.File;
@@ -32,13 +33,16 @@ public class TestRunListenersFactory {
     private final Configuration configuration;
     private final FileManager fileManager;
     private final Gson gson;
+    private final TestExecutionReporter testExecutionReporter;
 
     public TestRunListenersFactory(Configuration configuration,
                                    FileManager fileManager,
-                                   Gson gson) {
+                                   Gson gson,
+                                   TestExecutionReporter testExecutionReporter) {
         this.configuration = configuration;
         this.fileManager = fileManager;
         this.gson = gson;
+        this.testExecutionReporter = testExecutionReporter;
     }
 
     public List<ITestRunListener> createTestListeners(TestCaseEvent testCase,
@@ -53,6 +57,7 @@ public class TestRunListenersFactory {
                         device.getModelName(), progressReporter),
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
+                new TestExecutionListener(device,testExecutionReporter),
                 getScreenTraceTestRunListener(fileManager, pool, device),
                 new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager),
                 getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));

@@ -1,4 +1,4 @@
-package com.shazam.fork.sorting;
+package com.shazam.fork.stat;
 
 import com.shazam.fork.model.Device;
 

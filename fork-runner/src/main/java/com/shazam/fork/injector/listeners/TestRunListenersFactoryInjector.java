@@ -13,14 +13,16 @@ package com.shazam.fork.injector.listeners;
 import com.shazam.fork.runner.listeners.TestRunListenersFactory;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
+import static com.shazam.fork.injector.stat.TestExecutionReporterInjector.testExecutionReporter;
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 import static com.shazam.fork.injector.GsonInjector.gson;
 
 public class TestRunListenersFactoryInjector {
 
-    private TestRunListenersFactoryInjector() {}
+    private TestRunListenersFactoryInjector() {
+    }
 
     public static TestRunListenersFactory testRunListenersFactory() {
-        return new TestRunListenersFactory(configuration(), fileManager(), gson());
+        return new TestRunListenersFactory(configuration(), fileManager(), gson(), testExecutionReporter());
     }
 }

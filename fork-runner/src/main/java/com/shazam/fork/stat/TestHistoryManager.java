@@ -1,4 +1,4 @@
-package com.shazam.fork.sorting;
+package com.shazam.fork.stat;
 
 import com.agoda.fork.sorting.TestHistory;
 import com.android.ddmlib.testrunner.TestIdentifier;
