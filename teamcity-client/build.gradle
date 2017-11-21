@@ -1,8 +1,4 @@
-group 'com.shazam.fork'
-version '3.0.0-SNAPSHOT'
-
 apply plugin: 'java-library'
-apply plugin: 'idea'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 sourceCompatibility = 1.8
