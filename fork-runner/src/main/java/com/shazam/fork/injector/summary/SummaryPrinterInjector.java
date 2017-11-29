@@ -16,6 +16,8 @@ import com.shazam.fork.summary.*;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
 import static com.shazam.fork.injector.GsonInjector.gson;
+import static com.shazam.fork.injector.stat.ExecutionTimeLineSummaryPrinterInjector.htmlStatsSummaryPrinter;
+import static com.shazam.fork.injector.stat.ExecutionTimeLineSummaryPrinterInjector.jsonSummaryStatsSerializer;
 import static com.shazam.fork.injector.summary.HtmlGeneratorInjector.htmlGenerator;
 import static com.shazam.fork.injector.summary.LogCatRetrieverInjector.logCatRetriever;
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
@@ -25,7 +27,11 @@ public class SummaryPrinterInjector {
     private SummaryPrinterInjector() {}
 
     public static SummaryPrinter summaryPrinter() {
-        return new CompositeSummaryPrinter(consoleSummaryPrinter(), htmlSummaryPrinter(), jsonSummarySerializer());
+        return new CompositeSummaryPrinter(consoleSummaryPrinter(),
+                htmlSummaryPrinter(),
+                jsonSummarySerializer(),
+                jsonSummaryStatsSerializer(),
+                htmlStatsSummaryPrinter());
     }
 
     private static SummaryPrinter consoleSummaryPrinter() {
