@@ -51,8 +51,8 @@ public class StatSummarySerializer {
 
     private Data createData(TestExecution execution, int status, String preparedTestName, TestMetric testMetric) {
         return new Data(preparedTestName, status,
-                new Date(execution.getStartTime()),
-                new Date(execution.getStartTime() + execution.getEndTime()),
+                execution.getStartTime(),
+                execution.getStartTime() + execution.getEndTime(),
                 testMetric.getExpectedValue(), testMetric.getVariance());
     }
 
