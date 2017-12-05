@@ -50,7 +50,12 @@ function testsChart() {
             .attr('class', 'legend');
     }
 
-    function renderTitle(svg, parseDateTime, startDate, finishDate) {
+    function convertDate(date){
+        var dateFormat = d3.time.format('%Y-%m-%d %H:%M:%S');
+        return dateFormat(date)
+    }
+
+    function renderTitle(svg, startDate, finishDate) {
         svg.select('#g_title')
             .append('text')
             .attr('x', paddingLeft)
@@ -59,9 +64,9 @@ function testsChart() {
             .attr('class', 'heading');
 
         var subtitleText = 'from ' + moment(parseDateTime(startDate)).format('l') + ' '
-            + moment(parseDateTime(startDate)).format('LTS') + ' to '
-            + moment(parseDateTime(finishDate)).format('l') + ' '
-            + moment(parseDateTime(finishDate)).format('LTS');
+            + moment(convertDate(startDate)).format('LTS') + ' to '
+            + moment(convertDate(finishDate)).format('l') + ' '
+            + moment(convertDate(finishDate)).format('LTS');
 
         svg.select('#g_title')
             .append('text')
@@ -71,7 +76,7 @@ function testsChart() {
             .attr('class', 'subheading');
     }
 
-    function renderTests(svg, dataset, startSet, endSet, xScale, parseDateTime) {
+    function renderTests(svg, dataset, startSet, endSet, xScale) {
         var g = svg.select('#g_data').selectAll('.g_data')
             .data(dataset.measures.slice(startSet, endSet))
             .enter()
@@ -115,8 +120,8 @@ function testsChart() {
                         output = '<i class="fa fa-fw fa-times tooltip_failed_test"></i>';
                     }
                     return output + d.testName + '</br>'
-                        + moment(parseDateTime(d.startDate)).format('LTS') + ' - '
-                        + moment(parseDateTime(d.endDate)).format('LTS') + '| variance = ' + d.variance.toFixed(2) + ' expected = ' + d.expectedValue.toFixed(2);
+                        + moment(convertDate(d.startDate)).format('LTS') + ' - '
+                        + moment(convertDate(d.endDate)).format('LTS') + '| variance = ' + d.variance.toFixed(2) + ' expected = ' + d.expectedValue.toFixed(2);
                 }).style('left', function () {
                     return window.pageXOffset + matrix.e + 'px';
                 }).style('top', function () {
@@ -136,8 +141,8 @@ function testsChart() {
             .call(xAxis);
     }
 
-    function renderGrid(svg, xScale, firstFinishDate, noOfDatasets, dataset) {
-        svg.select('#g_axis').selectAll('line.vert_grid').data(xScale.ticks().concat(xScale.domain()).concat([firstFinishDate]))
+    function renderGrid(svg, xScale, noOfDatasets, dataset) {
+        svg.select('#g_axis').selectAll('line.vert_grid').data(xScale.ticks().concat(xScale.domain()))
             .enter()
             .append('line')
             .attr({
@@ -168,6 +173,18 @@ function testsChart() {
             });
     }
 
+    function customTickFunc (t0, t1, step)
+    {
+        var startTime = new Date(t0),
+            endTime= new Date(t1), times = [];
+        endTime.setUTCDate(endTime.getUTCDate() + 1);
+        while (startTime < endTime) {
+            startTime.setUTCDate(startTime.getUTCDate() + 2);
+            times.push(new Date(startTime));
+        }
+        return times;
+    }
+
     function calculateScale(startDate, finishDate) {
         return d3.time.scale()
             .domain([startDate, finishDate])
@@ -181,6 +198,18 @@ function testsChart() {
             .orient('top');
     }
 
+    function prepareDates(dataset) {
+        dataset.measures.forEach(function (d) {
+            d.data.forEach(function (d1) {
+                d1.startDate = new Date(d1.startDate);
+                d1.endDate = new Date(d1.endDate);
+            });
+            d.data.sort(function (a, b) {
+                return a.startDate - b.startDate;
+            });
+        });
+    }
+
     function chart(selection) {
         selection.each(function drawGraph(dataset) {
             var startSet = 0;
@@ -192,16 +221,7 @@ function testsChart() {
             var success = dataset.passedTests;
             var failed = dataset.failedTests;
 
-            var parseDateTime = d3.time.format('%Y-%m-%d %H:%M:%S');
-            dataset.measures.forEach(function (d) {
-                d.data.forEach(function (d1) {
-                    d1.startDate = parseDateTime.parse(d1.startDate);
-                    d1.endDate = parseDateTime.parse(d1.endDate);
-                });
-                d.data.sort(function (a, b) {
-                    return a.startDate - b.startDate;
-                });
-            });
+            prepareDates(dataset);
 
             var startDate = 0;
             var finishDate = 0;
@@ -231,7 +251,7 @@ function testsChart() {
 
             var axis = calculateAxis(scale);
 
-            axis.tickValues(scale.ticks().concat(scale.domain()).concat([firstFinishDate]));
+            axis.tickValues(scale.ticks().concat(scale.domain()));
 
             var svg = d3.select(this).append('svg')
                 .attr('width', width + margin.left + margin.right)
@@ -287,13 +307,13 @@ function testsChart() {
                     }
                 });
 
-            renderGrid(svg, scale, firstFinishDate, noOfDatasets, dataset);
+            renderGrid(svg, scale, noOfDatasets, dataset);
 
             renderTime(svg, axis);
 
-            renderTests(svg, dataset, startSet, endSet, scale, parseDateTime);
+            renderTests(svg, dataset, startSet, endSet, scale);
 
-            renderTitle(svg, parseDateTime, startDate, finishDate);
+            renderTitle(svg, startDate, finishDate);
 
             renderLegend(svg, success, failed);
         });
