@@ -11,9 +11,13 @@ import com.shazam.fork.summary.PoolSummary;
 import com.shazam.fork.summary.Summary;
 import com.shazam.fork.summary.TestResult;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.ToLongFunction;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -27,7 +31,6 @@ public class StatSummarySerializer {
         this.reporter = reporter;
         this.testHistoryManager = testHistoryManager;
     }
-
 
     private String prepareTestName(String fullTestName) {
         return fullTestName.substring(fullTestName.lastIndexOf('.') + 1);
@@ -62,12 +65,42 @@ public class StatSummarySerializer {
                 .orElse(new TestMetric(0.0, 0.0));
     }
 
+    private ExecutionStats calculateExecutionStats(List<Data> data) {
+
+        return new ExecutionStats(calculateIdle(data), calculateAverageExecutionTime(data));
+    }
+
+    private long calculateAverageExecutionTime(List<Data> data) {
+        return (long) data.stream()
+                .mapToLong(this::calculateDuration)
+                .average()
+                .orElse(0.0);
+    }
+
+    private long calculateDuration(Data a) {
+        return a.getEndDate() - a.getStartDate();
+    }
+
+    private Long calculateIdle(List<Data> data) {
+        if (data.size() == 0) return 0L;
+        long time = 0;
+        for (int i = 1; i < data.size(); i++) {
+            time += data.get(i).getStartDate() - data.get(i - 1).getEndDate();
+        }
+        return time;
+    }
+
+    private Measure createMeasure(Device device) {
+        List<Data> data = parseData(device).collect(toList());
+        return new Measure(device.getSerial(), calculateExecutionStats(data), data);
+    }
+
     private Stream<Measure> parsePoolSummary(PoolSummary poolSummary) {
         return poolSummary.getTestResults()
                 .stream()
                 .map(TestResult::getDevice)
                 .distinct()
-                .map(device -> new Measure(device.getSerial(), parseData(device).collect(toList())));
+                .map(this::createMeasure);
     }
 
 
@@ -89,10 +122,22 @@ public class StatSummarySerializer {
                 .count();
     }
 
+    private ExecutionStats aggregateExecutionStats(List<Measure> list) {
+        long summaryIdle = 0;
+        long avgTestExecutionTime = 0;
+        for (Measure measure : list) {
+            summaryIdle += measure.getExecutionStats().getIdleTimeMillis();
+            avgTestExecutionTime += measure.getExecutionStats().getAverageTestExecutionTimeMillis();
+        }
+        avgTestExecutionTime = avgTestExecutionTime / list.size();
+        return new ExecutionStats(summaryIdle, avgTestExecutionTime);
+    }
+
     public ExecutionResult parse(Summary summary) {
         int failedTests = summary.getFailedTests().size();
         int ignoredTests = summary.getIgnoredTests().size();
         int passedTestCount = passedTestCount(summary) - ignoredTests - failedTests;
-        return new ExecutionResult(passedTestCount, failedTests, parseList(summary.getPoolSummaries()));
+        List<Measure> measures = parseList(summary.getPoolSummaries());
+        return new ExecutionResult(passedTestCount, failedTests, aggregateExecutionStats(measures), measures);
     }
 }
