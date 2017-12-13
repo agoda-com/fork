@@ -32,8 +32,7 @@ public class QueueProvider {
 
             TeamCityProvider teamCityStatLoaderProvider = new TeamCityProvider(teamcity);
             StatLoader statLoader = teamCityStatLoaderProvider.getStatLoader();
-            String configuration = teamcity.configuration;
-            List<TestHistory> tests = statLoader.loadHistory(configuration);
+            List<TestHistory> tests = statLoader.loadHistory();
             testHistoryManager.addTestHistories(tests);
 
             return new BalancerQueue(testCaseEvents, tests);

@@ -21,8 +21,10 @@ public class TeamCityStatLoader implements StatLoader {
     }
 
     @Override
-    public List<TestHistory> loadHistory(String configuration) {
-        return testHistories(configuration);
+    public List<TestHistory> loadHistory() {
+        throw new UnsupportedOperationException();
+//        String configuration = "";
+//        return testHistories(configuration);
     }
 
     private TestHistory createTestHistory(Test test) {

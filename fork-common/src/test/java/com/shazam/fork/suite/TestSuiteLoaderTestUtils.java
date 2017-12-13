@@ -1,5 +1,6 @@
 package com.shazam.fork.suite;
 
+import com.agoda.fork.sorting.TestMetric;
 import com.shazam.fork.model.TestCaseEvent;
 import org.hamcrest.Matcher;
 
@@ -15,16 +16,16 @@ import static java.util.Collections.emptyMap;
 public class TestSuiteLoaderTestUtils {
     @Nonnull
     static Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, Map<String, String> properties) {
-        return sameBeanAs(newTestCase(testMethod, testClass, false, emptyList(), properties));
+        return sameBeanAs(newTestCase(testMethod, testClass, false, emptyList(), properties, TestMetric.empty()));
     }
 
     @Nonnull
     static Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, boolean isIgnored) {
-        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, emptyList(), emptyMap()));
+        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, emptyList(), emptyMap(), TestMetric.empty()));
     }
 
     @Nonnull
     static Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, boolean isIgnored, List<String> permissions) {
-        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, permissions, emptyMap()));
+        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, permissions, emptyMap(), TestMetric.empty()));
     }
 }

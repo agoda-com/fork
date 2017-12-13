@@ -3,6 +3,7 @@ package com.shazam.fork.suite;
 
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.stat.TestStatsLoader;
 import org.hamcrest.Matcher;
 import org.jf.dexlib.DexFile;
 import org.junit.Before;
@@ -45,7 +46,8 @@ public class TestSuiteLoaderExcludeTest {
 
     @Before
     public void setUp() throws Exception {
-        testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher, "", "com.shazam.annotations.CustomTestAnnotation1");
+        testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor,
+                fakeTestClassMatcher, "", "com.shazam.annotations.CustomTestAnnotation1",new TestStatsLoader());
     }
 
     @Test

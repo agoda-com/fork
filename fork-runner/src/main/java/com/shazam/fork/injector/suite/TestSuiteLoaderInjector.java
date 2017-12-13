@@ -10,6 +10,7 @@
 
 package com.shazam.fork.injector.suite;
 
+import com.shazam.fork.stat.TestStatsLoader;
 import com.shazam.fork.suite.TestSuiteLoader;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
@@ -25,6 +26,7 @@ public class TestSuiteLoaderInjector {
                 dexFileExtractor(),
                 testClassMatcher(),
                 configuration().getIncludedAnnotation(),
-                configuration().getExcludedAnnotation());
+                configuration().getExcludedAnnotation(),
+                new TestStatsLoader());
     }
 }

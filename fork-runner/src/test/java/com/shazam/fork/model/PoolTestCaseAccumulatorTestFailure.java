@@ -28,9 +28,9 @@ public class PoolTestCaseAccumulatorTestFailure {
             .withName("another_pool")
             .addDevice(ANOTHER_DEVICE)
             .build();
-    
-    private final TestCaseEvent A_TEST_CASE = newTestCase("a_method", "a_class", false, emptyList(), emptyMap());
-    private final TestCaseEvent ANOTHER_TEST_CASE = newTestCase("another_method", "a_class", false, emptyList(), emptyMap());
+
+    private final TestCaseEvent A_TEST_CASE = newTestCase("a_method", "a_class", false, emptyList(), emptyMap(), null);
+    private final TestCaseEvent ANOTHER_TEST_CASE = newTestCase("another_method", "a_class", false, emptyList(), emptyMap(), null);
 
     PoolTestCaseFailureAccumulator subject;
 
