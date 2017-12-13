@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation project(':fork-sorting-common')
+    implementation project(':fork-stat-common')
     implementation project(':teamcity-client')
 }
 

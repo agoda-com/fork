@@ -18,7 +18,7 @@ targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
     api project(':fork-client')
-    api project(':fork-sorting-common')
+    api project(':fork-stat-common')
     api "com.google.code.findbugs:jsr305:3.0.1"
     api "com.android.tools.ddms:ddmlib:25.1.0"
     api "commons-io:commons-io:2.5"
