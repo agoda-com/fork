@@ -10,12 +10,8 @@
 
 package com.shazam.fork.suite;
 
-import com.agoda.fork.sorting.TestHistory;
-import com.agoda.fork.sorting.TestMetric;
-import com.google.common.base.Strings;
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.stat.StatServiceLoader;
 import com.shazam.fork.stat.TestStatsLoader;
 import org.jf.dexlib.*;
 import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;

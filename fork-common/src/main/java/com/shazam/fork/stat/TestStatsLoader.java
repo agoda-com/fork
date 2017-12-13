@@ -1,7 +1,7 @@
 package com.shazam.fork.stat;
 
-import com.agoda.fork.sorting.TestHistory;
-import com.agoda.fork.sorting.TestMetric;
+import com.agoda.fork.stat.TestHistory;
+import com.agoda.fork.stat.TestMetric;
 import com.shazam.fork.model.TestCaseEvent;
 
 import java.util.ArrayList;

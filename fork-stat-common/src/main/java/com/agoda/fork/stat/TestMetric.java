@@ -1,4 +1,4 @@
-package com.agoda.fork.sorting;
+package com.agoda.fork.stat;
 
 public class TestMetric {
 

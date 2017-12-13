@@ -1,7 +1,7 @@
 package com.shazam.fork.stat;
 
-import com.agoda.fork.sorting.StatLoader;
-import com.agoda.fork.sorting.TestHistory;
+import com.agoda.fork.stat.StatLoader;
+import com.agoda.fork.stat.TestHistory;
 
 import java.util.List;
 import java.util.ServiceLoader;

@@ -1,6 +1,6 @@
 package com.shazam.fork.suite;
 
-import com.agoda.fork.sorting.TestMetric;
+import com.agoda.fork.stat.TestMetric;
 import com.shazam.fork.model.TestCaseEvent;
 import org.hamcrest.Matcher;
 

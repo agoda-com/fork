@@ -1,12 +1,15 @@
 package com.agoda.fork.teamcity;
 
-import com.agoda.fork.sorting.*;
+import com.agoda.fork.stat.*;
 import com.agoda.fork.teamcity.entities.Build;
 import com.agoda.fork.teamcity.entities.Test;
 import com.agoda.fork.teamcity.entities.TestResult;
 import io.reactivex.Single;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.nodes.Tag;
 
 import java.util.*;
 
@@ -15,16 +18,16 @@ import static java.util.stream.Collectors.toList;
 public class TeamCityStatLoader implements StatLoader {
 
     private final TeamCityService teamCityService;
+    private final TeamCityConfig teamCityConfig;
 
-    public TeamCityStatLoader(TeamCityService teamCityService) {
+    public TeamCityStatLoader(TeamCityService teamCityService, TeamCityConfig teamCityConfig) {
         this.teamCityService = teamCityService;
+        this.teamCityConfig = teamCityConfig;
     }
 
     @Override
     public List<TestHistory> loadHistory() {
-        throw new UnsupportedOperationException();
-//        String configuration = "";
-//        return testHistories(configuration);
+        return testHistories(teamCityConfig.getConfiguration());
     }
 
     private TestHistory createTestHistory(Test test) {

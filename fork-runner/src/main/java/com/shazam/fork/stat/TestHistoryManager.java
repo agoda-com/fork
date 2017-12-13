@@ -1,6 +1,6 @@
 package com.shazam.fork.stat;
 
-import com.agoda.fork.sorting.TestHistory;
+import com.agoda.fork.stat.TestHistory;
 import com.android.ddmlib.testrunner.TestIdentifier;
 
 import java.util.Collection;

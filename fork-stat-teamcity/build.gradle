@@ -8,6 +8,7 @@ repositories {
 }
 
 dependencies {
+    implementation "org.yaml:snakeyaml:1.18"
     implementation project(':fork-stat-common')
     implementation project(':teamcity-client')
 }

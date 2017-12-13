@@ -1,6 +1,6 @@
 package com.shazam.fork.model;
 
-import com.agoda.fork.sorting.TestMetric;
+import com.agoda.fork.stat.TestMetric;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.base.Objects;
 

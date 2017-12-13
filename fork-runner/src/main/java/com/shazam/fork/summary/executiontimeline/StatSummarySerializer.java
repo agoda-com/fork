@@ -1,7 +1,7 @@
 package com.shazam.fork.summary.executiontimeline;
 
-import com.agoda.fork.sorting.TestHistory;
-import com.agoda.fork.sorting.TestMetric;
+import com.agoda.fork.stat.TestHistory;
+import com.agoda.fork.stat.TestMetric;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.stat.TestExecution;
@@ -11,13 +11,7 @@ import com.shazam.fork.summary.PoolSummary;
 import com.shazam.fork.summary.Summary;
 import com.shazam.fork.summary.TestResult;
 
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.ToLongFunction;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;

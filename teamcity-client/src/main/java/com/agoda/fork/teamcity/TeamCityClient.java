@@ -31,8 +31,7 @@ public final class TeamCityClient {
     }
 
     private String credentials() {
-        AuthConfig authConfig = config.getAuthConfig();
-        return Credentials.basic(authConfig.getUser(), authConfig.getPassword());
+        return Credentials.basic(config.getUser(), config.getPassword());
     }
 
     private OkHttpClient createHttpClient() {

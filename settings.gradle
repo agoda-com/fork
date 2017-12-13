@@ -18,5 +18,5 @@ include ':chimprunner'
 include ':chimprunner-gradle-plugin'
 include 'teamcity-client'
 include 'fork-stat-common'
-include 'fork-sorting-teamcity'
+include 'fork-stat-teamcity'
 
