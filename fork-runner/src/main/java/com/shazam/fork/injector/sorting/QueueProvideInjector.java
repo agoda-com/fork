@@ -1,6 +1,7 @@
 package com.shazam.fork.injector.sorting;
 
 import com.shazam.fork.QueueProvider;
+import com.shazam.fork.stat.StatServiceLoader;
 import com.shazam.fork.stat.TestStatsLoader;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
@@ -12,6 +13,6 @@ public class QueueProvideInjector {
     }
 
     private static TestStatsLoader testStatLoader() {
-        return new TestStatsLoader();
+        return new TestStatsLoader(new StatServiceLoader());
     }
 }

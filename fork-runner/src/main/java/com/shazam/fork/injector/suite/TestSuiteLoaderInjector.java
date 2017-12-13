@@ -10,6 +10,7 @@
 
 package com.shazam.fork.injector.suite;
 
+import com.shazam.fork.stat.StatServiceLoader;
 import com.shazam.fork.stat.TestStatsLoader;
 import com.shazam.fork.suite.TestSuiteLoader;
 
@@ -27,6 +28,6 @@ public class TestSuiteLoaderInjector {
                 testClassMatcher(),
                 configuration().getIncludedAnnotation(),
                 configuration().getExcludedAnnotation(),
-                new TestStatsLoader());
+                new TestStatsLoader(new StatServiceLoader()));
     }
 }

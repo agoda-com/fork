@@ -10,6 +10,7 @@
 
 package com.shazam.chimprunner.injector.suite;
 
+import com.shazam.fork.stat.StatServiceLoader;
 import com.shazam.fork.stat.TestStatsLoader;
 import com.shazam.fork.suite.TestSuiteLoader;
 
@@ -26,6 +27,6 @@ public class TestSuiteLoaderInjector {
         return new TestSuiteLoader(configuration().getInstrumentationApk(),
                 dexFileExtractor(), testClassMatcher(),
                 "", "",
-                new TestStatsLoader());
+                new TestStatsLoader(new StatServiceLoader()));
     }
 }

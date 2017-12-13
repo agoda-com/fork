@@ -15,6 +15,10 @@ public class TestStatsLoader {
 
     StatServiceLoader loader;
 
+    public TestStatsLoader(StatServiceLoader loader) {
+        this.loader = loader;
+    }
+
     private final List<TestHistory> testHistories = new ArrayList<>();
     private final Map<String, TestMetric> testMetris = new HashMap<>();
 
