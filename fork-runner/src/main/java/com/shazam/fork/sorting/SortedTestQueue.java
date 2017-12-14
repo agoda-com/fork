@@ -8,9 +8,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 public class SortedTestQueue extends LinkedList<TestCaseEvent> {
-
-    private static final Logger logger = LoggerFactory.getLogger(SortedTestQueue.class);
-
     private static final TestComparator comparator = new TestComparator();
 
     @Override
@@ -29,8 +26,6 @@ public class SortedTestQueue extends LinkedList<TestCaseEvent> {
 
     @Override
     public TestCaseEvent poll() {
-        TestCaseEvent event = super.poll();
-        logger.error(event.toString());
-        return event;
+        return super.poll();
     }
 }
