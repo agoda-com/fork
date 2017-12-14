@@ -17,7 +17,7 @@ function testsChart() {
         .attr('class', 'tooltip')
         .style('opacity', 0);
 
-    function renderLegend(svg, success, failed) {
+    function renderLegend(svg, success, failed, dataset) {
         var legend = svg.select('#g_title')
             .append('g')
             .attr('id', 'g_legend')
@@ -48,9 +48,25 @@ function testsChart() {
             .attr('y', paddingTopHeading + 8.5 + 15 + 2)
             .text('Failed test = ' + failed)
             .attr('class', 'legend');
+
+        var deviceCount = dataset.measures.length;
+        var idle = dataset.executionStats.idleTimeMillis;
+        var averageIdle = idle / deviceCount;
+
+        legend.append('text')
+            .attr('x', width + margin.right - 350)
+            .attr('y', paddingTopHeading + 8.5 + 15 + 2)
+            .text('Summary idle: ' + Math.round(moment.duration(idle).asSeconds()).toFixed(2) + " sec")
+            .attr('class', 'legend');
+
+        legend.append('text')
+            .attr('x', width + margin.right - 350)
+            .attr('y', paddingTopHeading + 8.5)
+            .text('Average Idle: ' + Math.round(moment.duration(averageIdle).asSeconds()).toFixed(2) + " sec")
+            .attr('class', 'legend');
     }
 
-    function convertDate(date){
+    function convertDate(date) {
         var dateFormat = d3.time.format('%Y-%m-%d %H:%M:%S');
         return dateFormat(date)
     }
@@ -303,7 +319,7 @@ function testsChart() {
 
             renderTitle(svg, startDate, finishDate);
 
-            renderLegend(svg, success, failed);
+            renderLegend(svg, success, failed, dataset);
         });
     }
 
