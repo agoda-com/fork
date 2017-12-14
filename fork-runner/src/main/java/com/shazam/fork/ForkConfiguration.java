@@ -100,12 +100,12 @@ public class ForkConfiguration {
     public String excludedAnnotation;
 
     /**
-     * Filter test run to tests without given annotation
+     * Filter test run to tests with given annotation
      */
     public String includedAnnotation;
 
     /**
-     * TODO
+     * The strategy that will be used to calculate execution order.
      */
     public SortingStrategy sortingStrategy;
 
