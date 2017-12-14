@@ -40,7 +40,7 @@ public class TestSuiteLoaderIncludedTest {
     public void setUp() throws Exception {
         testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher,
                 "com.shazam.annotations.CustomTestAnnotation2",
-                "",new TestStatsLoader(new StatServiceLoader()));
+                "",new TestStatsLoader(new StatServiceLoader("")));
     }
 
     @Test

@@ -14,14 +14,12 @@ package com.shazam.fork.injector;
 
 import com.shazam.fork.ForkRunner;
 
-import com.shazam.fork.QueueProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.shazam.fork.injector.pooling.PoolLoaderInjector.poolLoader;
 import static com.shazam.fork.injector.runner.PoolTestRunnerFactoryInjector.poolTestRunnerFactory;
 import static com.shazam.fork.injector.runner.ProgressReporterInjector.progressReporter;
-import static com.shazam.fork.injector.sorting.QueueProvideInjector.queueProvider;
 import static com.shazam.fork.injector.stat.TestStatLoaderInjector.testStatsLoader;
 import static com.shazam.fork.injector.suite.TestSuiteLoaderInjector.testSuiteLoader;
 import static com.shazam.fork.injector.summary.SummaryGeneratorHookInjector.summaryGeneratorHook;
@@ -43,7 +41,6 @@ public class ForkRunnerInjector {
                 poolTestRunnerFactory(),
                 progressReporter(),
                 summaryGeneratorHook(),
-                queueProvider(),
                 testStatsLoader());
 
         logger.debug("Bootstrap of ForkRunner took: {} milliseconds", millisSinceNanoTime(startNanos));

@@ -17,6 +17,7 @@ import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.pooling.*;
 import com.shazam.fork.runner.PoolTestRunnerFactory;
 import com.shazam.fork.runner.ProgressReporter;
+import com.shazam.fork.sorting.TestQueue;
 import com.shazam.fork.stat.TestStatsLoader;
 import com.shazam.fork.suite.NoTestCasesFoundException;
 import com.shazam.fork.suite.TestSuiteLoader;
@@ -40,7 +41,6 @@ public class ForkRunner {
     private final PoolTestRunnerFactory poolTestRunnerFactory;
     private final ProgressReporter progressReporter;
     private final SummaryGeneratorHook summaryGeneratorHook;
-    private final QueueProvider queueProvider;
     private final TestStatsLoader testStatsLoader;
 
     public ForkRunner(PoolLoader poolLoader,
@@ -48,14 +48,12 @@ public class ForkRunner {
                       PoolTestRunnerFactory poolTestRunnerFactory,
                       ProgressReporter progressReporter,
                       SummaryGeneratorHook summaryGeneratorHook,
-                      QueueProvider queueProvider,
                       TestStatsLoader testStatsLoader) {
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
         this.poolTestRunnerFactory = poolTestRunnerFactory;
         this.progressReporter = progressReporter;
         this.summaryGeneratorHook = summaryGeneratorHook;
-        this.queueProvider = queueProvider;
         this.testStatsLoader = testStatsLoader;
     }
 
@@ -71,7 +69,7 @@ public class ForkRunner {
 
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
 
-            Queue<TestCaseEvent> testCasesQueue = queueProvider.createQueue(testCases);
+            Queue<TestCaseEvent> testCasesQueue = new TestQueue(testCases);
 
             summaryGeneratorHook.registerHook(pools, testCases);
 

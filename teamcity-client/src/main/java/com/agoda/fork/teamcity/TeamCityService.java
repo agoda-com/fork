@@ -15,10 +15,4 @@ public interface TeamCityService {
 
     @GET("/httpAuth/app/rest/testOccurrences")
     Single<TestResult> tests(@Query("locator") String locator);
-
-    @Streaming
-    @GET("/repository/download/{configuration}/{id}:id/artifacts/{path}")
-    Single<ResponseBody> artifactContent(@Path("configuration") String configuration,
-                                         @Path("id") int buildId,
-                                         @Path(value = "path", encoded = true) String artifactPath);
 }

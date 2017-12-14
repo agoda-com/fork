@@ -85,7 +85,7 @@ public class TestSuiteLoaderTest {
 
     @Before
     public void setUp() throws Exception {
-        testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher, "", "", new TestStatsLoader(new StatServiceLoader()));
+        testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher, "", "", new TestStatsLoader(new StatServiceLoader("")));
     }
 
     @SuppressWarnings("unchecked")

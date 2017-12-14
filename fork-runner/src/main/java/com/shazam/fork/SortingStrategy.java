@@ -1,15 +1,16 @@
 package com.shazam.fork;
 
-import com.shazam.fork.sorting.TeamCitySortingStrategy;
+import com.shazam.fork.sorting.Stats;
 import groovy.lang.Closure;
 
 public class SortingStrategy {
     public Boolean defaultStrategy;
-    public TeamCitySortingStrategy teamcity;
+    public Stats statistics;
 
-    public void teamcity(Closure<?> manualClosure) {
-        teamcity = new TeamCitySortingStrategy();
-        manualClosure.setDelegate(teamcity);
+
+    public void stats(Closure<?> manualClosure) {
+        statistics = new Stats();
+        manualClosure.setDelegate(statistics);
         manualClosure.call();
     }
 }

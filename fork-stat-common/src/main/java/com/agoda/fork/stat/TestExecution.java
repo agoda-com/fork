@@ -2,18 +2,12 @@ package com.agoda.fork.stat;
 
 public class TestExecution {
     private final int duration;
-    private final int retryCount;
 
-    public TestExecution(int duration, int retryCount) {
+    public TestExecution(int duration) {
         this.duration = duration;
-        this.retryCount = retryCount;
     }
 
     public int getDuration() {
         return duration;
-    }
-
-    public int getRetryCount() {
-        return retryCount;
     }
 }

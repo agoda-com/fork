@@ -6,13 +6,11 @@ public class TestResult {
     private final int count;
     private final String href;
     private final List<Test> testOccurrence;
-    private final List<String> retries;
 
-    public TestResult(int count, String href, List<Test> testOccurrence, List<String> retries) {
+    public TestResult(int count, String href, List<Test> testOccurrence) {
         this.count = count;
         this.href = href;
         this.testOccurrence = testOccurrence;
-        this.retries = retries;
     }
 
     public int getCount() {
@@ -25,9 +23,5 @@ public class TestResult {
 
     public List<Test> getTestOccurrence() {
         return testOccurrence;
-    }
-
-    public List<String> getRetries() {
-        return retries;
     }
 }

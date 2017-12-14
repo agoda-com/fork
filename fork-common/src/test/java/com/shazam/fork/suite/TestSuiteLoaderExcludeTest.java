@@ -5,30 +5,20 @@ import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.stat.StatServiceLoader;
 import com.shazam.fork.stat.TestStatsLoader;
-import org.hamcrest.Matcher;
 import org.jf.dexlib.DexFile;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.shazam.fork.io.FakeDexFileExtractor.fakeDexFileExtractor;
 import static com.shazam.fork.io.Files.convertFileToDexFile;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.suite.FakeTestClassMatcher.fakeTestClassMatcher;
 import static com.shazam.fork.suite.TestSuiteLoaderTestUtils.sameTestEventAs;
 import static com.shazam.shazamcrest.MatcherAssert.assertThat;
-import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
-import static java.util.Arrays.asList;
-import static java.util.Collections.*;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 
 public class TestSuiteLoaderExcludeTest {
@@ -48,7 +38,7 @@ public class TestSuiteLoaderExcludeTest {
     @Before
     public void setUp() throws Exception {
         testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor,
-                fakeTestClassMatcher, "", "com.shazam.annotations.CustomTestAnnotation1",new TestStatsLoader(new StatServiceLoader()));
+                fakeTestClassMatcher, "", "com.shazam.annotations.CustomTestAnnotation1",new TestStatsLoader(new StatServiceLoader("")));
     }
 
     @Test

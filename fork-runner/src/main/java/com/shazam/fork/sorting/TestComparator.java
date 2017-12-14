@@ -1,19 +1,21 @@
 package com.shazam.fork.sorting;
 
+import com.shazam.fork.model.TestCaseEvent;
+
 import java.util.Comparator;
 
-class TestComparator implements Comparator<BalancerTestCaseEvent>{
-    private static Comparator<BalancerTestCaseEvent> getDefaultComparator() {
-        return Comparator.<BalancerTestCaseEvent>comparingDouble(value ->
-                Math.sqrt(value.getMetric().getVariance()) * 2 + value.getMetric().getExpectedValue()
+class TestComparator implements Comparator<TestCaseEvent> {
+    private static Comparator<TestCaseEvent> getDefaultComparator() {
+        return Comparator.<TestCaseEvent>comparingDouble(value ->
+                Math.sqrt(value.getTestMetric().getVariance()) * 2 + value.getTestMetric().getExpectedValue()
         ).reversed();
     }
 
     @Override
-    public int compare(BalancerTestCaseEvent o1, BalancerTestCaseEvent o2) {
-        if (o1.getMetric().getVariance() == 0 || o1.getMetric().getExpectedValue() == 0) {
+    public int compare(TestCaseEvent o1, TestCaseEvent o2) {
+        if (o1.getTestMetric().getVariance() == 0 || o1.getTestMetric().getExpectedValue() == 0) {
             return -1;
-        } else if (o2.getMetric().getVariance() == 0 || o2.getMetric().getExpectedValue() == 0) {
+        } else if (o2.getTestMetric().getVariance() == 0 || o2.getTestMetric().getExpectedValue() == 0) {
             return 1;
         } else {
             return getDefaultComparator().compare(o1, o2);
