@@ -63,7 +63,7 @@ function testsChart() {
             .text('Test run results')
             .attr('class', 'heading');
 
-        var subtitleText = 'from ' + moment(parseDateTime(startDate)).format('l') + ' '
+        var subtitleText = 'from ' + moment(convertDate(startDate)).format('l') + ' '
             + moment(convertDate(startDate)).format('LTS') + ' to '
             + moment(convertDate(finishDate)).format('l') + ' '
             + moment(convertDate(finishDate)).format('LTS');
@@ -171,18 +171,6 @@ function testsChart() {
                     return ((lineSpacing + dataHeight) * i) + lineSpacing + dataHeight / 2;
                 }
             });
-    }
-
-    function customTickFunc (t0, t1, step)
-    {
-        var startTime = new Date(t0),
-            endTime= new Date(t1), times = [];
-        endTime.setUTCDate(endTime.getUTCDate() + 1);
-        while (startTime < endTime) {
-            startTime.setUTCDate(startTime.getUTCDate() + 2);
-            times.push(new Date(startTime));
-        }
-        return times;
     }
 
     function calculateScale(startDate, finishDate) {
