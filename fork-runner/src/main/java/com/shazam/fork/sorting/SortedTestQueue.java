@@ -7,15 +7,11 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class TestQueue extends LinkedList<TestCaseEvent> {
+public class SortedTestQueue extends LinkedList<TestCaseEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestQueue.class);
+    private static final Logger logger = LoggerFactory.getLogger(SortedTestQueue.class);
 
     private static final TestComparator comparator = new TestComparator();
-
-    public TestQueue(Collection<TestCaseEvent> testCases) {
-        this.addAll(testCases);
-    }
 
     @Override
     public boolean add(TestCaseEvent event) {
