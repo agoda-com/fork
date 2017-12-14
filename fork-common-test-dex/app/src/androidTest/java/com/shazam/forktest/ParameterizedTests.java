@@ -1,14 +1,17 @@
-package com.shazam.annotations;
+package com.shazam.forktest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import com.shazam.annotations.CustomParameterizedAnnotation;
+
 import java.util.Arrays;
 import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 
+@CustomParameterizedAnnotation
 @RunWith(Parameterized.class)
 public class ParameterizedTests {
 
