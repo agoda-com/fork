@@ -10,7 +10,12 @@ repositories {
 dependencies {
     implementation "org.yaml:snakeyaml:1.18"
     implementation project(':fork-stat-common')
-    implementation project(':teamcity-client')
+
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
 }
 
 jar {
