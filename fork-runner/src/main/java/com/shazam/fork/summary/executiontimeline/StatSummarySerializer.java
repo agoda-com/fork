@@ -7,6 +7,7 @@ import com.shazam.fork.model.Device;
 import com.shazam.fork.stat.TestExecution;
 import com.shazam.fork.stat.TestExecutionReporter;
 import com.shazam.fork.stat.TestHistoryManager;
+import com.shazam.fork.stat.TestStatsLoader;
 import com.shazam.fork.summary.PoolSummary;
 import com.shazam.fork.summary.Summary;
 import com.shazam.fork.summary.TestResult;
@@ -19,11 +20,12 @@ import static java.util.stream.Collectors.toList;
 public class StatSummarySerializer {
 
     private final TestExecutionReporter reporter;
-    private final TestHistoryManager testHistoryManager;
+    private final TestStatsLoader testStatsLoader;
 
-    public StatSummarySerializer(TestExecutionReporter reporter, TestHistoryManager testHistoryManager) {
+    public StatSummarySerializer(TestExecutionReporter reporter,
+                                 TestStatsLoader testStatsLoader) {
         this.reporter = reporter;
-        this.testHistoryManager = testHistoryManager;
+        this.testStatsLoader = testStatsLoader;
     }
 
     private String prepareTestName(String fullTestName) {
@@ -54,9 +56,7 @@ public class StatSummarySerializer {
     }
 
     private TestMetric getTestMetric(TestExecution execution) {
-        return testHistoryManager.getTestHistory(execution.getTest())
-                .map(TestHistory::getTestMetric)
-                .orElse(new TestMetric(0.0, 0.0));
+        return testStatsLoader.findMetric(execution.getTest());
     }
 
     private ExecutionStats calculateExecutionStats(List<Data> data) {

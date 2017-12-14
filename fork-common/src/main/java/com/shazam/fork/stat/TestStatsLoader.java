@@ -2,6 +2,7 @@ package com.shazam.fork.stat;
 
 import com.agoda.fork.stat.TestHistory;
 import com.agoda.fork.stat.TestMetric;
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.TestCaseEvent;
 
 import java.util.ArrayList;
@@ -31,6 +32,14 @@ public class TestStatsLoader {
 
     public TestMetric findMetric(String className, String methodName) {
         return testMetris.getOrDefault(calculateTestKey(className, methodName), TestMetric.empty());
+    }
+
+    public TestMetric findMetric(TestIdentifier testIdentifier) {
+        return testMetris.getOrDefault(calculateTestKey(testIdentifier), TestMetric.empty());
+    }
+
+    private String calculateTestKey(TestIdentifier testIdentifier) {
+        return calculateTestKey(testIdentifier.getClassName(),testIdentifier.getTestName());
     }
 
     private String calculateTestKey(TestHistory history) {
