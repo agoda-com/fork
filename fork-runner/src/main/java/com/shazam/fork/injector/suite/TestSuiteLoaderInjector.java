@@ -16,6 +16,7 @@ import com.shazam.fork.suite.TestSuiteLoader;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 import static com.shazam.fork.injector.io.DexFileExtractorInjector.dexFileExtractor;
+import static com.shazam.fork.injector.stat.TestStatLoaderInjector.testStatsLoader;
 import static com.shazam.fork.injector.suite.TestClassMatcherInjector.testClassMatcher;
 
 public class TestSuiteLoaderInjector {
@@ -28,6 +29,6 @@ public class TestSuiteLoaderInjector {
                 testClassMatcher(),
                 configuration().getIncludedAnnotation(),
                 configuration().getExcludedAnnotation(),
-                new TestStatsLoader(new StatServiceLoader()));
+                testStatsLoader());
     }
 }
