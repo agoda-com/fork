@@ -60,6 +60,10 @@ public class TestCaseEvent {
         return properties;
     }
 
+    public TestMetric getTestMetric() {
+        return testMetric;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hashCode(this.testMethod, this.testClass);
