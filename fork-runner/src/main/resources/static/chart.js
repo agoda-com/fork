@@ -199,6 +199,7 @@ function testsChart() {
     function calculateAxis(xScale) {
         return d3.svg.axis()
             .scale(xScale)
+            .tickFormat(d3.time.format("%M:%S"))
             .orient('top');
     }
 
