@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableMap;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.model.TestCaseEventFactory;
 import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.FileType;
@@ -27,7 +28,6 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.summary.TestResult.SUMMARY_KEY_TOTAL_FAILURE_COUNT;
 
 public class ForkXmlTestRunListener extends XmlTestRunListener {
@@ -36,6 +36,7 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
     private final Pool pool;
     private final Device device;
     private final TestCaseEvent testCase;
+    private final TestCaseEventFactory factory;
 
     @Nonnull
     private final ProgressReporter progressReporter;
@@ -45,12 +46,14 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
                                   Pool pool,
                                   Device device,
                                   TestCaseEvent testCase,
-                                  @Nonnull ProgressReporter progressReporter) {
+                                  @Nonnull ProgressReporter progressReporter,
+                                  TestCaseEventFactory factory) {
         this.fileManager = fileManager;
         this.pool = pool;
         this.device = device;
         this.testCase = testCase;
         this.progressReporter = progressReporter;
+        this.factory = factory;
     }
 
     @Override
@@ -69,7 +72,7 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
         ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
                 .putAll(super.getPropertiesAttributes());
         if (test != null) {
-            int testFailuresCount = progressReporter.getTestFailuresCount(pool, newTestCase(test));
+            int testFailuresCount = progressReporter.getTestFailuresCount(pool, factory.newTestCase(test));
             if (testFailuresCount > 0) {
                 mapBuilder.put(SUMMARY_KEY_TOTAL_FAILURE_COUNT, Integer.toString(testFailuresCount));
             }

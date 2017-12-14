@@ -4,6 +4,9 @@ import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 
+import com.shazam.fork.model.TestCaseEventFactory;
+import com.shazam.fork.stat.StatServiceLoader;
+import com.shazam.fork.stat.TestStatsLoader;
 import org.jmock.Expectations;
 import org.jmock.auto.Mock;
 import org.jmock.integration.junit4.JUnitRuleMockery;
@@ -12,7 +15,6 @@ import org.junit.Test;
 
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.runner.FakePoolTestCaseAccumulator.aFakePoolTestCaseAccumulator;
 import static com.shazam.fork.runner.FakeProgressReporterTrackers.aFakeProgressReporterTrackers;
 import static java.util.Collections.emptyList;
@@ -20,15 +22,18 @@ import static java.util.Collections.emptyMap;
 
 public class OverallProgressReporterTest {
 
-    @Rule public JUnitRuleMockery mockery = new JUnitRuleMockery();
-    @Mock private PoolProgressTracker mockPoolProgressTracker;
+    @Rule
+    public JUnitRuleMockery mockery = new JUnitRuleMockery();
+    @Mock
+    private PoolProgressTracker mockPoolProgressTracker;
     private final FakePoolTestCaseAccumulator fakeTestCasesAccumulator = aFakePoolTestCaseAccumulator();
 
     private final Device A_DEVICE = aDevice().build();
     private final Pool A_POOL = aDevicePool()
             .addDevice(A_DEVICE)
             .build();
-    private final TestCaseEvent A_TEST_CASE = newTestCase("aTestMethod", "aTestClass", false, emptyList(), emptyMap(), null);
+    private final TestCaseEventFactory factory = new TestCaseEventFactory(new TestStatsLoader(new StatServiceLoader("")));
+    private final TestCaseEvent A_TEST_CASE = factory.newTestCase("aTestMethod", "aTestClass", false, emptyList(), emptyMap());
 
     private OverallProgressReporter overallProgressReporter;
 

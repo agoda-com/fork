@@ -1,16 +1,11 @@
 package com.shazam.fork.model;
 
 import com.agoda.fork.stat.TestMetric;
-import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.base.Objects;
 
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SIMPLE_STYLE;
 
@@ -23,21 +18,13 @@ public class TestCaseEvent {
     private final Map<String, String> properties;
     private final TestMetric testMetric;
 
-    private TestCaseEvent(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties, TestMetric testMetric) {
+    TestCaseEvent(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties, TestMetric testMetric) {
         this.testMethod = testMethod;
         this.testClass = testClass;
         this.isIgnored = isIgnored;
         this.permissionsToRevoke = permissionsToRevoke;
         this.properties = properties;
         this.testMetric = testMetric;
-    }
-
-    public static TestCaseEvent newTestCase(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties, TestMetric testMetric) {
-        return new TestCaseEvent(testMethod, testClass, isIgnored, permissionsToRevoke, properties, testMetric);
-    }
-
-    public static TestCaseEvent newTestCase(@Nonnull TestIdentifier testIdentifier) {
-        return new TestCaseEvent(testIdentifier.getTestName(), testIdentifier.getClassName(), false, emptyList(), emptyMap(), TestMetric.empty());
     }
 
     public String getTestMethod() {

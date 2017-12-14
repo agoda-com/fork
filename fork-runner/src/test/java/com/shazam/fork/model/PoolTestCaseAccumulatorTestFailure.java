@@ -1,10 +1,11 @@
 package com.shazam.fork.model;
 
+import com.shazam.fork.stat.StatServiceLoader;
+import com.shazam.fork.stat.TestStatsLoader;
 import org.junit.Before;
 import org.junit.Test;
 
 import static com.shazam.fork.model.Device.Builder.aDevice;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -29,8 +30,9 @@ public class PoolTestCaseAccumulatorTestFailure {
             .addDevice(ANOTHER_DEVICE)
             .build();
 
-    private final TestCaseEvent A_TEST_CASE = newTestCase("a_method", "a_class", false, emptyList(), emptyMap(), null);
-    private final TestCaseEvent ANOTHER_TEST_CASE = newTestCase("another_method", "a_class", false, emptyList(), emptyMap(), null);
+    private final TestCaseEventFactory factory = new TestCaseEventFactory(new TestStatsLoader(new StatServiceLoader("")));
+    private final TestCaseEvent A_TEST_CASE = factory.newTestCase("a_method", "a_class", false, emptyList(), emptyMap());
+    private final TestCaseEvent ANOTHER_TEST_CASE = factory.newTestCase("another_method", "a_class", false, emptyList(), emptyMap());
 
     PoolTestCaseFailureAccumulator subject;
 

@@ -24,13 +24,11 @@ public class StatServiceLoader {
     }
 
     public List<TestHistory> load() {
-        logger.info("StatServiceLoader.load");
         return StreamSupport.stream(ServiceLoader.load(StatLoaderProvider.class).spliterator(), true)
                 .flatMap(loader -> {
                     List<TestHistory> histories = new ArrayList<>();
                     try {
                         histories.addAll(loader.create(path).loadHistory());
-                        logger.info("histories.size = " + histories.size());
                     } catch (FileNotFoundException e) {
                         logger.error("can't load history", e);
                     }
