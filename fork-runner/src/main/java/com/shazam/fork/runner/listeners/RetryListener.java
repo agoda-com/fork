@@ -14,6 +14,7 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.model.TestCaseEventFactory;
 import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.FileType;
@@ -28,7 +29,6 @@ import java.util.Queue;
 import javax.annotation.Nonnull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 
 public class RetryListener extends NoOpITestRunListener {
 
@@ -44,12 +44,14 @@ public class RetryListener extends NoOpITestRunListener {
     private ProgressReporter progressReporter;
     private FileManager fileManager;
     private Pool pool;
+    private final TestCaseEventFactory testCaseEventFactory;
 
     public RetryListener(@Nonnull Pool pool, @Nonnull Device device,
                          @Nonnull Queue<TestCaseEvent> queueOfTestsInPool,
                          @Nonnull TestCaseEvent currentTestCaseEvent,
                          @Nonnull ProgressReporter progressReporter,
-                         FileManager fileManager) {
+                         FileManager fileManager,
+                         TestCaseEventFactory testCaseEventFactory) {
         checkNotNull(device);
         checkNotNull(queueOfTestsInPool);
         checkNotNull(currentTestCaseEvent);
@@ -61,19 +63,20 @@ public class RetryListener extends NoOpITestRunListener {
         this.progressReporter = progressReporter;
         this.pool = pool;
         this.fileManager = fileManager;
+        this.testCaseEventFactory = testCaseEventFactory;
     }
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
         failedTest = test;
-        progressReporter.recordFailedTestCase(pool, newTestCase(failedTest));
+        progressReporter.recordFailedTestCase(pool, testCaseEventFactory.newTestCase(failedTest));
     }
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
         super.testRunEnded(elapsedTime, runMetrics);
         if (failedTest != null) {
-            if (progressReporter.requestRetry(pool, newTestCase(failedTest))) {
+            if (progressReporter.requestRetry(pool, testCaseEventFactory.newTestCase(failedTest))) {
                 queueOfTestsInPool.add(currentTestCaseEvent);
                 logger.info("Test " + failedTest.toString() + " enqueued again into pool:" + pool.getName());
                 removeFailureTraceFiles();

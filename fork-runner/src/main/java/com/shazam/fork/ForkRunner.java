@@ -17,6 +17,8 @@ import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.pooling.*;
 import com.shazam.fork.runner.PoolTestRunnerFactory;
 import com.shazam.fork.runner.ProgressReporter;
+import com.shazam.fork.sorting.QueueProvider;
+import com.shazam.fork.stat.TestStatsLoader;
 import com.shazam.fork.suite.NoTestCasesFoundException;
 import com.shazam.fork.suite.TestSuiteLoader;
 import com.shazam.fork.summary.SummaryGeneratorHook;
@@ -25,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
@@ -38,17 +41,23 @@ public class ForkRunner {
     private final PoolTestRunnerFactory poolTestRunnerFactory;
     private final ProgressReporter progressReporter;
     private final SummaryGeneratorHook summaryGeneratorHook;
+    private final TestStatsLoader testStatsLoader;
+    private final QueueProvider queueProvider;
 
     public ForkRunner(PoolLoader poolLoader,
                       TestSuiteLoader testClassLoader,
                       PoolTestRunnerFactory poolTestRunnerFactory,
                       ProgressReporter progressReporter,
-                      SummaryGeneratorHook summaryGeneratorHook) {
+                      SummaryGeneratorHook summaryGeneratorHook,
+                      TestStatsLoader testStatsLoader,
+                      QueueProvider queueProvider) {
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
         this.poolTestRunnerFactory = poolTestRunnerFactory;
         this.progressReporter = progressReporter;
         this.summaryGeneratorHook = summaryGeneratorHook;
+        this.testStatsLoader = testStatsLoader;
+        this.queueProvider = queueProvider;
     }
 
     public boolean run() {
@@ -59,13 +68,22 @@ public class ForkRunner {
             CountDownLatch poolCountDownLatch = new CountDownLatch(numberOfPools);
             poolExecutor = namedExecutor(numberOfPools, "PoolExecutor-%d");
 
+            testStatsLoader.load();
+
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
+
+            Queue<TestCaseEvent> testCasesQueue = queueProvider.create();
+
+            testCasesQueue.addAll(testCases);
+
             summaryGeneratorHook.registerHook(pools, testCases);
 
             progressReporter.start();
             for (Pool pool : pools) {
-                Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool, testCases,
-                        poolCountDownLatch, progressReporter);
+                Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool,
+                        testCasesQueue,
+                        poolCountDownLatch,
+                        progressReporter);
                 poolExecutor.execute(poolTestRunner);
             }
             poolCountDownLatch.await();

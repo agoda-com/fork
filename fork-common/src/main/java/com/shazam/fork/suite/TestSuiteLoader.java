@@ -10,9 +10,10 @@
 
 package com.shazam.fork.suite;
 
-import com.google.common.base.Strings;
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.model.TestCaseEventFactory;
+import com.shazam.fork.stat.TestStatsLoader;
 import org.jf.dexlib.*;
 import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
 import org.jf.dexlib.EncodedValue.ArrayEncodedValue;
@@ -24,12 +25,12 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.suite.AnnotationParser.parseAnnotation;
 import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class TestSuiteLoader {
     private static final String TEST_ANNOTATION = "Lorg/junit/Test;";
@@ -42,20 +43,24 @@ public class TestSuiteLoader {
     private final TestClassMatcher testClassMatcher;
     private final List<String> includedAnnotations;
     private final List<String> excludedAnnotations;
+    private final TestCaseEventFactory factory;
 
     public TestSuiteLoader(File instrumentationApkFile,
                            DexFileExtractor dexFileExtractor,
                            TestClassMatcher testClassMatcher,
                            String includedAnnotation,
-                           String excludedAnnotation) {
+                           String excludedAnnotation,
+                           TestCaseEventFactory testCaseEventFactory) {
         this.instrumentationApkFile = instrumentationApkFile;
         this.dexFileExtractor = dexFileExtractor;
         this.testClassMatcher = testClassMatcher;
         this.includedAnnotations = parseAnnotation().apply(includedAnnotation);
         this.excludedAnnotations = parseAnnotation().apply(excludedAnnotation);
+        this.factory = testCaseEventFactory;
     }
 
     public Collection<TestCaseEvent> loadTestSuite() throws NoTestCasesFoundException {
+
         List<TestCaseEvent> testCaseEvents = dexFileExtractor.getDexFiles(instrumentationApkFile).stream()
                 .map(dexFile -> dexFile.ClassDefsSection.getItems())
                 .flatMap(Collection::stream)
@@ -126,7 +131,7 @@ public class TestSuiteLoader {
         boolean ignored = isClassIgnored(annotationDirectoryItem) || isMethodIgnored(annotations);
         List<String> permissionsToRevoke = getPermissionsToRevoke(annotations);
         Map<String, String> properties = getTestProperties(annotations);
-        return newTestCase(testMethod, testClass, ignored, permissionsToRevoke, properties);
+        return factory.newTestCase(testMethod, testClass, ignored, permissionsToRevoke, properties);
     }
 
     private String getClassName(ClassDefItem classDefItem) {

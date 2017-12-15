@@ -1,0 +1,85 @@
+.rect_passed_test {
+    fill: #5cb85c;
+}
+
+.rect_passed_test:hover {
+    fill: #449d44
+}
+
+.rect_failed_test {
+    fill: #d9534d;
+}
+
+.rect_failed_test:hover {
+    fill: #c9302c;
+}
+
+.tooltip_passed_test {
+    color: #449d44;
+}
+
+.tooltip_failed_test {
+    color: #c9302c;
+}
+
+div.tooltip {
+    position: absolute;
+    text-align: left;
+    font-size: 10px;
+    padding-left: 0;
+    width: auto;
+    border: 0;
+    border-left: thin solid #000000;
+    pointer-events: none;
+    line-height: 12px;
+    padding-top: 0;
+    display: block;
+}
+
+.ytitle {
+    dominant-baseline: central;
+    font-size: 12px;
+}
+
+.ytitle.link {
+    cursor: pointer;
+    fill: #07C;
+}
+
+.axis path,
+.axis line {
+    display: none;
+}
+
+.axis text {
+    font-size: 12px;
+    fill: #777;
+}
+
+.vert_grid {
+    fill: none;
+    stroke: #dddddd;
+    stroke-width: 1px;
+}
+
+.horz_grid {
+    fill: none;
+    stroke: #dddddd;
+    stroke-width: 1px;
+}
+
+.heading {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.subheading {
+    font-size: 12px;
+    fill: #777;
+}
+
+.legend {
+    dominant-baseline: central;
+    font-size: 12px;
+    fill: #777;
+}

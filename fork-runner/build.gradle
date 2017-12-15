@@ -19,6 +19,7 @@ targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
     api project(':fork-common')
+    implementation project(':fork-stat-common')
     implementation 'org.codehaus.groovy:groovy-all:2.4.12'
     implementation(
             "com.beust:jcommander:$JCOMMANDER_VERSION",

@@ -62,6 +62,7 @@ public class Configuration {
     private final String includedAnnotation;
 
     private ApplicationInfo applicationInfo;
+    private SortingStrategy sortingStrategy;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -87,6 +88,7 @@ public class Configuration {
         this.excludedAnnotation = builder.excludedAnnotation;
         this.includedAnnotation = builder.includedAnnotation;
         this.applicationInfo = builder.applicationInfo;
+        this.sortingStrategy = builder.sortingStrategy;
     }
 
     @Nonnull
@@ -194,6 +196,10 @@ public class Configuration {
         return applicationInfo;
     }
 
+    public SortingStrategy getSortingStrategy() {
+        return sortingStrategy;
+    }
+
     public static class Builder {
         private File androidSdk;
         private File applicationApk;
@@ -218,6 +224,7 @@ public class Configuration {
         private String excludedAnnotation;
         private String includedAnnotation;
         private ApplicationInfo applicationInfo;
+        public SortingStrategy sortingStrategy;
 
         public static Builder configuration() {
             return new Builder();
@@ -318,6 +325,11 @@ public class Configuration {
             return this;
         }
 
+        public Builder withSortingStrategy(@Nullable SortingStrategy sortingStrategy) {
+            this.sortingStrategy = sortingStrategy;
+            return this;
+        }
+
         public Configuration build() {
             checkNotNull(androidSdk, "SDK is required.");
             checkArgument(androidSdk.exists(), "SDK directory does not exist.");
@@ -345,6 +357,7 @@ public class Configuration {
             retryPerTestCaseQuota = assignValueOrDefaultIfZero(retryPerTestCaseQuota, Defaults.RETRY_QUOTA_PER_TEST_CASE);
             logArgumentsBadInteractions();
             poolingStrategy = validatePoolingStrategy(poolingStrategy);
+            sortingStrategy = validateSortingStrategy(sortingStrategy);
             applicationInfo = ApplicationInfoFactory.parseFromFile(applicationApk);
             return new Configuration(this);
         }
@@ -390,6 +403,14 @@ public class Configuration {
             }
 
             return poolingStrategy;
+        }
+
+        private SortingStrategy validateSortingStrategy(SortingStrategy sortingStrategy) {
+            if (sortingStrategy == null) {
+                sortingStrategy = new SortingStrategy();
+                sortingStrategy.defaultStrategy = true;
+            }
+            return sortingStrategy;
         }
     }
 }
