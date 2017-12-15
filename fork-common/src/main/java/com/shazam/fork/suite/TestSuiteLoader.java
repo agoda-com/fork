@@ -220,31 +220,6 @@ public class TestSuiteLoader {
                     String vType = typeEncodedValue.value.getTypeDescriptor();
                     return "Lorg/junit/runners/Parameterized;".equals(vType);
                 });
-//        for (AnnotationItem a : annotations) {
-//            String aStr = a.getEncodedAnnotation().annotationType.getTypeDescriptor();
-//            if (!"Lorg/junit/runner/RunWith;".equals(aStr)) {
-//                continue;
-//            }
-//
-//            EncodedValue[] values = a.getEncodedAnnotation().values;
-//            if (values == null || values.length == 0) {
-//                continue;
-//            }
-//
-//            for (EncodedValue v : values) {
-//                if (!(v instanceof TypeEncodedValue)) {
-//                    continue;
-//                }
-//
-//                TypeEncodedValue vv = (TypeEncodedValue) v;
-//                String vType = vv.value.getTypeDescriptor();
-//                if ("Lorg/junit/runners/Parameterized;".equals(vType)) {
-//                    return true;
-//
-//                }
-//            }
-//        }
-//        return false;
     }
 
     private boolean isClassIgnored(AnnotationDirectoryItem annotationDirectoryItem) {
