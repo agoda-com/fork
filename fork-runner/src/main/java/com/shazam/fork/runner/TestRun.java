@@ -31,60 +31,66 @@ import java.util.List;
 import static java.lang.String.format;
 
 class TestRun {
-	private static final Logger logger = LoggerFactory.getLogger(TestRun.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestRun.class);
     private final String poolName;
-	private final TestRunParameters testRunParameters;
-	private final List<ITestRunListener> testRunListeners;
-	private final PermissionGrantingManager permissionGrantingManager;
+    private final TestRunParameters testRunParameters;
+    private final List<ITestRunListener> testRunListeners;
+    private final PermissionGrantingManager permissionGrantingManager;
 
-	public TestRun(String poolName,
-				   TestRunParameters testRunParameters,
-				   List<ITestRunListener> testRunListeners,
-				   PermissionGrantingManager permissionGrantingManager) {
+    public TestRun(String poolName,
+                   TestRunParameters testRunParameters,
+                   List<ITestRunListener> testRunListeners,
+                   PermissionGrantingManager permissionGrantingManager) {
         this.poolName = poolName;
-		this.testRunParameters = testRunParameters;
-		this.testRunListeners = testRunListeners;
-		this.permissionGrantingManager = permissionGrantingManager;
-	}
+        this.testRunParameters = testRunParameters;
+        this.testRunListeners = testRunListeners;
+        this.permissionGrantingManager = permissionGrantingManager;
+    }
 
-	public void execute() {
-		String applicationPackage = testRunParameters.getApplicationPackage();
-		IDevice device = testRunParameters.getDeviceInterface();
+    public void execute() {
+        String applicationPackage = testRunParameters.getApplicationPackage();
+        IDevice device = testRunParameters.getDeviceInterface();
 
-		RemoteAndroidTestRunner runner = new RemoteAndroidTestRunner(
-				testRunParameters.getTestPackage(),
-				testRunParameters.getTestRunner(),
-				device);
+        RemoteAndroidTestRunner runner = new RemoteAndroidTestRunner(
+                testRunParameters.getTestPackage(),
+                testRunParameters.getTestRunner(),
+                device);
 
-		TestCaseEvent test = testRunParameters.getTest();
-		String testClassName = test.getTestClass();
-		String testMethodName = test.getTestMethod();
-		IRemoteAndroidTestRunner.TestSize testSize = testRunParameters.getTestSize();
-		if (testSize != null) {
-			runner.setTestSize(testSize);
-		}
-		runner.setRunName(poolName);
-		runner.setMethodName(testClassName, testMethodName);
-		runner.setMaxtimeToOutputResponse(testRunParameters.getTestOutputTimeout());
+        TestCaseEvent test = testRunParameters.getTest();
+        String testClassName = test.getTestClass();
+        String testMethodName = test.getTestMethod();
+        IRemoteAndroidTestRunner.TestSize testSize = testRunParameters.getTestSize();
+        if (testSize != null) {
+            runner.setTestSize(testSize);
+        }
+        runner.setRunName(poolName);
 
-        if (testRunParameters.isCoverageEnabled()) {
+        if (testMethodName == null) {
+            runner.setClassName(testClassName);
+        } else {
+            runner.setMethodName(testClassName, testMethodName);
+        }
+
+        runner.setMaxtimeToOutputResponse(testRunParameters.getTestOutputTimeout());
+
+        if (testMethodName != null && testRunParameters.isCoverageEnabled()) {
             runner.setCoverage(true);
             runner.addInstrumentationArg("coverageFile", RemoteFileManager.getCoverageFileName(new TestIdentifier(testClassName, testMethodName)));
         }
 
-		List<String> permissionsToRevoke = testRunParameters.getTest().getPermissionsToRevoke();
+        List<String> permissionsToRevoke = testRunParameters.getTest().getPermissionsToRevoke();
 
-		permissionGrantingManager.revokePermissions(applicationPackage, device, permissionsToRevoke);
+        permissionGrantingManager.revokePermissions(applicationPackage, device, permissionsToRevoke);
 
-		try {
-			runner.run(testRunListeners);
-		} catch (ShellCommandUnresponsiveException | TimeoutException e) {
-			logger.warn("Test: " + testClassName + " got stuck. You can increase the timeout in settings if it's too strict");
-		} catch (AdbCommandRejectedException | IOException e) {
-			throw new RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e);
-		} finally {
-			permissionGrantingManager.restorePermissions(applicationPackage, device, permissionsToRevoke);
-		}
+        try {
+            runner.run(testRunListeners);
+        } catch (ShellCommandUnresponsiveException | TimeoutException e) {
+            logger.warn("Test: " + testClassName + " got stuck. You can increase the timeout in settings if it's too strict");
+        } catch (AdbCommandRejectedException | IOException e) {
+            throw new RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e);
+        } finally {
+            permissionGrantingManager.restorePermissions(applicationPackage, device, permissionsToRevoke);
+        }
 
     }
 }
