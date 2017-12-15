@@ -15,20 +15,20 @@ import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.model.TestCaseEventFactory;
 import com.shazam.fork.stat.TestStatsLoader;
 import org.jf.dexlib.*;
-import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
-import org.jf.dexlib.EncodedValue.ArrayEncodedValue;
-import org.jf.dexlib.EncodedValue.EncodedValue;
-import org.jf.dexlib.EncodedValue.StringEncodedValue;
+import org.jf.dexlib.EncodedValue.*;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static com.shazam.fork.suite.AnnotationParser.parseAnnotation;
 import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -90,10 +90,20 @@ public class TestSuiteLoader {
                 return emptyList();
             } else {
                 classIncluded = true;
+                if (isParametrized(classSet)) {
+                    return createParameterizedTest(classDefItem, annotationDirectoryItem);
+                }
             }
         }
 
         return parseMethods(classDefItem, annotationDirectoryItem, classIncluded);
+    }
+
+    private List<TestCaseEvent> createParameterizedTest(ClassDefItem classDefItem,
+                                                        AnnotationDirectoryItem annotationDirectoryItem) {
+        String testClass = getClassName(classDefItem);
+        boolean ignored = isClassIgnored(annotationDirectoryItem);
+        return Collections.singletonList(factory.newTestCase(null, testClass, ignored, emptyList(), emptyMap()));
     }
 
     private List<TestCaseEvent> parseMethods(ClassDefItem classDefItem, AnnotationDirectoryItem annotationDirectory, boolean classIncluded) {
@@ -188,6 +198,53 @@ public class TestSuiteLoader {
             if (names[i].getStringValue().equals(key)) return i;
         }
         return index;
+    }
+
+    private boolean isParametrized(AnnotationSetItem classSet) {
+        AnnotationItem[] annotations = classSet.getAnnotations();
+        if (annotations == null || annotations.length == 0) {
+            return false;
+        }
+
+        return Arrays.stream(annotations)
+                .filter(annotation -> {
+                    String descriptor = annotation.getEncodedAnnotation().annotationType.getTypeDescriptor();
+                    return "Lorg/junit/runner/RunWith;".equals(descriptor);
+                })
+                .map(annotationItem -> annotationItem.getEncodedAnnotation().values)
+                .filter(values -> values != null && values.length != 0)
+                .flatMap(Arrays::stream)
+                .filter(v -> v instanceof TypeEncodedValue)
+                .anyMatch(encodedValue -> {
+                    TypeEncodedValue typeEncodedValue = (TypeEncodedValue) encodedValue;
+                    String vType = typeEncodedValue.value.getTypeDescriptor();
+                    return "Lorg/junit/runners/Parameterized;".equals(vType);
+                });
+//        for (AnnotationItem a : annotations) {
+//            String aStr = a.getEncodedAnnotation().annotationType.getTypeDescriptor();
+//            if (!"Lorg/junit/runner/RunWith;".equals(aStr)) {
+//                continue;
+//            }
+//
+//            EncodedValue[] values = a.getEncodedAnnotation().values;
+//            if (values == null || values.length == 0) {
+//                continue;
+//            }
+//
+//            for (EncodedValue v : values) {
+//                if (!(v instanceof TypeEncodedValue)) {
+//                    continue;
+//                }
+//
+//                TypeEncodedValue vv = (TypeEncodedValue) v;
+//                String vType = vv.value.getTypeDescriptor();
+//                if ("Lorg/junit/runners/Parameterized;".equals(vType)) {
+//                    return true;
+//
+//                }
+//            }
+//        }
+//        return false;
     }
 
     private boolean isClassIgnored(AnnotationDirectoryItem annotationDirectoryItem) {
