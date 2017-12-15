@@ -37,6 +37,8 @@ public class TestSuiteLoader {
     private static final String IGNORE_ANNOTATION = "Lorg/junit/Ignore;";
     private static final String REVOKE_PERMISSION_ANNOTATION = "Lcom/shazam/fork/RevokePermission;";
     private static final String TEST_PROPERTIES_ANNOTATION = "Lcom/shazam/fork/TestProperties;";
+    public static final String PARAMETERIZED_RUNNER = "Lorg/junit/runners/Parameterized;";
+    public static final String RUN_WITH_ANNOTATION = "Lorg/junit/runner/RunWith;";
 
     private final File instrumentationApkFile;
     private final DexFileExtractor dexFileExtractor;
@@ -209,7 +211,7 @@ public class TestSuiteLoader {
         return Arrays.stream(annotations)
                 .filter(annotation -> {
                     String descriptor = annotation.getEncodedAnnotation().annotationType.getTypeDescriptor();
-                    return "Lorg/junit/runner/RunWith;".equals(descriptor);
+                    return RUN_WITH_ANNOTATION.equals(descriptor);
                 })
                 .map(annotationItem -> annotationItem.getEncodedAnnotation().values)
                 .filter(values -> values != null && values.length != 0)
@@ -218,7 +220,7 @@ public class TestSuiteLoader {
                 .anyMatch(encodedValue -> {
                     TypeEncodedValue typeEncodedValue = (TypeEncodedValue) encodedValue;
                     String vType = typeEncodedValue.value.getTypeDescriptor();
-                    return "Lorg/junit/runners/Parameterized;".equals(vType);
+                    return PARAMETERIZED_RUNNER.equals(vType);
                 });
     }
 
