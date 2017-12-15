@@ -33,5 +33,3 @@ public class Measure {
         return data;
     }
 }
-
-
