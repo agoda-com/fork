@@ -10,6 +10,7 @@
 
 package com.shazam.fork.runner;
 
+import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.*;
 import com.shazam.fork.system.adb.Installer;
 
@@ -27,7 +28,7 @@ public class DeviceTestRunnerFactory {
     }
 
     public Runnable createDeviceTestRunner(Pool pool,
-                                           Queue<TestCaseEvent> testClassQueue,
+                                           Queue<TestTask> testClassQueue,
                                            CountDownLatch deviceInPoolCountDownLatch,
                                            Device device,
                                            ProgressReporter progressReporter

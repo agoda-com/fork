@@ -12,6 +12,7 @@ package com.shazam.fork.runner;
 
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.shazam.fork.Configuration;
+import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.*;
 import com.shazam.fork.runner.listeners.TestRunListenersFactory;
 
@@ -35,11 +36,11 @@ public class TestRunFactory {
         this.factory = factory;
     }
 
-    public TestRun createTestRun(TestCaseEvent testCase,
+    public TestRun createTestRun(TestTask testCase,
                                  Device device,
                                  Pool pool,
                                  ProgressReporter progressReporter,
-                                 Queue<TestCaseEvent> queueOfTestsInPool) {
+                                 Queue<TestTask> queueOfTestsInPool) {
         TestRunParameters testRunParameters = testRunParameters()
                 .withDeviceInterface(device.getDeviceInterface())
                 .withTest(testCase)

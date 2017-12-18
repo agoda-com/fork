@@ -17,7 +17,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 @Root(name="testcase", strict=false)
-class TestCase {
+public class TestCase {
 
 	@Attribute
 	private String name;

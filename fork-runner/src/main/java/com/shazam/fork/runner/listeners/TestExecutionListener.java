@@ -5,12 +5,16 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.stat.TestExecution;
 import com.shazam.fork.stat.TestExecutionReporter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 import static java.lang.System.currentTimeMillis;
 
 public class TestExecutionListener implements ITestRunListener {
+
+    Logger logger = LoggerFactory.getLogger(TestExecutionListener.class);
 
     private long startTime = 0;
 
@@ -27,12 +31,14 @@ public class TestExecutionListener implements ITestRunListener {
 
     @Override
     public void testRunStarted(String runName, int testCount) {
+        logger.error("testRunStarted = " + runName + " testCount = " + testCount);
     }
 
     @Override
     public void testStarted(TestIdentifier test) {
         startTime = currentTimeMillis();
         failed = false;
+        logger.error("testStarted= " + test.toString());
     }
 
     @Override
@@ -55,6 +61,7 @@ public class TestExecutionListener implements ITestRunListener {
                 startTime,
                 endedAfter,
                 failed ? TestExecution.Status.FAILED : TestExecution.Status.ENDED);
+        logger.error("testEnded = " + test.toString());
         executionReporter.add(device, execution);
     }
 
@@ -68,5 +75,6 @@ public class TestExecutionListener implements ITestRunListener {
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
+        logger.error("testEnded");
     }
 }

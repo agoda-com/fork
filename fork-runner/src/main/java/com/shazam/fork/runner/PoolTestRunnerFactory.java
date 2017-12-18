@@ -10,6 +10,7 @@
 
 package com.shazam.fork.runner;
 
+import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 
@@ -26,7 +27,7 @@ public class PoolTestRunnerFactory {
     }
 
     public Runnable createPoolTestRunner(Pool pool,
-                                         Queue<TestCaseEvent> testCases,
+                                         Queue<TestTask> testCases,
                                          CountDownLatch poolCountDownLatch,
                                          ProgressReporter progressReporter) {
 

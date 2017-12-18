@@ -14,6 +14,7 @@ package com.shazam.fork.injector;
 
 import com.shazam.fork.ForkRunner;
 
+import com.shazam.fork.batch.watcher.BatchWatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import static com.shazam.fork.injector.sorting.QueueProviderInjector.queueProvid
 import static com.shazam.fork.injector.stat.TestStatLoaderInjector.testStatsLoader;
 import static com.shazam.fork.injector.suite.TestSuiteLoaderInjector.testSuiteLoader;
 import static com.shazam.fork.injector.summary.SummaryGeneratorHookInjector.summaryGeneratorHook;
+import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
 
@@ -43,7 +45,8 @@ public class ForkRunnerInjector {
                 progressReporter(),
                 summaryGeneratorHook(),
                 testStatsLoader(),
-                queueProvider());
+                queueProvider(),
+                new BatchWatcher(fileManager()));
 
         logger.debug("Bootstrap of ForkRunner took: {} milliseconds", millisSinceNanoTime(startNanos));
 

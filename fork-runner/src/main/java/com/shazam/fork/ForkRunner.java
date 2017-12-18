@@ -12,6 +12,9 @@
  */
 package com.shazam.fork;
 
+import com.shazam.fork.batch.BatchQueueProvider;
+import com.shazam.fork.batch.tasks.TestTask;
+import com.shazam.fork.batch.watcher.BatchWatcher;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.pooling.*;
@@ -43,6 +46,7 @@ public class ForkRunner {
     private final SummaryGeneratorHook summaryGeneratorHook;
     private final TestStatsLoader testStatsLoader;
     private final QueueProvider queueProvider;
+    private final BatchWatcher batchWatcher;
 
     public ForkRunner(PoolLoader poolLoader,
                       TestSuiteLoader testClassLoader,
@@ -50,7 +54,8 @@ public class ForkRunner {
                       ProgressReporter progressReporter,
                       SummaryGeneratorHook summaryGeneratorHook,
                       TestStatsLoader testStatsLoader,
-                      QueueProvider queueProvider) {
+                      QueueProvider queueProvider,
+                      BatchWatcher batchWatcher) {
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
         this.poolTestRunnerFactory = poolTestRunnerFactory;
@@ -58,6 +63,7 @@ public class ForkRunner {
         this.summaryGeneratorHook = summaryGeneratorHook;
         this.testStatsLoader = testStatsLoader;
         this.queueProvider = queueProvider;
+        this.batchWatcher = batchWatcher;
     }
 
     public boolean run() {
@@ -72,13 +78,12 @@ public class ForkRunner {
 
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
 
-            Queue<TestCaseEvent> testCasesQueue = queueProvider.create();
-
-            testCasesQueue.addAll(testCases);
+            Queue<TestTask> testCasesQueue = new BatchQueueProvider().provide(testCases);
 
             summaryGeneratorHook.registerHook(pools, testCases);
 
             progressReporter.start();
+            batchWatcher.start();
             for (Pool pool : pools) {
                 Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool,
                         testCasesQueue,
@@ -88,6 +93,7 @@ public class ForkRunner {
             }
             poolCountDownLatch.await();
             progressReporter.stop();
+            batchWatcher.stop();
 
             boolean overallSuccess = summaryGeneratorHook.defineOutcome();
             logger.info("Overall success: " + overallSuccess);

@@ -2,8 +2,12 @@ package com.shazam.fork.batch
 
 import com.agoda.fork.stat.TestMetric
 import com.shazam.fork.batch.tasks.TestTask
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class TestTaskComparator : Comparator<TestTask> {
+
+    val logger: Logger = LoggerFactory.getLogger(TestTaskComparator::class.java)
 
     private fun getDefaultComparator(): java.util.Comparator<TestMetric> {
         return Comparator.comparingDouble<TestMetric> { value ->
@@ -22,9 +26,18 @@ class TestTaskComparator : Comparator<TestTask> {
     }
 
     override fun compare(o1: TestTask, o2: TestTask): Int {
-        val testMetric1 = extractTestMetric(o1)
-        val testMetric2 = extractTestMetric(o2)
-        return compareMetrics(testMetric1, testMetric2)
+        val res = when {
+            o1 is TestTask.MultiTestTask -> -1
+            o2 is TestTask.MultiTestTask -> 1
+            else -> {
+                val testMetric1 = extractTestMetric(o1)
+                val testMetric2 = extractTestMetric(o2)
+                compareMetrics(testMetric1, testMetric2)
+            }
+        }
+        logger.error("Compare result for o1 is TestTask.MultiTestTask = ${o1 is TestTask.MultiTestTask}" +
+                "o2 is TestTask.MultiTestTask = ${o2 is TestTask.MultiTestTask} res = $res")
+        return res
     }
 
     private fun extractTestMetric(task: TestTask) = when (task) {
