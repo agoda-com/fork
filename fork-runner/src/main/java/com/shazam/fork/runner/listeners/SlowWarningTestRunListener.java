@@ -10,9 +10,7 @@
 
 package com.shazam.fork.runner.listeners;
 
-import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,14 +19,10 @@ import java.util.Map;
 import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
 
-class SlowWarningTestRunListener implements ITestRunListener {
+class SlowWarningTestRunListener extends NoOpITestRunListener {
     private static final Logger logger = LoggerFactory.getLogger(SlowWarningTestRunListener.class);
     private static final long TEST_LENGTH_THRESHOLD_MILLIS = 30 * 1000;
     private long startTime;
-
-    @Override
-    public void testRunStarted(String runName, int testCount) {
-    }
 
     @Override
     public void testStarted(TestIdentifier test) {
@@ -36,41 +30,10 @@ class SlowWarningTestRunListener implements ITestRunListener {
     }
 
     @Override
-    public void testFailed(TestIdentifier test, String trace) {
-
-    }
-
-    @Override
-    public void testAssumptionFailure(TestIdentifier test, String trace) {
-
-    }
-
-    @Override
-    public void testIgnored(TestIdentifier test) {
-
-    }
-
-    @Override
     public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
         long testDuration = millisSinceNanoTime(startTime);
         if (testDuration > TEST_LENGTH_THRESHOLD_MILLIS) {
-            logger.warn("Slow test ({}ms): {} {}" , testDuration, test.getClassName(), test.getTestName());
-
+            logger.warn("Slow test ({}ms): {} {}", testDuration, test.getClassName(), test.getTestName());
         }
-    }
-
-    @Override
-    public void testRunFailed(String errorMessage) {
-
-    }
-
-    @Override
-    public void testRunStopped(long elapsedTime) {
-
-    }
-
-    @Override
-    public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
-
     }
 }

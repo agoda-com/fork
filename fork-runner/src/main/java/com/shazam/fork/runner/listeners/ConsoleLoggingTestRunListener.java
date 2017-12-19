@@ -26,7 +26,7 @@ import java.util.Map;
 import static java.lang.String.format;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-class ConsoleLoggingTestRunListener implements ITestRunListener {
+class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
     private static final Logger logger = LoggerFactory.getLogger(ConsoleLoggingTestRunListener.class);
 	private static final SimpleDateFormat TEST_TIME = new SimpleDateFormat("mm.ss");
     private static final String PERCENT = "%02d%%";
@@ -42,10 +42,6 @@ class ConsoleLoggingTestRunListener implements ITestRunListener {
         this.progressReporter = progressReporter;
         this.testPackage = testPackage;
     }
-
-	@Override
-	public void testRunStarted(String runName, int testCount) {
-	}
 
 	@Override
 	public void testStarted(TestIdentifier test) {
@@ -69,10 +65,6 @@ class ConsoleLoggingTestRunListener implements ITestRunListener {
     }
 
     @Override
-	public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
-	}
-
-    @Override
     public void testRunFailed(String errorMessage) {
         System.out.println(format("%s %s %s %s [%s] Test run failed: %s", runningTime(), progress(), failures(), modelName, serial, errorMessage));
     }
@@ -81,10 +73,6 @@ class ConsoleLoggingTestRunListener implements ITestRunListener {
 	public void testRunStopped(long elapsedTime) {
         System.out.println(format("%s %s %s %s [%s] Test run stopped after %s ms", runningTime(), progress(), failures(), modelName, serial, elapsedTime));
 	}
-
-    @Override
-    public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
-    }
 
     private String runningTime() {
         return TEST_TIME.format(new Date(progressReporter.millisSinceTestsStarted()));

@@ -22,7 +22,7 @@ import com.shazam.fork.system.io.FileManager;
 
 import java.util.*;
 
-class LogCatTestRunListener implements ITestRunListener {
+class LogCatTestRunListener extends NoOpITestRunListener {
     private final FileManager fileManager;
     private final Pool pool;
 	private final Device device;
@@ -47,22 +47,6 @@ class LogCatTestRunListener implements ITestRunListener {
 		new Thread(logCatReceiverTask, "CatLogger-" + runName + "-" + device.getSerial()).start();
 	}
 
-	@Override
-	public void testStarted(TestIdentifier test) {
-	}
-
-	@Override
-	public void testFailed(TestIdentifier test, String trace) {
-	}
-
-    @Override
-    public void testAssumptionFailure(TestIdentifier test, String trace) {
-    }
-
-    @Override
-    public void testIgnored(TestIdentifier test) {
-    }
-
     @Override
 	public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
 		List<LogCatMessage> copyOfLogCatMessages;
@@ -76,14 +60,6 @@ class LogCatTestRunListener implements ITestRunListener {
                 new RawLogCatWriter(fileManager, pool, device));
         LogCatSerializer logCatSerializer = new LogCatSerializer(test, logCatWriter);
 		logCatSerializer.serializeLogs(copyOfLogCatMessages);
-	}
-
-	@Override
-	public void testRunFailed(String errorMessage) {
-	}
-
-	@Override
-	public void testRunStopped(long elapsedTime) {
 	}
 
 	@Override

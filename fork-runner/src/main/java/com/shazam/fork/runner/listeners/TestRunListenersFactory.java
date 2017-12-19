@@ -66,19 +66,24 @@ public class TestRunListenersFactory {
     }
 
 
-    private ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
-                                                             File output,
-                                                             Pool pool,
-                                                             Device device,
-                                                             TestTask testCase,
-                                                             ProgressReporter progressReporter,
-                                                             TestCaseEventFactory factory) {
-        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testCase, progressReporter, factory);
-        xmlTestRunListener.setReportDir(output);
+    private SingleForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
+                                                                   File output,
+                                                                   Pool pool,
+                                                                   Device device,
+                                                                   TestTask testCase,
+                                                                   ProgressReporter progressReporter,
+                                                                   TestCaseEventFactory factory) {
+        SingleForkXmlTestRunListener xmlTestRunListener = new SingleForkXmlTestRunListener(fileManager,
+                pool,
+                device,
+                testCase,
+                progressReporter,
+                factory,
+                output);
         return xmlTestRunListener;
     }
 
-    private ITestRunListener  getCoverageTestRunListener(Configuration configuration,
+    private ITestRunListener getCoverageTestRunListener(Configuration configuration,
                                                         Device device,
                                                         FileManager fileManager,
                                                         Pool pool,

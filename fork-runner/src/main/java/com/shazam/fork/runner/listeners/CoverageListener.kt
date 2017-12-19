@@ -1,6 +1,5 @@
 package com.shazam.fork.runner.listeners
 
-import com.android.ddmlib.testrunner.ITestRunListener
 import com.android.ddmlib.testrunner.TestIdentifier
 import com.shazam.fork.batch.tasks.TestTask
 import com.shazam.fork.model.*
@@ -11,28 +10,17 @@ import org.slf4j.LoggerFactory
 
 import com.shazam.fork.system.io.FileType.COVERAGE
 
-class CoverageListener(private val device: Device, private val fileManager: FileManager, private val pool: Pool, private val testCase: TestTask) : ITestRunListener {
+class CoverageListener(private val device: Device,
+                       private val fileManager: FileManager,
+                       private val pool: Pool,
+                       private val testCase: TestTask) : NoOpITestRunListener() {
     private val logger = LoggerFactory.getLogger(CoverageListener::class.java)
-
-    override fun testRunStarted(runName: String, testCount: Int) {}
-
-    override fun testStarted(test: TestIdentifier) {}
-
-    override fun testFailed(test: TestIdentifier, trace: String) {}
-
-    override fun testAssumptionFailure(test: TestIdentifier, trace: String) {}
-
-    override fun testIgnored(test: TestIdentifier) {}
 
     override fun testEnded(test: TestIdentifier, testMetrics: Map<String, String>) {
         if (testCase is TestTask.MultiTestTask) {
             saveCoverageFile("/sdcard/fork/coverage.ec", test)
         }
     }
-
-    override fun testRunFailed(errorMessage: String) {}
-
-    override fun testRunStopped(elapsedTime: Long) {}
 
     override fun testRunEnded(elapsedTime: Long, runMetrics: Map<String, String>) {
         when (testCase) {

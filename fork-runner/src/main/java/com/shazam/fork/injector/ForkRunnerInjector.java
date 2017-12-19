@@ -14,7 +14,6 @@ package com.shazam.fork.injector;
 
 import com.shazam.fork.ForkRunner;
 
-import com.shazam.fork.batch.watcher.BatchWatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +44,7 @@ public class ForkRunnerInjector {
                 progressReporter(),
                 summaryGeneratorHook(),
                 testStatsLoader(),
-                queueProvider(),
-                new BatchWatcher(fileManager()));
+                queueProvider());
 
         logger.debug("Bootstrap of ForkRunner took: {} milliseconds", millisSinceNanoTime(startNanos));
 
