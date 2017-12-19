@@ -39,8 +39,6 @@ public class RetryListener extends NoOpITestRunListener {
     private final Device device;
     @Nonnull
     private final Queue<TestTask> queueOfTestsInPool;
-    @Nonnull
-    private final TestTask currentTestCaseEvent;
     private ProgressReporter progressReporter;
     private FileManager fileManager;
     private Pool pool;
@@ -48,18 +46,15 @@ public class RetryListener extends NoOpITestRunListener {
 
     public RetryListener(@Nonnull Pool pool, @Nonnull Device device,
                          @Nonnull Queue<TestTask> queueOfTestsInPool,
-                         @Nonnull TestTask currentTestCaseEvent,
                          @Nonnull ProgressReporter progressReporter,
                          FileManager fileManager,
                          TestCaseEventFactory testCaseEventFactory) {
         checkNotNull(device);
         checkNotNull(queueOfTestsInPool);
-        checkNotNull(currentTestCaseEvent);
         checkNotNull(progressReporter);
         checkNotNull(pool);
         this.device = device;
         this.queueOfTestsInPool = queueOfTestsInPool;
-        this.currentTestCaseEvent = currentTestCaseEvent;
         this.progressReporter = progressReporter;
         this.pool = pool;
         this.fileManager = fileManager;
@@ -68,10 +63,11 @@ public class RetryListener extends NoOpITestRunListener {
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
-        progressReporter.recordFailedTestCase(pool, testCaseEventFactory.newTestCase(test));
+        TestCaseEvent event = testCaseEventFactory.newTestCase(test);
+        progressReporter.recordFailedTestCase(pool, event);
 
-        if (progressReporter.requestRetry(pool, testCaseEventFactory.newTestCase(test))) {
-            queueOfTestsInPool.add(currentTestCaseEvent);
+        if (progressReporter.requestRetry(pool, event)) {
+            queueOfTestsInPool.add(new TestTask.SingleTestTask(event));
             logger.info("Test " + test.toString() + " enqueued again into pool:" + pool.getName());
             removeFailureTraceFiles(test);
         } else {

@@ -10,39 +10,44 @@
 
 package com.shazam.fork.runner;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class PoolProgressTrackerImpl implements PoolProgressTracker {
 
     private final int totalTests;
-    private int failedTests;
-    private int completedTests;
+    private AtomicInteger failedTests;
+    private AtomicInteger completedTests;
 
     public PoolProgressTrackerImpl(int totalTests) {
         this.totalTests = totalTests;
+        this.failedTests = new AtomicInteger(0);
+        this.completedTests = new AtomicInteger(0);
+
     }
 
     @Override
     public void completedTest() {
-        completedTests++;
+        completedTests.incrementAndGet();
     }
 
     @Override
     public void failedTest() {
-        failedTests++;
+        failedTests.incrementAndGet();
     }
 
     @Override
     public void trackTestEnqueuedAgain() {
-        completedTests--;
-        failedTests--;
+        completedTests.decrementAndGet();
+        failedTests.decrementAndGet();
     }
 
     @Override
     public float getProgress() {
-        return (float) completedTests / (float) totalTests;
+        return (float) completedTests.get() / (float) totalTests;
     }
 
     @Override
     public int getNumberOfFailedTests() {
-        return failedTests;
+        return failedTests.get();
     }
 }
