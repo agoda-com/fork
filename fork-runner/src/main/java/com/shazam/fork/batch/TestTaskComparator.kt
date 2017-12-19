@@ -27,8 +27,8 @@ class TestTaskComparator : Comparator<TestTask> {
 
     override fun compare(o1: TestTask, o2: TestTask): Int {
         val res = when {
-            o1 is TestTask.MultiTestTask -> -1
-            o2 is TestTask.MultiTestTask -> 1
+        /*o1 is TestTask.MultiTestTask -> -1
+        o2 is TestTask.MultiTestTask -> 1*/
             else -> {
                 val testMetric1 = extractTestMetric(o1)
                 val testMetric2 = extractTestMetric(o2)
