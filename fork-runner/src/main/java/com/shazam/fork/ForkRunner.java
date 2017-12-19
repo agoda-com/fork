@@ -73,7 +73,7 @@ public class ForkRunner {
             testStatsLoader.load();
 
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
-
+            int totalTests = testCases.size();
             Queue<TestTask> testCasesQueue = new BatchQueueProvider().provide(testCases);
 
             summaryGeneratorHook.registerHook(pools, testCases);
@@ -82,6 +82,7 @@ public class ForkRunner {
             for (Pool pool : pools) {
                 Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool,
                         testCasesQueue,
+                        totalTests,
                         poolCountDownLatch,
                         progressReporter);
                 poolExecutor.execute(poolTestRunner);

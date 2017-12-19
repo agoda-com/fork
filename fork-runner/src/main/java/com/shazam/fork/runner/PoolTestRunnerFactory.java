@@ -28,10 +28,10 @@ public class PoolTestRunnerFactory {
 
     public Runnable createPoolTestRunner(Pool pool,
                                          Queue<TestTask> testCases,
+                                         int totalTests,
                                          CountDownLatch poolCountDownLatch,
                                          ProgressReporter progressReporter) {
 
-        int totalTests = testCases.size();
         progressReporter.addPoolProgress(pool, new PoolProgressTrackerImpl(totalTests));
 
         return new PoolTestRunner(
