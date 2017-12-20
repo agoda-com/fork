@@ -23,7 +23,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -57,8 +59,10 @@ public class Configuration {
     private final PoolingStrategy poolingStrategy;
     private final boolean autoGrantPermissions;
     private final String excludedAnnotation;
+    private final String includedAnnotation;
 
     private ApplicationInfo applicationInfo;
+    private SortingStrategy sortingStrategy;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -82,7 +86,9 @@ public class Configuration {
         poolingStrategy = builder.poolingStrategy;
         autoGrantPermissions = builder.autoGrantPermissions;
         this.excludedAnnotation = builder.excludedAnnotation;
+        this.includedAnnotation = builder.includedAnnotation;
         this.applicationInfo = builder.applicationInfo;
+        this.sortingStrategy = builder.sortingStrategy;
     }
 
     @Nonnull
@@ -182,8 +188,16 @@ public class Configuration {
         return excludedAnnotation;
     }
 
+    public String getIncludedAnnotation() {
+        return includedAnnotation;
+    }
+
     public ApplicationInfo getApplicationInfo() {
         return applicationInfo;
+    }
+
+    public SortingStrategy getSortingStrategy() {
+        return sortingStrategy;
     }
 
     public static class Builder {
@@ -208,7 +222,9 @@ public class Configuration {
         private PoolingStrategy poolingStrategy;
         private boolean autoGrantPermissions;
         private String excludedAnnotation;
+        private String includedAnnotation;
         private ApplicationInfo applicationInfo;
+        public SortingStrategy sortingStrategy;
 
         public static Builder configuration() {
             return new Builder();
@@ -304,6 +320,16 @@ public class Configuration {
             return this;
         }
 
+        public Builder withIncludedAnnotation(String includedAnnotation) {
+            this.includedAnnotation = includedAnnotation;
+            return this;
+        }
+
+        public Builder withSortingStrategy(@Nullable SortingStrategy sortingStrategy) {
+            this.sortingStrategy = sortingStrategy;
+            return this;
+        }
+
         public Configuration build() {
             checkNotNull(androidSdk, "SDK is required.");
             checkArgument(androidSdk.exists(), "SDK directory does not exist.");
@@ -331,6 +357,7 @@ public class Configuration {
             retryPerTestCaseQuota = assignValueOrDefaultIfZero(retryPerTestCaseQuota, Defaults.RETRY_QUOTA_PER_TEST_CASE);
             logArgumentsBadInteractions();
             poolingStrategy = validatePoolingStrategy(poolingStrategy);
+            sortingStrategy = validateSortingStrategy(sortingStrategy);
             applicationInfo = ApplicationInfoFactory.parseFromFile(applicationApk);
             return new Configuration(this);
         }
@@ -361,13 +388,13 @@ public class Configuration {
                 poolingStrategy = new PoolingStrategy();
                 poolingStrategy.eachDevice = true;
             } else {
-                long selectedStrategies = asList(
+                long selectedStrategies = Stream.of(
                         poolingStrategy.eachDevice,
                         poolingStrategy.splitTablets,
                         poolingStrategy.computed,
-                        poolingStrategy.manual)
-                        .stream()
-                        .filter(p -> p != null)
+                        poolingStrategy.manual,
+                        poolingStrategy.common)
+                        .filter(Objects::nonNull)
                         .count();
                 if (selectedStrategies > Defaults.STRATEGY_LIMIT) {
                     throw new IllegalArgumentException("You have selected more than one strategies in configuration. " +
@@ -376,6 +403,14 @@ public class Configuration {
             }
 
             return poolingStrategy;
+        }
+
+        private SortingStrategy validateSortingStrategy(SortingStrategy sortingStrategy) {
+            if (sortingStrategy == null) {
+                sortingStrategy = new SortingStrategy();
+                sortingStrategy.defaultStrategy = true;
+            }
+            return sortingStrategy;
         }
     }
 }

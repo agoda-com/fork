@@ -10,10 +10,14 @@
 
 package com.shazam.fork.injector.suite;
 
+import com.shazam.fork.stat.StatServiceLoader;
+import com.shazam.fork.stat.TestStatsLoader;
 import com.shazam.fork.suite.TestSuiteLoader;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 import static com.shazam.fork.injector.io.DexFileExtractorInjector.dexFileExtractor;
+import static com.shazam.fork.injector.model.TestCaseEventFactoryInjector.testCaseEventFactory;
+import static com.shazam.fork.injector.stat.TestStatLoaderInjector.testStatsLoader;
 import static com.shazam.fork.injector.suite.TestClassMatcherInjector.testClassMatcher;
 
 public class TestSuiteLoaderInjector {
@@ -21,6 +25,11 @@ public class TestSuiteLoaderInjector {
     private TestSuiteLoaderInjector() {}
 
     public static TestSuiteLoader testSuiteLoader() {
-        return new TestSuiteLoader(configuration().getInstrumentationApk(), dexFileExtractor(), testClassMatcher());
+        return new TestSuiteLoader(configuration().getInstrumentationApk(),
+                dexFileExtractor(),
+                testClassMatcher(),
+                configuration().getIncludedAnnotation(),
+                configuration().getExcludedAnnotation(),
+                testCaseEventFactory());
     }
 }

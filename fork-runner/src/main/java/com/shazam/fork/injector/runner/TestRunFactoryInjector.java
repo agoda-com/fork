@@ -14,12 +14,13 @@ import com.shazam.fork.runner.TestRunFactory;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 import static com.shazam.fork.injector.listeners.TestRunListenersFactoryInjector.testRunListenersFactory;
+import static com.shazam.fork.injector.model.TestCaseEventFactoryInjector.testCaseEventFactory;
 
 public class TestRunFactoryInjector {
 
     private TestRunFactoryInjector() {}
 
     public static TestRunFactory testRunFactory() {
-        return new TestRunFactory(configuration(), testRunListenersFactory());
+        return new TestRunFactory(configuration(), testRunListenersFactory(), testCaseEventFactory());
     }
 }

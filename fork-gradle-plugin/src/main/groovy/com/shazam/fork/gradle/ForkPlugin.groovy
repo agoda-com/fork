@@ -83,6 +83,8 @@ class ForkPlugin implements Plugin<Project> {
                 autoGrantPermissions = config.autoGrantPermissions
                 ignoreFailures = config.ignoreFailures
                 excludedAnnotation = config.excludedAnnotation
+                includedAnnotation = config.includedAnnotation
+                sortingStrategy = config.sortingStrategy
 
                 applicationApk = new File(baseVariantOutput.packageApplication.outputDirectory.path + "/" + baseVariantOutput.outputFileName)
 

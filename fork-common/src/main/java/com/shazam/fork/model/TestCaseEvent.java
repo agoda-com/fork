@@ -1,15 +1,11 @@
 package com.shazam.fork.model;
 
-import com.android.ddmlib.testrunner.TestIdentifier;
+import com.agoda.fork.stat.TestMetric;
 import com.google.common.base.Objects;
 
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SIMPLE_STYLE;
 
@@ -20,21 +16,15 @@ public class TestCaseEvent {
     private final boolean isIgnored;
     private final List<String> permissionsToRevoke;
     private final Map<String, String> properties;
+    private final TestMetric testMetric;
 
-    private TestCaseEvent(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties) {
+    TestCaseEvent(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties, TestMetric testMetric) {
         this.testMethod = testMethod;
         this.testClass = testClass;
         this.isIgnored = isIgnored;
         this.permissionsToRevoke = permissionsToRevoke;
         this.properties = properties;
-    }
-
-    public static TestCaseEvent newTestCase(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties) {
-        return new TestCaseEvent(testMethod, testClass, isIgnored, permissionsToRevoke, properties);
-    }
-
-    public static TestCaseEvent newTestCase(@Nonnull TestIdentifier testIdentifier) {
-        return new TestCaseEvent(testIdentifier.getTestName(), testIdentifier.getClassName(), false, emptyList(), emptyMap());
+        this.testMetric = testMetric;
     }
 
     public String getTestMethod() {
@@ -55,6 +45,10 @@ public class TestCaseEvent {
 
     public Map<String, String> getProperties() {
         return properties;
+    }
+
+    public TestMetric getTestMetric() {
+        return testMetric;
     }
 
     @Override

@@ -99,6 +99,22 @@ public class ForkConfiguration {
      */
     public String excludedAnnotation;
 
+    /**
+     * Filter test run to tests with given annotation
+     */
+    public String includedAnnotation;
+
+    /**
+     * The strategy that will be used to calculate execution order.
+     */
+    public SortingStrategy sortingStrategy;
+
+    public void sortingStrategy(Closure<?> sortingStrategyClosure){
+        sortingStrategy = new SortingStrategy();
+        sortingStrategyClosure.setDelegate(sortingStrategy);
+        sortingStrategyClosure.call();
+    }
+
     public void poolingStrategy(Closure<?> poolingStrategyClosure) {
         poolingStrategy = new PoolingStrategy();
         poolingStrategyClosure.setDelegate(poolingStrategy);

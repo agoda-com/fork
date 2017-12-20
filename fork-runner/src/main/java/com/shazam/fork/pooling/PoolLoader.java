@@ -15,7 +15,6 @@ import com.shazam.fork.PoolingStrategy;
 import com.shazam.fork.device.DeviceLoader;
 import com.shazam.fork.model.Devices;
 import com.shazam.fork.model.Pool;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +78,10 @@ public class PoolLoader {
 
         if (poolingStrategy.eachDevice != null && poolingStrategy.eachDevice) {
             return new EveryoneGetsAPoolLoader();
+        }
+
+        if(poolingStrategy.common != null && poolingStrategy.common){
+            return new CommonDevicePoolLoader();
         }
 
         throw new NoPoolLoaderConfiguredException("Could not determine which how to load pools to use based on your configuration");

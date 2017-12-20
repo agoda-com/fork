@@ -16,7 +16,9 @@ import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.model.TestCaseEventFactory;
 import com.shazam.fork.runner.ProgressReporter;
+import com.shazam.fork.stat.TestExecutionReporter;
 import com.shazam.fork.system.io.FileManager;
 
 import java.io.File;
@@ -32,40 +34,46 @@ public class TestRunListenersFactory {
     private final Configuration configuration;
     private final FileManager fileManager;
     private final Gson gson;
+    private final TestExecutionReporter testExecutionReporter;
 
     public TestRunListenersFactory(Configuration configuration,
                                    FileManager fileManager,
-                                   Gson gson) {
+                                   Gson gson,
+                                   TestExecutionReporter testExecutionReporter) {
         this.configuration = configuration;
         this.fileManager = fileManager;
         this.gson = gson;
+        this.testExecutionReporter = testExecutionReporter;
     }
 
     public List<ITestRunListener> createTestListeners(TestCaseEvent testCase,
                                                       Device device,
                                                       Pool pool,
                                                       ProgressReporter progressReporter,
-                                                      Queue<TestCaseEvent> testCaseEventQueue) {
+                                                      Queue<TestCaseEvent> testCaseEventQueue,
+                                                      TestCaseEventFactory factory) {
         return asList(
                 new ProgressTestRunListener(pool, progressReporter),
-                getForkXmlTestRunListener(fileManager, configuration.getOutput(), pool, device, testCase, progressReporter),
+                getForkXmlTestRunListener(fileManager, configuration.getOutput(), pool, device, testCase, progressReporter, factory),
                 new ConsoleLoggingTestRunListener(configuration.getTestPackage(), device.getSerial(),
                         device.getModelName(), progressReporter),
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
+                new TestExecutionListener(device, testExecutionReporter),
                 getScreenTraceTestRunListener(fileManager, pool, device),
-                new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager),
+                new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager, factory),
                 getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));
     }
 
 
     private ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
-                                                                   File output,
-                                                                   Pool pool,
-                                                                   Device device,
-                                                                   TestCaseEvent testCase,
-                                                                   ProgressReporter progressReporter) {
-        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testCase, progressReporter);
+                                                             File output,
+                                                             Pool pool,
+                                                             Device device,
+                                                             TestCaseEvent testCase,
+                                                             ProgressReporter progressReporter,
+                                                             TestCaseEventFactory factory) {
+        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testCase, progressReporter, factory);
         xmlTestRunListener.setReportDir(output);
         return xmlTestRunListener;
     }

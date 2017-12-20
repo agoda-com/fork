@@ -71,13 +71,6 @@ class TestRun {
             runner.setCoverage(true);
             runner.addInstrumentationArg("coverageFile", RemoteFileManager.getCoverageFileName(new TestIdentifier(testClassName, testMethodName)));
         }
-		String excludedAnnotation = testRunParameters.getExcludedAnnotation();
-		if (!Strings.isNullOrEmpty(excludedAnnotation)) {
-			logger.info("Tests annotated with {} will be excluded", excludedAnnotation);
-			runner.addInstrumentationArg("notAnnotation", excludedAnnotation);
-		} else {
-			logger.info("No excluding any test based on annotations");
-		}
 
 		List<String> permissionsToRevoke = testRunParameters.getTest().getPermissionsToRevoke();
 

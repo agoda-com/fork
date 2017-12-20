@@ -25,10 +25,14 @@ public class TestRunFactory {
 
     private final Configuration configuration;
     private final TestRunListenersFactory testRunListenersFactory;
+    private final TestCaseEventFactory factory;
 
-    public TestRunFactory(Configuration configuration, TestRunListenersFactory testRunListenersFactory) {
+    public TestRunFactory(Configuration configuration,
+                          TestRunListenersFactory testRunListenersFactory,
+                          TestCaseEventFactory factory) {
         this.configuration = configuration;
         this.testRunListenersFactory = testRunListenersFactory;
+        this.factory = factory;
     }
 
     public TestRun createTestRun(TestCaseEvent testCase,
@@ -45,7 +49,6 @@ public class TestRunFactory {
                 .withTestSize(configuration.getTestSize())
                 .withTestOutputTimeout((int) configuration.getTestOutputTimeout())
                 .withCoverageEnabled(configuration.isCoverageEnabled())
-                .withExcludedAnnotation(configuration.getExcludedAnnotation())
                 .build();
 
         List<ITestRunListener> testRunListeners = testRunListenersFactory.createTestListeners(
@@ -53,7 +56,8 @@ public class TestRunFactory {
                 device,
                 pool,
                 progressReporter,
-                queueOfTestsInPool);
+                queueOfTestsInPool,
+                factory);
 
         return new TestRun(
                 pool.getName(),
