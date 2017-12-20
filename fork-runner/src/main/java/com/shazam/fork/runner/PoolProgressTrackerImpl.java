@@ -22,7 +22,6 @@ public class PoolProgressTrackerImpl implements PoolProgressTracker {
         this.totalTests = totalTests;
         this.failedTests = new AtomicInteger(0);
         this.completedTests = new AtomicInteger(0);
-
     }
 
     @Override

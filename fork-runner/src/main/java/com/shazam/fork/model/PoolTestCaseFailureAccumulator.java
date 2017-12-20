@@ -3,6 +3,7 @@ package com.shazam.fork.model;
 import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 
 import static com.google.common.collect.FluentIterable.from;
@@ -12,7 +13,7 @@ import static com.google.common.collect.FluentIterable.from;
  */
 public class PoolTestCaseFailureAccumulator implements PoolTestCaseAccumulator {
 
-    private SetMultimap<Pool, TestCaseEventCounter> map = HashMultimap.<Pool, TestCaseEventCounter>create();
+    private SetMultimap<Pool, TestCaseEventCounter> map = Multimaps.synchronizedSetMultimap(HashMultimap.<Pool, TestCaseEventCounter>create());
 
     @Override
     public void record(Pool pool, TestCaseEvent testCaseEvent) {
