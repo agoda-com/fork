@@ -1,4 +1,3 @@
-
 package com.shazam.fork.suite;
 
 import com.shazam.fork.io.DexFileExtractor;
