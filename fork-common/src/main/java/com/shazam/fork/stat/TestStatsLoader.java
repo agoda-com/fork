@@ -21,21 +21,21 @@ public class TestStatsLoader {
     }
 
     private final List<TestHistory> testHistories = new ArrayList<>();
-    private final Map<String, TestMetric> testMetris = new HashMap<>();
+    private final Map<String, TestMetric> testMetrics = new HashMap<>();
 
     public void load() {
         testHistories.addAll(loader.load());
-        testMetris.putAll(testHistories
+        testMetrics.putAll(testHistories
                 .stream()
                 .collect(toMap(this::calculateTestKey, TestHistory::getTestMetric)));
     }
 
     public TestMetric findMetric(String className, String methodName) {
-        return testMetris.getOrDefault(calculateTestKey(className, methodName), TestMetric.empty());
+        return testMetrics.getOrDefault(calculateTestKey(className, methodName), TestMetric.empty());
     }
 
     public TestMetric findMetric(TestIdentifier testIdentifier) {
-        return testMetris.getOrDefault(calculateTestKey(testIdentifier), TestMetric.empty());
+        return testMetrics.getOrDefault(calculateTestKey(testIdentifier), TestMetric.empty());
     }
 
     private String calculateTestKey(TestIdentifier testIdentifier) {
