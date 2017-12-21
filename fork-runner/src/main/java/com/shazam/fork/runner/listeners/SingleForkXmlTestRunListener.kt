@@ -2,9 +2,7 @@ package com.shazam.fork.runner.listeners
 
 import com.android.SdkConstants
 import com.android.ddmlib.Log
-import com.android.ddmlib.testrunner.TestIdentifier
-import com.android.ddmlib.testrunner.TestResult
-import com.android.ddmlib.testrunner.TestRunResult
+import com.android.ddmlib.testrunner.*
 import com.google.common.collect.ImmutableMap
 import com.shazam.fork.batch.tasks.TestTask
 import com.shazam.fork.model.Device
@@ -28,36 +26,51 @@ class SingleForkXmlTestRunListener(val fileManager: FileManager,
                                    val testCase: TestTask,
                                    val progressReporter: ProgressReporter,
                                    val factory: TestCaseEventFactory,
-                                   val output: File) : NoOpITestRunListener() {
+                                   val output: File) : ITestRunListener {
 
-    private lateinit var runResult: TestRunResult
-    private var startTime: Long = 0L
+    private val runResult: TestRunResult = TestRunResult()
 
-    override fun testStarted(test: TestIdentifier) {
-        runResult = TestRunResult()
-        runResult.testStarted(test)
-        startTime = System.currentTimeMillis()
+    override fun testRunStarted(runName: String, numTests: Int) {
+        runResult.testRunStarted(runName, numTests)
     }
 
-    override fun testAssumptionFailure(test: TestIdentifier, trace: String) {
-        runResult.testAssumptionFailure(test, trace)
-        generateDocument(runResult, test, elapsedTime())
+    override fun testStarted(test: TestIdentifier) {
+        runResult.testStarted(test)
     }
 
     override fun testFailed(test: TestIdentifier, trace: String) {
         runResult.testFailed(test, trace)
-        generateDocument(runResult, test, elapsedTime())
     }
 
-    override fun testEnded(test: TestIdentifier, testMetrics: MutableMap<String, String>) {
-        runResult.testEnded(test, testMetrics)
-        generateDocument(runResult, test, elapsedTime())
+    override fun testAssumptionFailure(test: TestIdentifier, trace: String) {
+        runResult.testAssumptionFailure(test, trace)
     }
 
-    private fun elapsedTime() = System.currentTimeMillis() - startTime
-
-    override fun testIgnored(test: TestIdentifier?) {
+    override fun testIgnored(test: TestIdentifier) {
         runResult.testIgnored(test)
+    }
+
+    override fun testEnded(test: TestIdentifier, testMetrics: Map<String, String>) {
+        runResult.testEnded(test, testMetrics)
+    }
+
+    override fun testRunFailed(errorMessage: String) {
+        runResult.testRunFailed(errorMessage)
+    }
+
+    override fun testRunStopped(elapsedTime: Long) {
+        runResult.testRunStopped(elapsedTime)
+    }
+
+    override fun testRunEnded(elapsedTime: Long, runMetrics: Map<String, String>) {
+        runResult.testRunEnded(elapsedTime, runMetrics)
+        generateDocument()
+    }
+
+    private fun generateDocument() {
+        runResult.testResults.forEach {
+            generateDocument(it.key, it.value)
+        }
     }
 
     fun getResultFile(test: TestIdentifier): File {
@@ -68,7 +81,7 @@ class SingleForkXmlTestRunListener(val fileManager: FileManager,
         return output.absolutePath
     }
 
-    private fun generateDocument(runResult: TestRunResult, test: TestIdentifier, elapsedTime: Long) {
+    private fun generateDocument(test: TestIdentifier, testResult: TestResult) {
         val timestamp = getTimestamp()
 
         createOutputResultStream(test).use {
@@ -77,12 +90,16 @@ class SingleForkXmlTestRunListener(val fileManager: FileManager,
             serializer.startDocument(SdkConstants.UTF_8, null)
             serializer.setFeature(
                     "http://xmlpull.org/v1/doc/features.html#indent-output", true)
-            printTestResults(serializer, timestamp, elapsedTime, runResult, test)
+            printTestResults(serializer, timestamp, test, testResult)
             serializer.endDocument()
             val msg = String.format("XML test result file generated at %s. %s",
-                    getAbsoluteReportPath(), runResult.textSummary)
+                    getAbsoluteReportPath(), getTextSummary(testResult))
             Log.logAndDisplay(Log.LogLevel.INFO, LOG_TAG, msg)
         }
+    }
+
+    fun getTextSummary(testResult: TestResult): String {
+        return "Total tests 1, ${testResult.toString().toLowerCase()} 1"
     }
 
     private fun getTimestamp(): String {
@@ -105,21 +122,30 @@ class SingleForkXmlTestRunListener(val fileManager: FileManager,
 
     private fun printTestResults(serializer: KXmlSerializer,
                                  timestamp: String,
-                                 elapsedTime: Long,
-                                 runResult: TestRunResult, test: TestIdentifier) {
+                                 test: TestIdentifier,
+                                 testResult: TestResult) {
         serializer.startTag(ns, TESTSUITE)
         val name = getTestSuiteName()
         if (name != null) {
             serializer.attribute(ns, ATTR_NAME, name)
         }
-        serializer.attribute(ns, ATTR_TESTS, Integer.toString(runResult.numTests))
-        serializer.attribute(ns, ATTR_FAILURES, Integer.toString(
-                runResult.numAllFailedTests))
+
+        serializer.attribute(ns, ATTR_TESTS, Integer.toString(1))
+        val failed = when (testResult.status) {
+            TestResult.TestStatus.PASSED -> 0
+            TestResult.TestStatus.IGNORED -> 0
+            else -> 1
+        }
+        serializer.attribute(ns, ATTR_FAILURES, Integer.toString(failed))
         // legacy - there are no errors in JUnit4
         serializer.attribute(ns, ATTR_ERRORS, "0")
-        serializer.attribute(ns, ATTR_SKIPPED, Integer.toString(runResult.getNumTestsInState(
-                TestResult.TestStatus.IGNORED)))
+        val ignored = when (testResult.status) {
+            TestResult.TestStatus.IGNORED -> 1
+            else -> 0
+        }
+        serializer.attribute(ns, ATTR_SKIPPED, Integer.toString(ignored))
 
+        val elapsedTime = testResult.endTime - testResult.endTime
         serializer.attribute(ns, ATTR_TIME, java.lang.Double.toString(elapsedTime.toDouble() / 1000f))
         serializer.attribute(ns, TIMESTAMP, timestamp)
         serializer.attribute(ns, HOSTNAME, hostName)
@@ -133,10 +159,7 @@ class SingleForkXmlTestRunListener(val fileManager: FileManager,
         }
         serializer.endTag(ns, PROPERTIES)
 
-        val testResults = runResult.testResults
-        for (testEntry in testResults.entries) {
-            print(serializer, testEntry.key, testEntry.value)
-        }
+        print(serializer, test, testResult)
 
         serializer.endTag(ns, TESTSUITE)
     }

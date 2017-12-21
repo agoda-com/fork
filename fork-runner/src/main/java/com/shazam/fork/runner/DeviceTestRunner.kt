@@ -46,26 +46,24 @@ class DeviceTestRunner(private val installer: Installer,
             createCoverageDirectory(deviceInterface)
             clearLogcat(deviceInterface)
 
-            while (true) {
-                val testCaseEvent = queueOfTestsInPool.poll()
-                if (testCaseEvent != null) {
-                    val text = when(testCaseEvent){
-                        is TestTask.MultiTestTask -> "MultiTestTask started ${testCaseEvent.list}"
+            while (queueOfTestsInPool.isNotEmpty()){
+                queueOfTestsInPool.poll()?.run {
+                    val text = when(this){
+                        is TestTask.MultiTestTask -> "MultiTestTask started $list"
                         is TestTask.SingleTestTask -> "SingleTestTask started"
                     }
 
                     logger.error(text)
 
-                    val testRun = testRunFactory.createTestRun(testCaseEvent,
+                    val testRun = testRunFactory.createTestRun(this,
                             device,
                             pool,
                             progressReporter,
                             queueOfTestsInPool)
                     testRun.execute()
-                } else {
-                    break
                 }
             }
+
         } finally {
             logger.info("Device {} from pool {} finished", device.serial, pool.name)
             deviceCountDownLatch.countDown()

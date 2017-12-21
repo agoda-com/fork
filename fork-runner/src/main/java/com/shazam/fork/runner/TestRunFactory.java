@@ -36,14 +36,14 @@ public class TestRunFactory {
         this.factory = factory;
     }
 
-    public TestRun createTestRun(TestTask testCase,
+    public TestRun createTestRun(TestTask testTask,
                                  Device device,
                                  Pool pool,
                                  ProgressReporter progressReporter,
                                  Queue<TestTask> queueOfTestsInPool) {
         TestRunParameters testRunParameters = testRunParameters()
                 .withDeviceInterface(device.getDeviceInterface())
-                .withTest(testCase)
+                .withTest(testTask)
                 .withTestPackage(configuration.getInstrumentationPackage())
                 .withApplicationPackage(configuration.getApplicationPackage())
                 .withTestRunner(configuration.getTestRunnerClass())
@@ -53,7 +53,7 @@ public class TestRunFactory {
                 .build();
 
         List<ITestRunListener> testRunListeners = testRunListenersFactory.createTestListeners(
-                testCase,
+                testTask,
                 device,
                 pool,
                 progressReporter,

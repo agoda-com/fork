@@ -73,14 +73,13 @@ public class TestRunListenersFactory {
                                                                    TestTask testCase,
                                                                    ProgressReporter progressReporter,
                                                                    TestCaseEventFactory factory) {
-        SingleForkXmlTestRunListener xmlTestRunListener = new SingleForkXmlTestRunListener(fileManager,
+        return new SingleForkXmlTestRunListener(fileManager,
                 pool,
                 device,
                 testCase,
                 progressReporter,
                 factory,
                 output);
-        return xmlTestRunListener;
     }
 
     private ITestRunListener getCoverageTestRunListener(Configuration configuration,

@@ -20,6 +20,9 @@ class TestBatchFactory {
                 tempArray.clear()
             }
         }
+        if(tempArray.isNotEmpty()){
+            resultArray.add(TestTask.MultiTestTask(Lists.newArrayList(tempArray)))
+        }
         val single = grouped[false].orEmpty().map { TestTask.SingleTestTask(it) }
 
         return resultArray + single
