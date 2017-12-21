@@ -36,6 +36,7 @@ public class DeviceTestRunner implements Runnable {
     private final CountDownLatch deviceCountDownLatch;
     private final ProgressReporter progressReporter;
     private final TestRunFactory testRunFactory;
+    private TestCaseEvent lastEvent;
 
     public DeviceTestRunner(Installer installer,
                             Pool pool,
@@ -67,17 +68,32 @@ public class DeviceTestRunner implements Runnable {
 
             TestCaseEvent testCaseEvent;
             while ((testCaseEvent = queueOfTestsInPool.poll()) != null) {
-                TestRun testRun = testRunFactory.createTestRun(testCaseEvent,
-                        device,
-                        pool,
-                        progressReporter,
-                        queueOfTestsInPool);
-                testRun.execute();
+                if (testCaseEvent.equals(lastEvent)) {
+                    TestCaseEvent next = queueOfTestsInPool.poll();
+                    if (next != null) {
+                        queueOfTestsInPool.add(testCaseEvent);
+                        runTest(next);
+                    } else {
+                        runTest(testCaseEvent);
+                    }
+                } else {
+                    runTest(testCaseEvent);
+                }
             }
         } finally {
             logger.info("Device {} from pool {} finished", device.getSerial(), pool.getName());
             deviceCountDownLatch.countDown();
         }
+    }
+
+    private void runTest(TestCaseEvent testCaseEvent) {
+        lastEvent = testCaseEvent;
+        TestRun testRun = testRunFactory.createTestRun(testCaseEvent,
+                device,
+                pool,
+                progressReporter,
+                queueOfTestsInPool);
+        testRun.execute();
     }
 
     private void clearLogcat(final IDevice device) {
