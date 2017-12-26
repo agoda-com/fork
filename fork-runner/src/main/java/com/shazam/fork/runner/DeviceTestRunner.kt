@@ -15,17 +15,17 @@ package com.shazam.fork.runner
 import com.android.ddmlib.*
 import com.shazam.fork.batch.tasks.TestTask
 import com.shazam.fork.model.Device
-import com.shazam.fork.model.*
+import com.shazam.fork.model.Pool
 import com.shazam.fork.system.adb.Installer
-
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-
-import java.io.IOException
-import java.util.Queue
-import java.util.concurrent.CountDownLatch
-
 import com.shazam.fork.system.io.RemoteFileManager.*
+import org.slf4j.LoggerFactory
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.CountDownLatch
+import com.shazam.fork.injector.runner.ProgressReporterInjector.progressReporter
+import sun.audio.AudioDevice.device
+import com.shazam.fork.injector.runner.TestRunFactoryInjector.testRunFactory
+
 
 class DeviceTestRunner(private val installer: Installer,
                        private val pool: Pool,
@@ -34,6 +34,12 @@ class DeviceTestRunner(private val installer: Installer,
                        private val deviceCountDownLatch: CountDownLatch,
                        private val progressReporter: ProgressReporter,
                        private val testRunFactory: TestRunFactory) : Runnable {
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(DeviceTestRunner::class.java)
+    }
+
+    var lastEvent = 0
 
     override fun run() {
         val deviceInterface = device.deviceInterface
@@ -46,14 +52,19 @@ class DeviceTestRunner(private val installer: Installer,
             createCoverageDirectory(deviceInterface)
             clearLogcat(deviceInterface)
 
-            while (queueOfTestsInPool.isNotEmpty()){
+            while (queueOfTestsInPool.isNotEmpty()) {
                 queueOfTestsInPool.poll()?.run {
-                    val testRun = testRunFactory.createTestRun(this,
-                            device,
-                            pool,
-                            progressReporter,
-                            queueOfTestsInPool)
-                    testRun.execute()
+                    if (hashCode() == lastEvent) {
+                        val next = queueOfTestsInPool.poll()
+                        if (next != null) {
+                            queueOfTestsInPool.add(this)
+                            runTest(next)
+                        } else {
+                            runTest(this)
+                        }
+                    } else {
+                        runTest(this)
+                    }
                 }
             }
 
@@ -61,6 +72,15 @@ class DeviceTestRunner(private val installer: Installer,
             logger.info("Device {} from pool {} finished", device.serial, pool.name)
             deviceCountDownLatch.countDown()
         }
+    }
+
+    private fun runTest(testTask: TestTask) {
+        lastEvent = testTask.hashCode()
+        testRunFactory.createTestRun(testTask,
+                device,
+                pool,
+                progressReporter,
+                queueOfTestsInPool).execute()
     }
 
     private fun clearLogcat(device: IDevice) {
@@ -75,10 +95,5 @@ class DeviceTestRunner(private val installer: Installer,
         } catch (e: IOException) {
             logger.warn("Could not clear logcat on device: " + device.serialNumber, e)
         }
-
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(DeviceTestRunner::class.java)
     }
 }
