@@ -10,9 +10,6 @@
 
 package com.shazam.fork.runner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PoolProgressTrackerImpl implements PoolProgressTracker {
@@ -20,8 +17,6 @@ public class PoolProgressTrackerImpl implements PoolProgressTracker {
     private final int totalTests;
     private AtomicInteger failedTests;
     private AtomicInteger completedTests;
-
-    private static final Logger logger = LoggerFactory.getLogger(PoolProgressTrackerImpl.class);
 
     public PoolProgressTrackerImpl(int totalTests) {
         this.totalTests = totalTests;
@@ -31,19 +26,16 @@ public class PoolProgressTrackerImpl implements PoolProgressTracker {
 
     @Override
     public void completedTest() {
-        logger.error("completedTest");
         completedTests.incrementAndGet();
     }
 
     @Override
     public void failedTest() {
-        logger.error("failedTest");
         failedTests.incrementAndGet();
     }
 
     @Override
     public void trackTestEnqueuedAgain() {
-        logger.error("trackTestEnqueuedAgain");
         completedTests.decrementAndGet();
         failedTests.decrementAndGet();
     }
