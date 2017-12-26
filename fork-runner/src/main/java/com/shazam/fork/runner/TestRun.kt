@@ -18,6 +18,7 @@ import com.android.ddmlib.testrunner.TestIdentifier
 import com.shazam.fork.batch.tasks.TestTask
 import com.shazam.fork.system.PermissionGrantingManager
 import com.shazam.fork.system.io.RemoteFileManager
+import org.slf4j.Logger
 
 import org.slf4j.LoggerFactory
 
@@ -32,7 +33,7 @@ internal class TestRun(private val poolName: String,
                        private val testRunListeners: List<ITestRunListener>,
                        private val permissionGrantingManager: PermissionGrantingManager) {
 
-    val logger = LoggerFactory.getLogger(TestRun::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(TestRun::class.java)
 
     fun execute() {
         val device = testRunParameters.deviceInterface
@@ -108,9 +109,5 @@ internal class TestRun(private val poolName: String,
         val applicationPackage = testRunParameters.applicationPackage
         val device = testRunParameters.deviceInterface
         permissionGrantingManager.revokePermissions(applicationPackage, device, permissionsToRevoke)
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(TestRun::class.java)
     }
 }
