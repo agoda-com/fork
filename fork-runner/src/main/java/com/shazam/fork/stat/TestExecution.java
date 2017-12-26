@@ -1,12 +1,14 @@
 package com.shazam.fork.stat;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
+import org.jetbrains.annotations.NotNull;
 
 public class TestExecution {
 
     public enum Status {
         FAILED,
-        ENDED
+        PASSED,
+        IGNORED
     }
 
     private final TestIdentifier test;

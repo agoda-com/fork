@@ -71,9 +71,9 @@ internal class TestRun(private val poolName: String,
 //            logger.warn("Test: $testClassName got stuck. You can increase the timeout in settings if it's too strict")
         } catch (e: AdbCommandRejectedException) {
 //            throw RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e)
-            throw RuntimeException("Error while running test")
+            throw RuntimeException("Error while running test",e)
         } catch (e: IOException) {
-            throw RuntimeException("Error while running test")
+            throw RuntimeException("Error while running test",e)
 //            throw RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e)
         } finally {
 //            permissionGrantingManager.restorePermissions(applicationPackage, device, permissionsToRevoke)

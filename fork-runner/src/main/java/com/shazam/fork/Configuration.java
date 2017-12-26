@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.shazam.fork.system.axmlparser.InstrumentationInfoFactory.parseFromFile;
-import static java.util.Arrays.asList;
 
 public class Configuration {
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
@@ -63,6 +62,7 @@ public class Configuration {
 
     private ApplicationInfo applicationInfo;
     private SortingStrategy sortingStrategy;
+    private BatchStrategy batchStrategy;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -89,6 +89,7 @@ public class Configuration {
         this.includedAnnotation = builder.includedAnnotation;
         this.applicationInfo = builder.applicationInfo;
         this.sortingStrategy = builder.sortingStrategy;
+        this.batchStrategy = builder.batchStrategy;
     }
 
     @Nonnull
@@ -200,6 +201,10 @@ public class Configuration {
         return sortingStrategy;
     }
 
+    public BatchStrategy getBatchStrategy() {
+        return batchStrategy;
+    }
+
     public static class Builder {
         private File androidSdk;
         private File applicationApk;
@@ -224,7 +229,8 @@ public class Configuration {
         private String excludedAnnotation;
         private String includedAnnotation;
         private ApplicationInfo applicationInfo;
-        public SortingStrategy sortingStrategy;
+        private SortingStrategy sortingStrategy;
+        private BatchStrategy batchStrategy;
 
         public static Builder configuration() {
             return new Builder();
@@ -330,6 +336,12 @@ public class Configuration {
             return this;
         }
 
+        public Builder withBatchStrategy(@Nullable BatchStrategy batchStrategy) {
+            this.batchStrategy = batchStrategy;
+            return this;
+        }
+
+
         public Configuration build() {
             checkNotNull(androidSdk, "SDK is required.");
             checkArgument(androidSdk.exists(), "SDK directory does not exist.");
@@ -358,8 +370,36 @@ public class Configuration {
             logArgumentsBadInteractions();
             poolingStrategy = validatePoolingStrategy(poolingStrategy);
             sortingStrategy = validateSortingStrategy(sortingStrategy);
+            batchStrategy = validateBatchStrategy(batchStrategy, sortingStrategy);
             applicationInfo = ApplicationInfoFactory.parseFromFile(applicationApk);
             return new Configuration(this);
+        }
+
+        private BatchStrategy validateBatchStrategy(BatchStrategy batchStrategy,
+                                                    SortingStrategy sortingStrategy) {
+            if (batchStrategy == null) {
+                batchStrategy = new BatchStrategy();
+                batchStrategy.defaultStrategy = true;
+            } else {
+                long selectedStrategies = Stream.of(
+                        batchStrategy.defaultStrategy,
+                        batchStrategy.expectedTimeBasedStrategy,
+                        batchStrategy.chunkStrategy,
+                        batchStrategy.varianceBasedStrategy)
+                        .filter(Objects::nonNull)
+                        .count();
+                if (selectedStrategies > Defaults.STRATEGY_LIMIT) {
+                    throw new IllegalArgumentException("You have selected more than one strategies in configuration. " +
+                            "You can only select up to one.");
+                }
+                if (batchStrategy.varianceBasedStrategy != null && sortingStrategy.statistics == null) {
+                    throw new IllegalArgumentException("Variance based strategies can't work without stats");
+                }
+                if (batchStrategy.expectedTimeBasedStrategy != null && sortingStrategy.statistics == null) {
+                    throw new IllegalArgumentException("Expected time based strategies can't work without stats");
+                }
+            }
+            return batchStrategy;
         }
 
         private static <T> T assignValueOrDefaultIfNull(T value, T defaultValue) {

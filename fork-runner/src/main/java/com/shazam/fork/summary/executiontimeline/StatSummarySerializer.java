@@ -1,12 +1,10 @@
 package com.shazam.fork.summary.executiontimeline;
 
-import com.agoda.fork.stat.TestHistory;
 import com.agoda.fork.stat.TestMetric;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.stat.TestExecution;
 import com.shazam.fork.stat.TestExecutionReporter;
-import com.shazam.fork.stat.TestHistoryManager;
 import com.shazam.fork.stat.TestStatsLoader;
 import com.shazam.fork.summary.PoolSummary;
 import com.shazam.fork.summary.Summary;
@@ -38,17 +36,16 @@ public class StatSummarySerializer {
     }
 
     private Data convertToData(TestExecution execution) {
-        int status = convertStatus(execution);
         String preparedTestName = prepareTestName(execution.getTest().toString());
         TestMetric testMetric = getTestMetric(execution);
-        return createData(execution, status, preparedTestName, testMetric);
+        return createData(execution, execution.getStatus(), preparedTestName, testMetric);
     }
 
     private int convertStatus(TestExecution execution) {
-        return execution.getStatus() == TestExecution.Status.ENDED ? 1 : 0;
+        return execution.getStatus() == TestExecution.Status.PASSED ? 1 : 0;
     }
 
-    private Data createData(TestExecution execution, int status, String preparedTestName, TestMetric testMetric) {
+    private Data createData(TestExecution execution, TestExecution.Status status, String preparedTestName, TestMetric testMetric) {
         return new Data(preparedTestName, status,
                 execution.getStartTime(),
                 execution.getStartTime() + execution.getEndTime(),
@@ -130,7 +127,7 @@ public class StatSummarySerializer {
     public ExecutionResult parse(Summary summary) {
         int failedTests = summary.getFailedTests().size();
         int ignoredTests = summary.getIgnoredTests().size();
-        int passedTestCount = passedTestCount(summary) - ignoredTests - failedTests;
+        int passedTestCount = passedTestCount(summary) - failedTests;
         List<Measure> measures = parseList(summary.getPoolSummaries());
         return new ExecutionResult(passedTestCount, failedTests, aggregateExecutionStats(measures), measures);
     }

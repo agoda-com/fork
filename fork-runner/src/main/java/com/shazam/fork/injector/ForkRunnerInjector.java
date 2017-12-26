@@ -20,11 +20,10 @@ import org.slf4j.LoggerFactory;
 import static com.shazam.fork.injector.pooling.PoolLoaderInjector.poolLoader;
 import static com.shazam.fork.injector.runner.PoolTestRunnerFactoryInjector.poolTestRunnerFactory;
 import static com.shazam.fork.injector.runner.ProgressReporterInjector.progressReporter;
-import static com.shazam.fork.injector.sorting.QueueProviderInjector.queueProvider;
+import static com.shazam.fork.injector.sorting.TestTaskQueueProviderInjector.queueProvider;
 import static com.shazam.fork.injector.stat.TestStatLoaderInjector.testStatsLoader;
 import static com.shazam.fork.injector.suite.TestSuiteLoaderInjector.testSuiteLoader;
 import static com.shazam.fork.injector.summary.SummaryGeneratorHookInjector.summaryGeneratorHook;
-import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
 

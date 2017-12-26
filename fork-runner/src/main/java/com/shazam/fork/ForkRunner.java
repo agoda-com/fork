@@ -12,7 +12,7 @@
  */
 package com.shazam.fork;
 
-import com.shazam.fork.batch.BatchQueueProvider;
+import com.shazam.fork.batch.TestTaskQueueProvider;
 import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
@@ -44,7 +44,7 @@ public class ForkRunner {
     private final ProgressReporter progressReporter;
     private final SummaryGeneratorHook summaryGeneratorHook;
     private final TestStatsLoader testStatsLoader;
-    private final QueueProvider queueProvider;
+    private final TestTaskQueueProvider queueProvider;
 
     public ForkRunner(PoolLoader poolLoader,
                       TestSuiteLoader testClassLoader,
@@ -52,7 +52,7 @@ public class ForkRunner {
                       ProgressReporter progressReporter,
                       SummaryGeneratorHook summaryGeneratorHook,
                       TestStatsLoader testStatsLoader,
-                      QueueProvider queueProvider) {
+                      TestTaskQueueProvider queueProvider) {
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
         this.poolTestRunnerFactory = poolTestRunnerFactory;
@@ -74,7 +74,8 @@ public class ForkRunner {
 
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
             int totalTests = testCases.size();
-            Queue<TestTask> testCasesQueue = new BatchQueueProvider().provide(testCases);
+            int maxDevicesPerPool = pools.stream().mapToInt(i -> i.getDevices().size()).max().orElse(0);
+            Queue<TestTask> testCasesQueue = queueProvider.create(maxDevicesPerPool, testCases);
 
             summaryGeneratorHook.registerHook(pools, testCases);
 
