@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory
 
 class TestTaskComparator : Comparator<TestTask> {
 
-    val logger: Logger = LoggerFactory.getLogger(TestTaskComparator::class.java)
-
     private fun getDefaultComparator(): java.util.Comparator<TestMetric> {
         return Comparator.comparingDouble<TestMetric> { value ->
             Math.sqrt(value.variance) * 2 + value.expectedValue
