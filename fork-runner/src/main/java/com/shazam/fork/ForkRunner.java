@@ -19,7 +19,6 @@ import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.pooling.*;
 import com.shazam.fork.runner.PoolTestRunnerFactory;
 import com.shazam.fork.runner.ProgressReporter;
-import com.shazam.fork.sorting.QueueProvider;
 import com.shazam.fork.stat.TestStatsLoader;
 import com.shazam.fork.suite.NoTestCasesFoundException;
 import com.shazam.fork.suite.TestSuiteLoader;
