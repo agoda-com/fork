@@ -20,13 +20,13 @@ import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-class SingleForkXmlTestRunListener(val fileManager: FileManager,
-                                   val pool: Pool,
-                                   val device: Device,
-                                   val testCase: TestTask,
-                                   val progressReporter: ProgressReporter,
-                                   val factory: TestCaseEventFactory,
-                                   val output: File) : ITestRunListener {
+class SingleForkXmlTestRunListener(private val fileManager: FileManager,
+                                   private val pool: Pool,
+                                   private val device: Device,
+                                   private val testCase: TestTask,
+                                   private val progressReporter: ProgressReporter,
+                                   private val factory: TestCaseEventFactory,
+                                   private val output: File) : ITestRunListener {
 
     private val runResult: TestRunResult = TestRunResult()
 
@@ -73,7 +73,7 @@ class SingleForkXmlTestRunListener(val fileManager: FileManager,
         }
     }
 
-    fun getResultFile(test: TestIdentifier): File {
+    private fun getResultFile(test: TestIdentifier): File {
         return fileManager.createFile(FileType.TEST, pool, device, test)
     }
 
@@ -98,7 +98,7 @@ class SingleForkXmlTestRunListener(val fileManager: FileManager,
         }
     }
 
-    fun getTextSummary(testResult: TestResult): String {
+    private fun getTextSummary(testResult: TestResult): String {
         return "Total tests 1, ${testResult.toString().toLowerCase()} 1"
     }
 
@@ -164,7 +164,7 @@ class SingleForkXmlTestRunListener(val fileManager: FileManager,
         serializer.endTag(ns, TESTSUITE)
     }
 
-    fun getPropertiesAttributes(test: TestIdentifier): Map<String, String> {
+    private fun getPropertiesAttributes(test: TestIdentifier): Map<String, String> {
         val mapBuilder = ImmutableMap.builder<String, String>()
 
         val testFailuresCount = progressReporter.getTestFailuresCount(pool, factory.newTestCase(test))
@@ -182,7 +182,7 @@ class SingleForkXmlTestRunListener(val fileManager: FileManager,
         return testId.testName
     }
 
-    fun print(serializer: KXmlSerializer, testId: TestIdentifier, testResult: TestResult) {
+    private fun print(serializer: KXmlSerializer, testId: TestIdentifier, testResult: TestResult) {
 
         serializer.startTag(ns, TESTCASE)
         serializer.attribute(ns, ATTR_NAME, getTestName(testId))

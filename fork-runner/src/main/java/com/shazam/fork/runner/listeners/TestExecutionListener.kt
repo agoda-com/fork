@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 class TestExecutionListener(private val device: Device,
                             private val executionReporter: TestExecutionReporter) : NoOpITestRunListener() {
 
-    val runResult = TestRunResult()
+    private val runResult = TestRunResult()
 
     override fun testRunStarted(runName: String, testCount: Int) {
         runResult.testRunStarted(runName, testCount)

@@ -22,10 +22,6 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.CountDownLatch
-import com.shazam.fork.injector.runner.ProgressReporterInjector.progressReporter
-import sun.audio.AudioDevice.device
-import com.shazam.fork.injector.runner.TestRunFactoryInjector.testRunFactory
-
 
 class DeviceTestRunner(private val installer: Installer,
                        private val pool: Pool,
@@ -39,7 +35,7 @@ class DeviceTestRunner(private val installer: Installer,
         private val logger = LoggerFactory.getLogger(DeviceTestRunner::class.java)
     }
 
-    var lastEvent = 0
+    private var lastEvent = 0
 
     override fun run() {
         val deviceInterface = device.deviceInterface
