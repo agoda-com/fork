@@ -4,6 +4,10 @@ import com.shazam.fork.model.TestCaseEvent;
 
 import java.util.Comparator;
 
+/**
+ * Comparator based on test metrics.
+ */
+
 class TestComparator implements Comparator<TestCaseEvent> {
     private static Comparator<TestCaseEvent> getDefaultComparator() {
         return Comparator.<TestCaseEvent>comparingDouble(value ->
