@@ -25,6 +25,7 @@ import java.io.IOException
 
 import java.lang.String.format
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 internal class TestRun(private val poolName: String,
                        private val testRunParameters: TestRunParameters,
@@ -34,7 +35,6 @@ internal class TestRun(private val poolName: String,
     val logger = LoggerFactory.getLogger(TestRun::class.java)
 
     fun execute() {
-        val applicationPackage = testRunParameters.applicationPackage
         val device = testRunParameters.deviceInterface
 
         val runner = RemoteAndroidTestRunner(
@@ -47,11 +47,10 @@ internal class TestRun(private val poolName: String,
         runner.setRunName(poolName)
         val testSize = testRunParameters.testSize
         if (testSize != null) {
-            logger.error("TestSize = $testSize")
             runner.setTestSize(testSize)
         }
 
-        runner.setMaxtimeToOutputResponse(testRunParameters.testOutputTimeout)
+        runner.setMaxTimeToOutputResponse(testRunParameters.testOutputTimeout.toLong(), TimeUnit.MILLISECONDS)
 
         runner.apply {
             when (test) {
@@ -60,25 +59,22 @@ internal class TestRun(private val poolName: String,
             }
         }
 
-
         try {
             runner.run(testRunListeners)
         } catch (e: ShellCommandUnresponsiveException) {
-            logger.warn("Test got stuck. You can increase the timeout in settings if it's too strict")
-//            logger.warn("Test: $testClassName got stuck. You can increase the timeout in settings if it's too strict")
+            logger.warn("TestTask: $test stuck. You can increase the timeout in settings if it's too strict")
         } catch (e: TimeoutException) {
-            logger.warn("Test got stuck. You can increase the timeout in settings if it's too strict")
-//            logger.warn("Test: $testClassName got stuck. You can increase the timeout in settings if it's too strict")
+            logger.warn("TestTask: $test  got stuck. You can increase the timeout in settings if it's too strict")
         } catch (e: AdbCommandRejectedException) {
-//            throw RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e)
-            throw RuntimeException("Error while running test",e)
+            throw RuntimeException("Error while running test task $test", e)
         } catch (e: IOException) {
-            throw RuntimeException("Error while running test",e)
-//            throw RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e)
+            throw RuntimeException("Error while running test task $test", e)
         } finally {
-//            permissionGrantingManager.restorePermissions(applicationPackage, device, permissionsToRevoke)
+            if (test is TestTask.SingleTestTask) {
+                val applicationPackage = testRunParameters.applicationPackage
+                permissionGrantingManager.restorePermissions(applicationPackage, device, test.event.permissionsToRevoke)
+            }
         }
-
     }
 
     private fun executeMultiple(test: TestTask.MultiTestTask, runner: RemoteAndroidTestRunner) {
