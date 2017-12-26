@@ -48,13 +48,6 @@ class DeviceTestRunner(private val installer: Installer,
 
             while (queueOfTestsInPool.isNotEmpty()){
                 queueOfTestsInPool.poll()?.run {
-                    val text = when(this){
-                        is TestTask.MultiTestTask -> "MultiTestTask started $list"
-                        is TestTask.SingleTestTask -> "SingleTestTask started"
-                    }
-
-                    logger.error(text)
-
                     val testRun = testRunFactory.createTestRun(this,
                             device,
                             pool,
