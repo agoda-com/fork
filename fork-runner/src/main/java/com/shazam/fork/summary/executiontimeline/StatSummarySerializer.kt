@@ -2,9 +2,6 @@ package com.shazam.fork.summary.executiontimeline
 
 import com.agoda.fork.stat.TestMetric
 import com.android.ddmlib.testrunner.TestIdentifier
-import com.google.common.collect.Collections2
-import com.google.common.collect.EvictingQueue
-import com.google.common.collect.Lists
 import com.shazam.fork.model.Device
 import com.shazam.fork.stat.TestExecution
 import com.shazam.fork.stat.TestExecutionReporter
@@ -42,7 +39,7 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
     }
 
     private fun calculateExecutionStats(data: List<Data>): ExecutionStats {
-        return ExecutionStats(calculateIdle(data)!!, calculateAverageExecutionTime(data))
+        return ExecutionStats(calculateIdle(data), calculateAverageExecutionTime(data))
     }
 
     private fun calculateAverageExecutionTime(data: List<Data>): Long {

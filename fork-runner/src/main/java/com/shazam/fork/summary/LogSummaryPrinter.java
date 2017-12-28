@@ -92,11 +92,6 @@ public class LogSummaryPrinter implements SummaryPrinter {
     }
 
 	private Collection<TestResult> getResultsWithStatus(Collection<TestResult> testResults, final ResultStatus resultStatus) {
-		return filter(testResults, new Predicate<TestResult>() {
-			@Override
-			public boolean apply(@Nullable TestResult testResult) {
-				return testResult.getResultStatus().equals(resultStatus);
-			}
-		});
+		return filter(testResults, testResult -> testResult.getResultStatus().equals(resultStatus));
 	}
 }

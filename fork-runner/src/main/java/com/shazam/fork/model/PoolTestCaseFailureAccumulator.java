@@ -59,12 +59,7 @@ public class PoolTestCaseFailureAccumulator implements PoolTestCaseAccumulator {
     }
 
     private static Predicate<TestCaseEventCounter> isSameTestCase(final TestCaseEvent testCaseEvent) {
-        return new Predicate<TestCaseEventCounter>() {
-            @Override
-            public boolean apply(TestCaseEventCounter input) {
-                return input.getTestCaseEvent() != null
-                        && testCaseEvent.equals(input.getTestCaseEvent());
-            }
-        };
+        return input -> input.getTestCaseEvent() != null
+                && testCaseEvent.equals(input.getTestCaseEvent());
     }
 }
