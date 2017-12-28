@@ -62,7 +62,6 @@ class JenkinsDownloader {
 
             jobWithDetails
                     .getBuilds()
-                    .stream()
                     .forEach(build -> getDetailsFromBuild(build).stream()
                             .filter(this::isForkSummaryArtifact)
                             .forEach(artifact -> downloadArtifact(build, artifact)));

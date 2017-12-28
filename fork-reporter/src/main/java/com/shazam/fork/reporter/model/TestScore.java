@@ -27,7 +27,7 @@ public class TestScore implements Comparable<TestScore> {
 
     public static TestScore from(TestLabel testLabel, List<TestInstance> testInstances) {
         StringBuilder score = new StringBuilder(testInstances.size());
-        testInstances.stream().forEach(testInstance -> {
+        testInstances.forEach(testInstance -> {
             Status status = testInstance.getStatus();
             char scoreCode = scoreCodeFor(status);
             score.append(scoreCode);
