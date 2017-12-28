@@ -15,7 +15,6 @@ package com.shazam.fork.runner;
 import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestCaseEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -15,14 +15,12 @@ package com.shazam.fork.summary;
 import com.android.ddmlib.logcat.LogCatMessage;
 
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Diagnostics;
 
 import javax.annotation.Nullable;
 
-import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static com.shazam.fork.summary.OutcomeAggregator.toPoolOutcome;

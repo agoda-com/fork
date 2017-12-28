@@ -22,10 +22,8 @@ import org.lesscss.LessCompiler;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Charsets.UTF_8;
-import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.io.Files.copyResource;
 import static com.shazam.fork.summary.HtmlConverters.toHtmlLogCatMessages;
 import static com.shazam.fork.summary.HtmlConverters.toHtmlSummary;

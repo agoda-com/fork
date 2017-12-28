@@ -13,7 +13,6 @@ package com.shazam.fork.suite;
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.model.TestCaseEventFactory;
-import com.shazam.fork.stat.TestStatsLoader;
 import org.jf.dexlib.*;
 import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
 import org.jf.dexlib.EncodedValue.ArrayEncodedValue;
@@ -30,7 +29,6 @@ import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class TestSuiteLoader {
     private static final String TEST_ANNOTATION = "Lorg/junit/Test;";

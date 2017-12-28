@@ -12,15 +12,11 @@
  */
 package com.shazam.fork.summary;
 
-import com.google.common.base.Predicate;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import javax.annotation.Nullable;
 
 import static com.google.common.collect.Collections2.filter;
 import static com.shazam.fork.summary.ResultStatus.ERROR;

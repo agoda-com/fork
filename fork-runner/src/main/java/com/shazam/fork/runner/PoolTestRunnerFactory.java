@@ -12,10 +12,7 @@ package com.shazam.fork.runner;
 
 import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestCaseEvent;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 

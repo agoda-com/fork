@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.zip.*;
 
 import static com.shazam.fork.io.Files.convertFileToDexFile;
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copyLarge;

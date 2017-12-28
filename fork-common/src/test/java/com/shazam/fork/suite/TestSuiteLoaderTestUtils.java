@@ -1,6 +1,5 @@
 package com.shazam.fork.suite;
 
-import com.agoda.fork.stat.TestMetric;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.model.TestCaseEventFactory;
 import com.shazam.fork.stat.StatServiceLoader;

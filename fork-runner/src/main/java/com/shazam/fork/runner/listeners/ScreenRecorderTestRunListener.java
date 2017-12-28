@@ -10,7 +10,6 @@
 package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.IDevice;
-import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;

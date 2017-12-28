@@ -12,7 +12,6 @@
  */
 package com.shazam.fork.runner.listeners;
 
-import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.runner.ProgressReporter;
 
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import static java.lang.String.format;
 

@@ -13,7 +13,6 @@
 package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.logcat.*;
-import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.gson.Gson;
 import com.shazam.fork.model.Device;

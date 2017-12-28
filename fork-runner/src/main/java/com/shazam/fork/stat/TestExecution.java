@@ -1,7 +1,6 @@
 package com.shazam.fork.stat;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
-import org.jetbrains.annotations.NotNull;
 
 public class TestExecution {
 
