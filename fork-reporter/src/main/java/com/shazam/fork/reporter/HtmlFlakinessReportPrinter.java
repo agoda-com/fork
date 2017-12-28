@@ -24,6 +24,8 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 public class HtmlFlakinessReportPrinter implements FlakinessReportPrinter {
     private static final String INDEX_FILENAME = "index.html";
     private static final String STATIC = "static";
+    public static final String TEMPLATES_POOL_HTML = "templates/pool.html";
+    public static final String TEMPLATES_INDEX_HTML = "templates/index.html";
     private final File output;
     private final HtmlGenerator htmlGenerator;
     private final TestToHtmlFlakinessReportConverter converter;
@@ -44,10 +46,10 @@ public class HtmlFlakinessReportPrinter implements FlakinessReportPrinter {
         recreateOutputFolder();
         copyAssets();
         HtmlFlakyTestIndex htmlFlakyTestIndex = converter.convertToIndex(flakinessReport);
-        htmlGenerator.generateHtml("templates/index.html", output, INDEX_FILENAME, htmlFlakyTestIndex);
+        htmlGenerator.generateHtml(TEMPLATES_INDEX_HTML, output, INDEX_FILENAME, htmlFlakyTestIndex);
 
         List<HtmlFlakyTestPool> htmlFlakyTestPool = converter.convertToPools(flakinessReport);
-        generatePoolHtmls(htmlFlakyTestPool, "templates/pool.html", new File(output, "pools"));
+        generatePoolHtmls(htmlFlakyTestPool, TEMPLATES_POOL_HTML, new File(output, "pools"));
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

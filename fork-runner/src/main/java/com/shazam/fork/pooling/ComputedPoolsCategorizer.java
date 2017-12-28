@@ -53,14 +53,12 @@ public class ComputedPoolsCategorizer {
 	}
 
 	private List<Bound> createBounds(ComputedPooling computedPooling) {
-		List<Bound> boundList = computedPooling.groups
+		return computedPooling.groups
 				.entrySet()
 				.stream()
 				.map(entry -> new Bound(entry.getKey(), entry.getValue()))
+				.sorted(Comparator.comparingInt(Bound::getLower))
 				.collect(toList());
-
-		boundList.sort((o1, o2) -> o1.getLower() - o2.getLower());
-		return boundList;
 	}
 
     private int findEnclosingBoundIndex(int parameter) {

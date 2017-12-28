@@ -55,8 +55,6 @@ public class TestScore implements Comparable<TestScore> {
 
     @Override
     public int compareTo(@Nonnull TestScore otherTestScore) {
-        String otherScore = otherTestScore.score;
-
-        return score.compareTo(otherScore);
+        return score.compareTo(otherTestScore.score);
     }
 }

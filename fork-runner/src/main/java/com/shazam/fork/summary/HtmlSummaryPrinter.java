@@ -20,6 +20,7 @@ import com.shazam.fork.io.HtmlGenerator;
 import org.lesscss.LessCompiler;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import static com.google.common.base.Charsets.UTF_8;
@@ -84,7 +85,7 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 			String less = Resources.toString(getClass().getResource("/spoon.less"), UTF_8);
 			String css = compiler.compile(less);
 			File cssFile = new File(staticOutput, "spoon.css");
-			writeStringToFile(cssFile, css);
+			writeStringToFile(cssFile, css, Charset.defaultCharset(), false);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

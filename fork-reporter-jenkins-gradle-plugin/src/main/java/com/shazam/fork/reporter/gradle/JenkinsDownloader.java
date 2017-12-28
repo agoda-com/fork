@@ -209,8 +209,7 @@ class JenkinsDownloader {
         try {
             URI uri = new URI(build.getUrl());
             String artifactPath = uri.getPath() + "artifact/" + artifact.getRelativePath();
-            URI artifactUri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), artifactPath, "", "");
-            return artifactUri;
+            return new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), artifactPath, "", "");
         } catch (URISyntaxException e) {
             throw new GradleException("Error when trying to construct artifact URL for: " + build.getUrl(), e);
         }
