@@ -4,6 +4,7 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.stat.TestStatsLoader;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class TestCaseEventFactory {
                 statsLoader.findMetric(testIdentifier.getClassName(), testIdentifier.getClassName()));
     }
 
-    public TestCaseEvent newTestCase(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties) {
+    public TestCaseEvent newTestCase(@Nullable String testMethod, @Nonnull String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties) {
         return new TestCaseEvent(testMethod, testClass, isIgnored, permissionsToRevoke, properties, statsLoader.findMetric(testClass, testMethod));
     }
 }

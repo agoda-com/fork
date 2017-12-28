@@ -1,12 +1,7 @@
 package com.shazam.fork.sorting;
 
 import com.shazam.fork.model.TestCaseEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 class SortedTestQueue extends PriorityBlockingQueue<TestCaseEvent> {

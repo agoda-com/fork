@@ -123,7 +123,11 @@ public class StatSummarySerializer {
             summaryIdle += measure.getExecutionStats().getIdleTimeMillis();
             avgTestExecutionTime += measure.getExecutionStats().getAverageTestExecutionTimeMillis();
         }
-        avgTestExecutionTime = avgTestExecutionTime / list.size();
+        int size = list.size();
+        //Temp workaround for Parameterized tests
+        if (size != 0) {
+            avgTestExecutionTime = avgTestExecutionTime / size;
+        }
         return new ExecutionStats(summaryIdle, avgTestExecutionTime);
     }
 

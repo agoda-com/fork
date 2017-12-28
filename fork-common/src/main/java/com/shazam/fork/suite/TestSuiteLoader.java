@@ -15,20 +15,20 @@ import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.model.TestCaseEventFactory;
 import com.shazam.fork.stat.TestStatsLoader;
 import org.jf.dexlib.*;
-import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
-import org.jf.dexlib.EncodedValue.ArrayEncodedValue;
-import org.jf.dexlib.EncodedValue.EncodedValue;
-import org.jf.dexlib.EncodedValue.StringEncodedValue;
+import org.jf.dexlib.EncodedValue.*;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static com.shazam.fork.suite.AnnotationParser.parseAnnotation;
 import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -37,6 +37,8 @@ public class TestSuiteLoader {
     private static final String IGNORE_ANNOTATION = "Lorg/junit/Ignore;";
     private static final String REVOKE_PERMISSION_ANNOTATION = "Lcom/shazam/fork/RevokePermission;";
     private static final String TEST_PROPERTIES_ANNOTATION = "Lcom/shazam/fork/TestProperties;";
+    public static final String PARAMETERIZED_RUNNER = "Lorg/junit/runners/Parameterized;";
+    public static final String RUN_WITH_ANNOTATION = "Lorg/junit/runner/RunWith;";
 
     private final File instrumentationApkFile;
     private final DexFileExtractor dexFileExtractor;
@@ -90,10 +92,20 @@ public class TestSuiteLoader {
                 return emptyList();
             } else {
                 classIncluded = true;
+                if (isParametrized(classSet)) {
+                    return createParameterizedTest(classDefItem, annotationDirectoryItem);
+                }
             }
         }
 
         return parseMethods(classDefItem, annotationDirectoryItem, classIncluded);
+    }
+
+    private List<TestCaseEvent> createParameterizedTest(ClassDefItem classDefItem,
+                                                        AnnotationDirectoryItem annotationDirectoryItem) {
+        String testClass = getClassName(classDefItem);
+        boolean ignored = isClassIgnored(annotationDirectoryItem);
+        return Collections.singletonList(factory.newTestCase(null, testClass, ignored, emptyList(), emptyMap()));
     }
 
     private List<TestCaseEvent> parseMethods(ClassDefItem classDefItem, AnnotationDirectoryItem annotationDirectory, boolean classIncluded) {
@@ -188,6 +200,28 @@ public class TestSuiteLoader {
             if (names[i].getStringValue().equals(key)) return i;
         }
         return index;
+    }
+
+    private boolean isParametrized(AnnotationSetItem classSet) {
+        AnnotationItem[] annotations = classSet.getAnnotations();
+        if (annotations == null || annotations.length == 0) {
+            return false;
+        }
+
+        return Arrays.stream(annotations)
+                .filter(annotation -> {
+                    String descriptor = annotation.getEncodedAnnotation().annotationType.getTypeDescriptor();
+                    return RUN_WITH_ANNOTATION.equals(descriptor);
+                })
+                .map(annotationItem -> annotationItem.getEncodedAnnotation().values)
+                .filter(values -> values != null && values.length != 0)
+                .flatMap(Arrays::stream)
+                .filter(v -> v instanceof TypeEncodedValue)
+                .anyMatch(encodedValue -> {
+                    TypeEncodedValue typeEncodedValue = (TypeEncodedValue) encodedValue;
+                    String vType = typeEncodedValue.value.getTypeDescriptor();
+                    return PARAMETERIZED_RUNNER.equals(vType);
+                });
     }
 
     private boolean isClassIgnored(AnnotationDirectoryItem annotationDirectoryItem) {

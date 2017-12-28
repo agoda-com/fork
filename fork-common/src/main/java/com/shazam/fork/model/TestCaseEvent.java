@@ -3,6 +3,8 @@ package com.shazam.fork.model;
 import com.agoda.fork.stat.TestMetric;
 import com.google.common.base.Objects;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -11,14 +13,16 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SIMPLE_STYLE;
 
 public class TestCaseEvent {
 
+    @Nullable
     private final String testMethod;
+    @Nonnull
     private final String testClass;
     private final boolean isIgnored;
     private final List<String> permissionsToRevoke;
     private final Map<String, String> properties;
     private final TestMetric testMetric;
 
-    TestCaseEvent(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties, TestMetric testMetric) {
+    TestCaseEvent(@Nullable String testMethod, @Nonnull String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties, TestMetric testMetric) {
         this.testMethod = testMethod;
         this.testClass = testClass;
         this.isIgnored = isIgnored;
@@ -27,10 +31,12 @@ public class TestCaseEvent {
         this.testMetric = testMetric;
     }
 
+    @Nullable
     public String getTestMethod() {
         return testMethod;
     }
 
+    @Nonnull
     public String getTestClass() {
         return testClass;
     }

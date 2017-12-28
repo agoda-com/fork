@@ -3,7 +3,6 @@ package com.shazam.fork.sorting;
 import com.shazam.fork.Configuration;
 import com.shazam.fork.model.TestCaseEvent;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 

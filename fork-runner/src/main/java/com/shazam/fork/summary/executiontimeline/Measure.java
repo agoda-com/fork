@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-
 public class Measure {
     @SerializedName("measure")
     private final String measure;
