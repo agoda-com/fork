@@ -88,13 +88,11 @@ internal class TestRun(private val poolName: String,
             runner.addInstrumentationArg("coverageFile", "/sdcard/fork/coverage.ec")
         }
 
-        logger.error("executeMultiple ${Arrays.toString(classes)}")
         runner.setClassNames(classes)
     }
 
 
     private fun executeSingle(test: TestTask.SingleTestTask, runner: RemoteAndroidTestRunner) {
-        logger.error("executeSingle ${test.event.testClass}#${test.event.testMethod}")
         val testClassName = test.event.testClass
         val testMethodName = test.event.testMethod
 

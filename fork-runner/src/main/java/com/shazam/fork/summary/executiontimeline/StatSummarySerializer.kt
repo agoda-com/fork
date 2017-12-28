@@ -2,6 +2,9 @@ package com.shazam.fork.summary.executiontimeline
 
 import com.agoda.fork.stat.TestMetric
 import com.android.ddmlib.testrunner.TestIdentifier
+import com.google.common.collect.Collections2
+import com.google.common.collect.EvictingQueue
+import com.google.common.collect.Lists
 import com.shazam.fork.model.Device
 import com.shazam.fork.stat.TestExecution
 import com.shazam.fork.stat.TestExecutionReporter
@@ -50,8 +53,8 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
         return a.endDate - a.startDate
     }
 
-    private fun calculateIdle(data: List<Data>): Long? {
-        return data.windowed(2, 1).map {
+    private fun calculateIdle(data: List<Data>): Long {
+        return data.stream().collect(SlidingCollector(2, 1)).map {
             it[1].startDate - it[0].endDate
         }.sum()
     }
