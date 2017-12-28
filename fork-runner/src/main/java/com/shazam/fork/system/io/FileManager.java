@@ -37,10 +37,6 @@ public class FileManager {
         return path.toFile().listFiles();
     }
 
-    public File createFile(FileType fileType, Pool pool, Device device, TestCaseEvent testCaseEvent) {
-        return createFile(fileType, pool, device, new TestIdentifier(testCaseEvent.getTestClass(), testCaseEvent.getTestMethod()));
-    }
-
     public File createFile(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier, int sequenceNumber) {
         try {
             Path directory = createDirectory(fileType, pool, device);
@@ -55,16 +51,6 @@ public class FileManager {
         try {
             Path directory = createDirectory(fileType, pool, device);
             String filename = createFilenameForTest(testIdentifier, fileType);
-            return createFile(directory, filename);
-        } catch (IOException e) {
-            throw new CouldNotCreateDirectoryException(e);
-        }
-    }
-
-    public File createFile(FileType fileType, Pool pool, Device device, String file) {
-        try {
-            Path directory = createDirectory(fileType, pool, device);
-            String filename = String.format("%s.%s", file, fileType.getSuffix());
             return createFile(directory, filename);
         } catch (IOException e) {
             throw new CouldNotCreateDirectoryException(e);
@@ -96,16 +82,8 @@ public class FileManager {
         return path.toFile();
     }
 
-    public Path createDirectory(FileType test) throws IOException {
-        return createDirectories(getDirectory(test));
-    }
-
     private Path createDirectory(FileType test, Pool pool, Device device) throws IOException {
         return createDirectories(getDirectory(test, pool, device));
-    }
-
-    private Path getDirectory(FileType fileType) {
-        return get(output.getAbsolutePath(), fileType.getDirectory());
     }
 
     private Path getDirectory(FileType fileType, Pool pool, Device device) {
