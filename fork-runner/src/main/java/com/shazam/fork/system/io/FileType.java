@@ -2,7 +2,6 @@ package com.shazam.fork.system.io;
 
 public enum FileType {
     TEST ("tests", "xml"),
-    TEST_BATCH ("test_batches", "xml"),
     RAW_LOG("logcat", "log"),
     JSON_LOG("logcat_json", "json"),
     SCREENSHOT ("screenshot", "png"),
