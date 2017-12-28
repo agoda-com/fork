@@ -190,27 +190,22 @@ public class TestSuiteLoader {
 
     private boolean isClassIgnored(AnnotationDirectoryItem annotationDirectoryItem) {
         AnnotationSetItem classAnnotations = annotationDirectoryItem.getClassAnnotations();
-        if (classAnnotations == null) {
-            return false;
-        }
-        return containsAnnotation(IGNORE_ANNOTATION, classAnnotations.getAnnotations());
+        return classAnnotations != null && containsAnnotation(IGNORE_ANNOTATION, classAnnotations.getAnnotations());
     }
 
 
     private boolean included(AnnotationItem... annotations) {
-        if (includedAnnotations.isEmpty()) {
-            return true;
-        }
-        return includedAnnotations.stream()
-                .anyMatch(included -> containsAnnotation(included, annotations));
+        return includedAnnotations.isEmpty() ||
+                containsAnnotation(annotations, includedAnnotations.stream());
+    }
+
+    private boolean containsAnnotation(AnnotationItem[] annotations, Stream<String> stream) {
+        return stream.anyMatch(included -> containsAnnotation(included, annotations));
     }
 
     private boolean excluded(AnnotationItem... annotations) {
-        if (excludedAnnotations.isEmpty()) {
-            return false;
-        }
-        return excludedAnnotations.stream()
-                .anyMatch(excluded -> containsAnnotation(excluded, annotations));
+        return !excludedAnnotations.isEmpty()
+                && containsAnnotation(annotations, excludedAnnotations.stream());
     }
 
     private boolean containsAnnotation(String comparisonAnnotation, AnnotationItem... annotations) {
