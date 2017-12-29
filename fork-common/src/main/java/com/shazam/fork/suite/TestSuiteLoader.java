@@ -35,6 +35,7 @@ public class TestSuiteLoader {
     private static final String IGNORE_ANNOTATION = "Lorg/junit/Ignore;";
     private static final String REVOKE_PERMISSION_ANNOTATION = "Lcom/shazam/fork/RevokePermission;";
     private static final String TEST_PROPERTIES_ANNOTATION = "Lcom/shazam/fork/TestProperties;";
+    public static final String JAVA_LANG_OBJECT_SINGATURE = "Ljava/lang/Object;";
 
     private final File instrumentationApkFile;
     private final DexFileExtractor dexFileExtractor;
@@ -58,14 +59,8 @@ public class TestSuiteLoader {
     }
 
     public Collection<TestCaseEvent> loadTestSuite() throws NoTestCasesFoundException {
-
-        List<TestCaseEvent> testCaseEvents = dexFileExtractor.getDexFiles(instrumentationApkFile).stream()
-                .map(dexFile -> dexFile.ClassDefsSection.getItems())
-                .flatMap(Collection::stream)
-                .filter(c -> testClassMatcher.matchesPatterns(c.getClassType().getTypeDescriptor()))
-                .map(this::convertClassToTestCaseEvents)
-                .flatMap(Collection::stream)
-                .collect(toList());
+        Collection<DexFile> dexFiles = dexFileExtractor.getDexFiles(instrumentationApkFile);
+        List<TestCaseEvent> testCaseEvents = extractTests(dexFiles);
 
         if (testCaseEvents.isEmpty()) {
             throw new NoTestCasesFoundException("No tests cases were found in the test APK: " + instrumentationApkFile.getAbsolutePath());
@@ -73,8 +68,21 @@ public class TestSuiteLoader {
         return testCaseEvents;
     }
 
+    private List<TestCaseEvent> extractTests(Collection<DexFile> dexFiles) {
+        List<ClassDefItem> classDefItems = dexFiles.stream()
+                .map(dexFile -> dexFile.ClassDefsSection.getItems())
+                .flatMap(Collection::stream)
+                .collect(toList());
+
+        return classDefItems.stream()
+                .filter(c -> testClassMatcher.matchesPatterns(c.getClassType().getTypeDescriptor()))
+                .map(item -> convertClassToTestCaseEvents(item, classDefItems))
+                .flatMap(Collection::stream)
+                .collect(toList());
+    }
+
     @Nonnull
-    private List<TestCaseEvent> convertClassToTestCaseEvents(ClassDefItem classDefItem) {
+    private List<TestCaseEvent> convertClassToTestCaseEvents(ClassDefItem classDefItem, List<ClassDefItem> classDefItems) {
         boolean classIncluded = false;
         AnnotationDirectoryItem annotationDirectoryItem = classDefItem.getAnnotations();
         if (annotationDirectoryItem == null) {
@@ -91,14 +99,38 @@ public class TestSuiteLoader {
             }
         }
 
-        return parseMethods(classDefItem, annotationDirectoryItem, classIncluded);
+        return parseMethods(classDefItem, annotationDirectoryItem, classIncluded, classDefItems);
     }
 
-    private List<TestCaseEvent> parseMethods(ClassDefItem classDefItem, AnnotationDirectoryItem annotationDirectory, boolean classIncluded) {
-        return annotationDirectory.getMethodAnnotations()
-                .stream()
+    private List<TestCaseEvent> parseMethods(ClassDefItem classDefItem,
+                                             AnnotationDirectoryItem annotationDirectory,
+                                             boolean classIncluded,
+                                             List<ClassDefItem> classDefItems) {
+        return recursiveSearch(classDefItem, annotationDirectory, classDefItems).stream()
                 .flatMap(method -> parseTestCaseEvents(classDefItem, annotationDirectory, method, classIncluded))
                 .collect(toList());
+    }
+
+    private List<AnnotationDirectoryItem.MethodAnnotation> recursiveSearch(ClassDefItem classDefItem,
+                                                                           AnnotationDirectoryItem directoryItem,
+                                                                           List<ClassDefItem> classDefItems) {
+        TypeIdItem superClassIdItem = classDefItem.getSuperclass();
+        String superClassDescriptor = superClassIdItem.getTypeDescriptor();
+        List<AnnotationDirectoryItem.MethodAnnotation> list = new ArrayList<>();
+        if (directoryItem != null) {
+            list.addAll(directoryItem.getMethodAnnotations());
+        }
+        if (!JAVA_LANG_OBJECT_SINGATURE.equals(superClassDescriptor)) {
+            findClassDef(classDefItems, superClassDescriptor)
+                    .ifPresent(a -> list.addAll(recursiveSearch(a, a.getAnnotations(), classDefItems)));
+        }
+        return list;
+    }
+
+    private Optional<ClassDefItem> findClassDef(List<ClassDefItem> classDefItems, String identity) {
+        return classDefItems.stream()
+                .filter(a -> a.getClassType().getTypeDescriptor().equals(identity))
+                .findFirst();
     }
 
     private Stream<TestCaseEvent> parseTestCaseEvents(ClassDefItem classDefItem,
