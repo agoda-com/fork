@@ -1,12 +1,12 @@
 package com.shazam.fork.batch
 
 import com.shazam.fork.BatchStrategy
-import com.shazam.fork.batch.strategies.*
+import com.shazam.fork.batch.strategies.DefaultFactoryStrategy
+import com.shazam.fork.batch.strategies.SplitFactoryStrategy
 import com.shazam.fork.batch.strategies.stat.ExpectedTimeFactoryStrategy
 import com.shazam.fork.batch.strategies.stat.VarianceFactoryStrategy
 import com.shazam.fork.batch.tasks.TestTask
 import com.shazam.fork.model.TestCaseEvent
-import org.slf4j.LoggerFactory
 
 class TestTaskQueueProvider(private val batchStrategy: BatchStrategy) {
 
@@ -14,9 +14,10 @@ class TestTaskQueueProvider(private val batchStrategy: BatchStrategy) {
         val extractedStrategy = extractStrategy(batchStrategy)
         val supportBatches = list.groupBy { it.permissionsToRevoke.isEmpty() }
         val tasks = extractedStrategy.batches(maxDevicesPerPool, supportBatches[true] ?: emptyList())
-        val queue = BatchTestQueue(tasks.size)
+        val singleTestTasks = supportBatches[false]?.map { TestTask.SingleTestTask(it) } ?: emptyList()
+        val queue = BatchTestQueue(tasks.size + singleTestTasks.size)
         queue.addAll(tasks)
-        queue.addAll(supportBatches[false]?.map { TestTask.SingleTestTask(it) } ?: emptyList())
+        queue.addAll(singleTestTasks)
         return queue
     }
 
