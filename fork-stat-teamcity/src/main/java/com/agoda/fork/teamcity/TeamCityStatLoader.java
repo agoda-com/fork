@@ -6,11 +6,6 @@ import com.agoda.fork.teamcity.entities.Test;
 import com.agoda.fork.teamcity.entities.TestResult;
 import io.reactivex.Single;
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
-import okhttp3.ResponseBody;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.nodes.Tag;
 
 import java.util.*;
 

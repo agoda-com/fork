@@ -109,7 +109,13 @@ public class ForkConfiguration {
      */
     public SortingStrategy sortingStrategy;
 
-    public void sortingStrategy(Closure<?> sortingStrategyClosure){
+    /**
+     * The strategy that will be used for batch generation
+     */
+    public BatchStrategy batchStrategy;
+
+
+    public void sortingStrategy(Closure<?> sortingStrategyClosure) {
         sortingStrategy = new SortingStrategy();
         sortingStrategyClosure.setDelegate(sortingStrategy);
         sortingStrategyClosure.call();
@@ -119,5 +125,11 @@ public class ForkConfiguration {
         poolingStrategy = new PoolingStrategy();
         poolingStrategyClosure.setDelegate(poolingStrategy);
         poolingStrategyClosure.call();
+    }
+
+    public void batchStrategy(Closure<?> bachStrategyClosure) {
+        batchStrategy = new BatchStrategy();
+        bachStrategyClosure.setDelegate(batchStrategy);
+        bachStrategyClosure.call();
     }
 }

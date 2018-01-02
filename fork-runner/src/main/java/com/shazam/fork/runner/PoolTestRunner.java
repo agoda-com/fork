@@ -12,9 +12,9 @@
  */
 package com.shazam.fork.runner;
 
+import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestCaseEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +30,13 @@ public class PoolTestRunner implements Runnable {
     public static final String DROPPED_BY = "DroppedBy-";
 
     private final Pool pool;
-    private final Queue<TestCaseEvent> testCases;
+    private final Queue<TestTask> testCases;
     private final CountDownLatch poolCountDownLatch;
     private final DeviceTestRunnerFactory deviceTestRunnerFactory;
     private final ProgressReporter progressReporter;
 
     public PoolTestRunner(DeviceTestRunnerFactory deviceTestRunnerFactory, Pool pool,
-                          Queue<TestCaseEvent> testCases,
+                          Queue<TestTask> testCases,
                           CountDownLatch poolCountDownLatch,
                           ProgressReporter progressReporter) {
         this.pool = pool;

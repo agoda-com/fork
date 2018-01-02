@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 
@@ -57,7 +58,7 @@ public class PerformanceTestRunner {
         String testClassName = testCaseEvent.getTestClass();
         String testMethodName = testCaseEvent.getTestMethod();
         androidTestRunner.setMethodName(testClassName, testMethodName);
-        androidTestRunner.setMaxtimeToOutputResponse(Defaults.ADB_MAX_TIME_TO_OUTPUT_RESPONSE);
+        androidTestRunner.setMaxTimeToOutputResponse(Defaults.ADB_MAX_TIME_TO_OUTPUT_RESPONSE, TimeUnit.MILLISECONDS);
         try {
             PerformanceTestListener performanceTestListener = new LoggingPerformanceTestListener(testCaseEvent, results);
             performanceTestListener.startOverall();

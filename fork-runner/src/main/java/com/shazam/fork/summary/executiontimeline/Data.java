@@ -1,14 +1,16 @@
 package com.shazam.fork.summary.executiontimeline;
 
+import com.shazam.fork.stat.TestExecution;
+
 public class Data {
     private final String testName;
-    private final int status;
+    private final TestExecution.Status status;
     private final long startDate;
     private final long endDate;
     private final double expectedValue;
     private final double variance;
 
-    public Data(String testName, int status, long startDate, long endDate, double expectedValue, double variance) {
+    public Data(String testName, TestExecution.Status status, long startDate, long endDate, double expectedValue, double variance) {
         this.testName = testName;
         this.status = status;
         this.startDate = startDate;
@@ -21,7 +23,7 @@ public class Data {
         return testName;
     }
 
-    public int getStatus() {
+    public TestExecution.Status getStatus() {
         return status;
     }
 

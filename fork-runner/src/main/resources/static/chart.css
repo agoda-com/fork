@@ -14,12 +14,24 @@
     fill: #c9302c;
 }
 
+.rect_ignored_test {
+    fill: #cccccc;
+}
+
+.rect_ignored_test:hover {
+    fill: #cccccc;
+}
+
 .tooltip_passed_test {
     color: #449d44;
 }
 
 .tooltip_failed_test {
     color: #c9302c;
+}
+
+.tooltip_ignored_test {
+    color: #cccccc;
 }
 
 div.tooltip {

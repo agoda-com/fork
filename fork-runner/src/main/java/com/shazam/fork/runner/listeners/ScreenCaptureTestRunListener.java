@@ -10,7 +10,6 @@
 package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.IDevice;
-import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
@@ -18,7 +17,7 @@ import com.shazam.fork.system.io.FileManager;
 
 import java.util.Map;
 
-class ScreenCaptureTestRunListener implements ITestRunListener {
+class ScreenCaptureTestRunListener extends NoOpITestRunListener {
     private final FileManager fileManager;
     private final IDevice deviceInterface;
     private final Pool pool;
@@ -32,10 +31,6 @@ class ScreenCaptureTestRunListener implements ITestRunListener {
         this.deviceInterface = device.getDeviceInterface();
         this.pool = pool;
         this.device = device;
-    }
-
-    @Override
-    public void testRunStarted(String runName, int testCount) {
     }
 
     @Override
@@ -63,17 +58,5 @@ class ScreenCaptureTestRunListener implements ITestRunListener {
     @Override
     public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
         screenCapturer.stopCapturing(hasFailed);
-    }
-
-    @Override
-    public void testRunFailed(String errorMessage) {
-    }
-
-    @Override
-    public void testRunStopped(long elapsedTime) {
-    }
-
-    @Override
-    public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
     }
 }

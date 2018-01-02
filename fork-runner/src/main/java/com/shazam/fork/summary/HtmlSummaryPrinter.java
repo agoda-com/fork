@@ -20,13 +20,14 @@ import com.shazam.fork.io.HtmlGenerator;
 import org.lesscss.LessCompiler;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import static com.google.common.base.Charsets.UTF_8;
-import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.io.Files.copyResource;
 import static com.shazam.fork.summary.HtmlConverters.toHtmlLogCatMessages;
 import static com.shazam.fork.summary.HtmlConverters.toHtmlSummary;
+import static java.util.stream.Collectors.*;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 
 public class HtmlSummaryPrinter implements SummaryPrinter {
@@ -84,7 +85,7 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 			String less = Resources.toString(getClass().getResource("/spoon.less"), UTF_8);
 			String css = compiler.compile(less);
 			File cssFile = new File(staticOutput, "spoon.css");
-			writeStringToFile(cssFile, css);
+			writeStringToFile(cssFile, css, Charset.defaultCharset(), false);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -126,6 +127,6 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
     private void addLogcats(HtmlTestResult testResult, HtmlPoolSummary pool) {
         TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
         List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSafeSerial, testIdentifier);
-        testResult.logcatMessages = transform(logCatMessages, toHtmlLogCatMessages());
+        testResult.logcatMessages = logCatMessages.stream().map(toHtmlLogCatMessages()).collect(toList());
     }
 }

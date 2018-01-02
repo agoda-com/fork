@@ -22,7 +22,7 @@ import java.util.Map;
 
 
 @Root
-class TestSuite {
+public class TestSuite {
 
 	@ElementList(inline=true, type=TestCase.class, required=false)
 	private List<TestCase> testCases;

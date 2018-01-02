@@ -9,6 +9,7 @@
  */
 
 apply plugin: 'java-library'
+apply plugin: 'kotlin'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 //noinspection GroovyUnusedAssignment
@@ -20,7 +21,7 @@ dependencies {
     api project(':fork-client')
     api project(':fork-stat-common')
     api "com.google.code.findbugs:jsr305:3.0.1"
-    api "com.android.tools.ddms:ddmlib:25.1.0"
+    api "com.android.tools.ddms:ddmlib:26.0.1"
     api "commons-io:commons-io:2.5"
     api "org.apache.commons:commons-lang3:3.4"
     api "com.github.spullara.mustache.java:compiler:0.8.0"
@@ -40,6 +41,7 @@ dependencies {
     testImplementation("junit:junit:$JUNIT_VERSION") {
         exclude module:'hamcrest-core'
     }
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 jar {
@@ -50,5 +52,27 @@ jar {
                 'Built-Date': new Date(),
                 'Built-JDK': System.getProperty('java.version'),
                 'Built-Gradle': gradle.gradleVersion
+    }
+}
+buildscript {
+    ext.kotlin_version = '1.2.10'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+repositories {
+    mavenCentral()
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }

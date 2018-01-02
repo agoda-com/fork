@@ -104,12 +104,7 @@ public class FlakinessSorter {
     }
 
     private Table<TestLabel, Build, TestInstance> getOrCreateTable(HashMap<String, Table<TestLabel, Build, TestInstance>> poolToFlakinessTableMap, String poolName) {
-        Table<TestLabel, Build, TestInstance> table = poolToFlakinessTableMap.get(poolName);
-        if (table == null) {
-            table = HashBasedTable.create();
-            poolToFlakinessTableMap.put(poolName, table);
-        }
-        return table;
+        return poolToFlakinessTableMap.computeIfAbsent(poolName, k -> HashBasedTable.create());
     }
 
     @Nonnull
@@ -129,7 +124,7 @@ public class FlakinessSorter {
                                                                            Set<TestLabel> testLabelsFullIndex) {
 
         TreeBasedTable<ScoredTestLabel, Build, TestInstance> sortedTable = create(
-                (scoredTest1, scoredTest2) -> scoredTest1.getTestScore().compareTo(scoredTest2.getTestScore()),
+                Comparator.comparing(ScoredTestLabel::getTestScore),
                 Build::compareTo);
 
         for (TestLabel testLabel : testLabelsFullIndex) {

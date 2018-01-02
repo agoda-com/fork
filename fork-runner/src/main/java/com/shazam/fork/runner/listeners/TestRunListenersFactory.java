@@ -13,9 +13,9 @@ package com.shazam.fork.runner.listeners;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.google.gson.Gson;
 import com.shazam.fork.Configuration;
+import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.model.TestCaseEventFactory;
 import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.stat.TestExecutionReporter;
@@ -46,11 +46,11 @@ public class TestRunListenersFactory {
         this.testExecutionReporter = testExecutionReporter;
     }
 
-    public List<ITestRunListener> createTestListeners(TestCaseEvent testCase,
+    public List<ITestRunListener> createTestListeners(TestTask testCase,
                                                       Device device,
                                                       Pool pool,
                                                       ProgressReporter progressReporter,
-                                                      Queue<TestCaseEvent> testCaseEventQueue,
+                                                      Queue<TestTask> testCaseEventQueue,
                                                       TestCaseEventFactory factory) {
         return asList(
                 new ProgressTestRunListener(pool, progressReporter),
@@ -61,28 +61,32 @@ public class TestRunListenersFactory {
                 new SlowWarningTestRunListener(),
                 new TestExecutionListener(device, testExecutionReporter),
                 getScreenTraceTestRunListener(fileManager, pool, device),
-                new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager, factory),
+                new RetryListener(pool, device, testCaseEventQueue, progressReporter, testCase, fileManager, factory),
                 getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));
     }
 
 
-    private ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
-                                                             File output,
-                                                             Pool pool,
-                                                             Device device,
-                                                             TestCaseEvent testCase,
-                                                             ProgressReporter progressReporter,
-                                                             TestCaseEventFactory factory) {
-        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testCase, progressReporter, factory);
-        xmlTestRunListener.setReportDir(output);
-        return xmlTestRunListener;
+    private SingleForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
+                                                                   File output,
+                                                                   Pool pool,
+                                                                   Device device,
+                                                                   TestTask testCase,
+                                                                   ProgressReporter progressReporter,
+                                                                   TestCaseEventFactory factory) {
+        return new SingleForkXmlTestRunListener(fileManager,
+                pool,
+                device,
+                testCase,
+                progressReporter,
+                factory,
+                output);
     }
 
     private ITestRunListener getCoverageTestRunListener(Configuration configuration,
                                                         Device device,
                                                         FileManager fileManager,
                                                         Pool pool,
-                                                        TestCaseEvent testCase) {
+                                                        TestTask testCase) {
         if (configuration.isCoverageEnabled()) {
             return new CoverageListener(device, fileManager, pool, testCase);
         }
