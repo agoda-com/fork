@@ -9,6 +9,7 @@
  */
 
 apply plugin: 'java-library'
+apply plugin: 'kotlin'
 apply plugin: 'application'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
@@ -24,6 +25,7 @@ dependencies {
             "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
             "com.google.code.gson:gson:$GSON_VERSION",
     )
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 jar {
@@ -43,5 +45,27 @@ run {
 
     if (project.hasProperty('args')) {
         args project.args.split('\\s+')
+    }
+}
+buildscript {
+    ext.kotlin_version = '1.2.10'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+repositories {
+    mavenCentral()
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }

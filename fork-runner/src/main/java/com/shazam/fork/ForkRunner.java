@@ -12,12 +12,13 @@
  */
 package com.shazam.fork;
 
+import com.shazam.fork.batch.TestTaskQueueProvider;
+import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.pooling.*;
 import com.shazam.fork.runner.PoolTestRunnerFactory;
 import com.shazam.fork.runner.ProgressReporter;
-import com.shazam.fork.sorting.QueueProvider;
 import com.shazam.fork.stat.TestStatsLoader;
 import com.shazam.fork.suite.NoTestCasesFoundException;
 import com.shazam.fork.suite.TestSuiteLoader;
@@ -42,7 +43,7 @@ public class ForkRunner {
     private final ProgressReporter progressReporter;
     private final SummaryGeneratorHook summaryGeneratorHook;
     private final TestStatsLoader testStatsLoader;
-    private final QueueProvider queueProvider;
+    private final TestTaskQueueProvider queueProvider;
 
     public ForkRunner(PoolLoader poolLoader,
                       TestSuiteLoader testClassLoader,
@@ -50,7 +51,7 @@ public class ForkRunner {
                       ProgressReporter progressReporter,
                       SummaryGeneratorHook summaryGeneratorHook,
                       TestStatsLoader testStatsLoader,
-                      QueueProvider queueProvider) {
+                      TestTaskQueueProvider queueProvider) {
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
         this.poolTestRunnerFactory = poolTestRunnerFactory;
@@ -71,10 +72,9 @@ public class ForkRunner {
             testStatsLoader.load();
 
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
-
-            Queue<TestCaseEvent> testCasesQueue = queueProvider.create();
-
-            testCasesQueue.addAll(testCases);
+            int totalTests = testCases.size();
+            int maxDevicesPerPool = pools.stream().mapToInt(i -> i.getDevices().size()).max().orElse(0);
+            Queue<TestTask> testCasesQueue = queueProvider.create(maxDevicesPerPool, testCases);
 
             summaryGeneratorHook.registerHook(pools, testCases);
 
@@ -82,6 +82,7 @@ public class ForkRunner {
             for (Pool pool : pools) {
                 Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool,
                         testCasesQueue,
+                        totalTests,
                         poolCountDownLatch,
                         progressReporter);
                 poolExecutor.execute(poolTestRunner);

@@ -56,6 +56,9 @@ public class PoolLoader {
 
     private void log(Collection<Pool> configuredPools) {
         logger.info("Number of device pools: " + configuredPools.size());
+        logger.info("Number of devices in pools: " + configuredPools.stream()
+                .map(Pool::size)
+                .reduce((a, b) -> a + b).orElse(0));
         for (Pool pool : configuredPools) {
             logger.debug(pool.toString());
         }
@@ -80,7 +83,7 @@ public class PoolLoader {
             return new EveryoneGetsAPoolLoader();
         }
 
-        if(poolingStrategy.common != null && poolingStrategy.common){
+        if (poolingStrategy.common != null && poolingStrategy.common) {
             return new CommonDevicePoolLoader();
         }
 

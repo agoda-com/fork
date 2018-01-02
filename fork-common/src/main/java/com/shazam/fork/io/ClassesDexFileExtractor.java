@@ -13,11 +13,12 @@ package com.shazam.fork.io;
 import org.jf.dexlib.DexFile;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.zip.*;
 
 import static com.shazam.fork.io.Files.convertFileToDexFile;
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copyLarge;
@@ -35,10 +36,9 @@ public class ClassesDexFileExtractor implements DexFileExtractor {
     public Collection<DexFile> getDexFiles(File apkFile) {
         dumpDexFilesFromApk(apkFile, outputDirectory);
         File[] dexFiles = outputDirectory.listFiles((dir, name) -> name.startsWith("classes") && name.endsWith(".dex"));
-        return asList(dexFiles)
-                .stream()
+        return Arrays.stream(dexFiles)
                 .map(convertFileToDexFile())
-                .filter(f -> f != null)
+                .filter(Objects::nonNull)
                 .collect(toList());
     }
 

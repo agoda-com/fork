@@ -1,6 +1,5 @@
 package com.shazam.fork.stat;
 
-import com.agoda.fork.stat.StatLoader;
 import com.agoda.fork.stat.StatLoaderProvider;
 import com.agoda.fork.stat.TestHistory;
 import org.slf4j.Logger;

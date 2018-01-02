@@ -15,7 +15,6 @@ import com.shazam.fork.suite.TestSuiteLoader;
 import static com.shazam.chimprunner.injector.ConfigurationInjector.configuration;
 import static com.shazam.chimprunner.injector.io.DexFileExtractorInjector.dexFileExtractor;
 import static com.shazam.chimprunner.injector.model.TestCaseEventFactoryInjector.testCaseEventFactory;
-import static com.shazam.chimprunner.injector.stat.TestStatLoaderInjector.testStatsLoader;
 import static com.shazam.chimprunner.injector.suite.TestClassMatcherInjector.testClassMatcher;
 
 public class TestSuiteLoaderInjector {

@@ -6,7 +6,8 @@ public class TestExecution {
 
     public enum Status {
         FAILED,
-        ENDED
+        PASSED,
+        IGNORED
     }
 
     private final TestIdentifier test;

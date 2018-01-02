@@ -42,7 +42,7 @@ public class TestToHtmlFlakinessReportConverter {
 
     private HtmlFlakyTestPool convertToPoolHtml(PoolHistory poolHistory) {
         Table<ScoredTestLabel, Build, TestInstance> table = poolHistory.getHistoryTable();
-        List<Build> buildList = table.columnKeySet().stream().collect(toList());
+        List<Build> buildList = new ArrayList<>(table.columnKeySet());
         Set<ScoredTestLabel> testLabels = table.rowKeySet();
 
         return new HtmlFlakyTestPool(

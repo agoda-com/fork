@@ -12,17 +12,14 @@
  */
 package com.shazam.fork.summary;
 
-import com.google.common.base.Function;
-
 import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
-import javax.annotation.Nullable;
-
-import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.summary.ResultStatus.PASS;
+import static java.util.stream.Collectors.toList;
 
 public class OutcomeAggregator {
 
@@ -32,30 +29,20 @@ public class OutcomeAggregator {
         }
 
         List<PoolSummary> poolSummaries = summary.getPoolSummaries();
-        Collection<Boolean> poolOutcomes = transform(poolSummaries, toPoolOutcome());
+        Collection<Boolean> poolOutcomes = poolSummaries.stream().map(toPoolOutcome()).collect(toList());
         return and(poolOutcomes);
     }
 
-    public static Function<? super PoolSummary, Boolean> toPoolOutcome() {
-        return new Function<PoolSummary, Boolean>() {
-            @Override
-            @Nullable
-            public Boolean apply(@Nullable PoolSummary input) {
-                final Collection<TestResult> testResults = input.getTestResults();
-                final Collection<Boolean> testOutcomes = transform(testResults, toTestOutcome());
-                return !testOutcomes.isEmpty() && and(testOutcomes);
-            }
+    static Function<? super PoolSummary, Boolean> toPoolOutcome() {
+        return (Function<PoolSummary, Boolean>) input -> {
+            final Collection<TestResult> testResults = input.getTestResults();
+            final Collection<Boolean> testOutcomes = testResults.stream().map(toTestOutcome()).collect(toList());
+            return !testOutcomes.isEmpty() && and(testOutcomes);
         };
     }
 
     private static Function<TestResult, Boolean> toTestOutcome() {
-        return new Function<TestResult, Boolean>() {
-            @Override
-            @Nullable
-            public Boolean apply(@Nullable TestResult input) {
-                return PASS.equals(input.getResultStatus());
-            }
-        };
+        return input -> PASS.equals(input.getResultStatus());
     }
 
     private static Boolean and(final Collection<Boolean> booleans) {

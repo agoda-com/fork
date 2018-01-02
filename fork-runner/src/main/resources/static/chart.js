@@ -117,10 +117,16 @@ function testsChart() {
             })
             .attr('height', dataHeight)
             .attr('class', function (d) {
-                if (d.status === 1) {
-                    return 'rect_passed_test';
-                } else {
-                    return 'rect_failed_test';
+                switch (d.status) {
+                    case "PASSED": {
+                        return 'rect_passed_test'
+                    }
+                    case "FAILED": {
+                        return 'rect_failed_test'
+                    }
+                    case "IGNORED": {
+                        return 'rect_ignored_test'
+                    }
                 }
             })
             .on('mouseover', function (d, i) {
@@ -130,10 +136,19 @@ function testsChart() {
                     .style('opacity', 0.9);
                 div.html(function () {
                     var output = '';
-                    if (d.status === 1) {
-                        output = '<i class="fa fa-fw fa-check tooltip_passed_test"></i>';
-                    } else {
-                        output = '<i class="fa fa-fw fa-times tooltip_failed_test"></i>';
+                    switch (d.status) {
+                        case "PASSED": {
+                            output = '<i class="fa fa-fw fa-check tooltip_passed_test"></i>';
+                            break;
+                        }
+                        case "FAILED": {
+                            output = '<i class="fa fa-fw fa-times tooltip_failed_test"></i>';
+                            break;
+                        }
+                        case "IGNORED": {
+                            output = '<i class="fa fa-fw fa-times tooltip_ignored_test"></i>';
+                            break;
+                        }
                     }
                     return output + d.testName + '</br>'
                         + moment(convertDate(d.startDate)).format('LTS') + ' - '

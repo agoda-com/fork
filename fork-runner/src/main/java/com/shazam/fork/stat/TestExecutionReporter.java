@@ -5,7 +5,6 @@ import com.shazam.fork.model.Device;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TestExecutionReporter {
 

@@ -3,6 +3,7 @@ package com.shazam.fork.runner;
 import com.shazam.fork.model.Pool;
 
 import java.util.AbstractMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public class FakeProgressReporterTrackers extends AbstractMap<Pool, PoolProgress
 
     @Override
     public Set<Entry<Pool, PoolProgressTracker>> entrySet() {
-        return null;
+        return new HashSet<>();
     }
 
     @Override

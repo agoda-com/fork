@@ -27,7 +27,7 @@ public class TestScore implements Comparable<TestScore> {
 
     public static TestScore from(TestLabel testLabel, List<TestInstance> testInstances) {
         StringBuilder score = new StringBuilder(testInstances.size());
-        testInstances.stream().forEach(testInstance -> {
+        testInstances.forEach(testInstance -> {
             Status status = testInstance.getStatus();
             char scoreCode = scoreCodeFor(status);
             score.append(scoreCode);
@@ -55,8 +55,6 @@ public class TestScore implements Comparable<TestScore> {
 
     @Override
     public int compareTo(@Nonnull TestScore otherTestScore) {
-        String otherScore = otherTestScore.score;
-
-        return score.compareTo(otherScore);
+        return score.compareTo(otherTestScore.score);
     }
 }

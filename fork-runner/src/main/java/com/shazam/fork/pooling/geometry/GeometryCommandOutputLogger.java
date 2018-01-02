@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * Writes the geometry command output to a file for diagnostics.
@@ -35,6 +36,6 @@ public class GeometryCommandOutputLogger implements CommandOutputLogger {
     public void logCommandOutput(String deviceIdentifier, String commandOutput) throws IOException {
         strategyDir.mkdirs();
         File file = new File(strategyDir, deviceIdentifier + "." + command.replaceAll("\\W+", "-") + ".txt");
-        FileUtils.writeStringToFile(file, commandOutput);
+        FileUtils.writeStringToFile(file, commandOutput, Charset.defaultCharset(), false);
     }
 }

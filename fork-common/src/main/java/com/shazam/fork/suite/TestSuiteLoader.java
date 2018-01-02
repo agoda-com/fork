@@ -13,7 +13,6 @@ package com.shazam.fork.suite;
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.model.TestCaseEventFactory;
-import com.shazam.fork.stat.TestStatsLoader;
 import org.jf.dexlib.*;
 import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
 import org.jf.dexlib.EncodedValue.ArrayEncodedValue;
@@ -30,7 +29,6 @@ import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class TestSuiteLoader {
     private static final String TEST_ANNOTATION = "Lorg/junit/Test;";
@@ -192,27 +190,22 @@ public class TestSuiteLoader {
 
     private boolean isClassIgnored(AnnotationDirectoryItem annotationDirectoryItem) {
         AnnotationSetItem classAnnotations = annotationDirectoryItem.getClassAnnotations();
-        if (classAnnotations == null) {
-            return false;
-        }
-        return containsAnnotation(IGNORE_ANNOTATION, classAnnotations.getAnnotations());
+        return classAnnotations != null && containsAnnotation(IGNORE_ANNOTATION, classAnnotations.getAnnotations());
     }
 
 
     private boolean included(AnnotationItem... annotations) {
-        if (includedAnnotations.isEmpty()) {
-            return true;
-        }
-        return includedAnnotations.stream()
-                .anyMatch(included -> containsAnnotation(included, annotations));
+        return includedAnnotations.isEmpty() ||
+                containsAnnotation(annotations, includedAnnotations.stream());
+    }
+
+    private boolean containsAnnotation(AnnotationItem[] annotations, Stream<String> stream) {
+        return stream.anyMatch(included -> containsAnnotation(included, annotations));
     }
 
     private boolean excluded(AnnotationItem... annotations) {
-        if (excludedAnnotations.isEmpty()) {
-            return false;
-        }
-        return excludedAnnotations.stream()
-                .anyMatch(excluded -> containsAnnotation(excluded, annotations));
+        return !excludedAnnotations.isEmpty()
+                && containsAnnotation(annotations, excludedAnnotations.stream());
     }
 
     private boolean containsAnnotation(String comparisonAnnotation, AnnotationItem... annotations) {
