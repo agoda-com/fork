@@ -14,9 +14,10 @@ class TestTaskQueueProvider(private val batchStrategy: BatchStrategy) {
         val extractedStrategy = extractStrategy(batchStrategy)
         val supportBatches = list.groupBy { it.permissionsToRevoke.isEmpty() }
         val tasks = extractedStrategy.batches(maxDevicesPerPool, supportBatches[true] ?: emptyList())
-        val queue = BatchTestQueue(tasks.size)
+        val singleTestTasks = supportBatches[false]?.map { TestTask.SingleTestTask(it) } ?: emptyList()
+        val queue = BatchTestQueue(tasks.size + singleTestTasks.size)
         queue.addAll(tasks)
-        queue.addAll(supportBatches[false]?.map { TestTask.SingleTestTask(it) } ?: emptyList())
+        queue.addAll(singleTestTasks)
         return queue
     }
 
