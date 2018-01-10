@@ -11,11 +11,8 @@ import com.shazam.fork.model.TestCaseEventFactory
 import com.shazam.fork.runner.ProgressReporter
 import com.shazam.fork.system.io.FileManager
 import com.shazam.fork.system.io.FileType
-import org.ietf.jgss.GSSException.FAILURE
 import org.slf4j.LoggerFactory
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.math.log
 
 class RetryListener(private val pool: Pool,
                     private val device: Device,
@@ -97,11 +94,7 @@ class RetryListener(private val pool: Pool,
             testCaseEventFactory.newTestCase(it)
         }.forEach { restartFailedTest(it) }
 
-        notExecuted.map {
-            TestTask.SingleTestTask(it)
-        }.forEach {
-            queueOfTestsInPool.add(it)
-        }
+        queueOfTestsInPool.add(TestTask.MultiTestTask(notExecuted))
     }
 
     private fun isSuccessful(it: TestResult) =
