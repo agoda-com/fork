@@ -7,8 +7,8 @@ import com.shazam.fork.summary.SummaryPrinter
 import com.shazam.fork.system.io.FileManager
 import java.io.FileWriter
 
-class FlakinessSummaryPrinter(val fileManager: FileManager,
-                              val gson: Gson) : SummaryPrinter {
+class FlakinessSummaryPrinter(private val fileManager: FileManager,
+                              private val gson: Gson) : SummaryPrinter {
 
     private data class FlakinessReport(val testName: String,
                                        val deviceSerial: String,
@@ -30,5 +30,4 @@ class FlakinessSummaryPrinter(val fileManager: FileManager,
             gson.toJson(it, FileWriter(file))
         }
     }
-
 }
