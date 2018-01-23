@@ -12,7 +12,7 @@
  */
 package com.shazam.fork;
 
-import com.shazam.fork.batch.TestTaskQueueProvider;
+import com.shazam.fork.execution.TestTaskQueueProvider;
 import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;

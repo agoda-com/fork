@@ -103,6 +103,7 @@ public class ForkCli {
                     .withIncludedAnnotation(forkConfiguration.includedAnnotation)
                     .withSortingStrategy(forkConfiguration.sortingStrategy)
                     .withBatchStrategy(forkConfiguration.batchStrategy)
+                    .withCustomExecutionStrategy(forkConfiguration.customExecutionStrategy)
                     .build();
 
             Fork fork = new Fork(configuration);

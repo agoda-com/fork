@@ -9,9 +9,9 @@
  */
 package com.shazam.fork;
 
-import java.util.Collection;
-
 import groovy.lang.Closure;
+
+import java.util.Collection;
 
 /**
  * Fork extension.
@@ -114,6 +114,10 @@ public class ForkConfiguration {
      */
     public BatchStrategy batchStrategy;
 
+    /**
+     * TODO
+     */
+    public CustomExecutionStrategy customExecutionStrategy;
 
     public void sortingStrategy(Closure<?> sortingStrategyClosure) {
         sortingStrategy = new SortingStrategy();
@@ -131,5 +135,11 @@ public class ForkConfiguration {
         batchStrategy = new BatchStrategy();
         bachStrategyClosure.setDelegate(batchStrategy);
         bachStrategyClosure.call();
+    }
+
+    public void customExecutionStrategy(Closure<?> executionStrategyClosure){
+        customExecutionStrategy = new CustomExecutionStrategy();
+        executionStrategyClosure.setDelegate(customExecutionStrategy);
+        executionStrategyClosure.call();
     }
 }
