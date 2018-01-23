@@ -13,6 +13,7 @@
 package com.shazam.fork.injector.summary;
 
 import com.shazam.fork.summary.*;
+import com.shazam.fork.summary.flakiness.FlakinessSummaryPrinter;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
 import static com.shazam.fork.injector.GsonInjector.gson;
@@ -24,7 +25,8 @@ import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 public class SummaryPrinterInjector {
 
-    private SummaryPrinterInjector() {}
+    private SummaryPrinterInjector() {
+    }
 
     public static SummaryPrinter summaryPrinter() {
         return new CompositeSummaryPrinter(consoleSummaryPrinter(),
@@ -44,5 +46,9 @@ public class SummaryPrinterInjector {
 
     private static SummaryPrinter jsonSummarySerializer() {
         return new JsonSummarySerializer(fileManager(), gson());
+    }
+
+    private static SummaryPrinter flakinessSummaryPrinter() {
+        return new FlakinessSummaryPrinter(fileManager(), gson());
     }
 }
