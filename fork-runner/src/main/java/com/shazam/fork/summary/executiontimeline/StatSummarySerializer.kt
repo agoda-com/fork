@@ -52,7 +52,11 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
 
     private fun calculateIdle(data: List<Data>): Long {
         return data.stream().collect(SlidingCollector(2, 1)).map {
-            it[1].startDate - it[0].endDate
+            if(it.size==2) {
+                it[1].startDate - it[0].endDate
+            }else{
+                0
+            }
         }.sum()
     }
 
