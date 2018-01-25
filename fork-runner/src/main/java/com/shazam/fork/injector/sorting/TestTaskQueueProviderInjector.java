@@ -6,6 +6,6 @@ import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 
 public class TestTaskQueueProviderInjector {
     public static TestTaskQueueProvider queueProvider(){
-        return new TestTaskQueueProvider(configuration().getBatchStrategy(),configuration().getCustomExecutionStrategy());
+        return new TestTaskQueueProvider(configuration().getBatchStrategy());
     }
 }
