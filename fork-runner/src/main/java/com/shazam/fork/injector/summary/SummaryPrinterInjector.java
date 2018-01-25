@@ -13,6 +13,8 @@
 package com.shazam.fork.injector.summary;
 
 import com.shazam.fork.summary.*;
+import com.shazam.fork.summary.flakiness.AggregatedFlakinessPerDeviceSummaryPrinter;
+import com.shazam.fork.summary.flakiness.AggregatedFlakinessSummaryPrinter;
 import com.shazam.fork.summary.flakiness.FlakinessSummaryPrinter;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
@@ -35,7 +37,9 @@ public class SummaryPrinterInjector {
                 jsonSummarySerializer(),
                 jsonSummaryStatsSerializer(),
                 htmlStatsSummaryPrinter(),
-                flakinessSummaryPrinter());
+                flakinessSummaryPrinter(),
+                aggregatedFlakinessPerDeviceSummaryPrinter(),
+                aggregatedFlakinessSummaryPrinter());
     }
 
     private static SummaryPrinter consoleSummaryPrinter() {
@@ -52,5 +56,13 @@ public class SummaryPrinterInjector {
 
     private static SummaryPrinter flakinessSummaryPrinter() {
         return new FlakinessSummaryPrinter(fileManager(), gson(), testCaseStore());
+    }
+
+    private static SummaryPrinter aggregatedFlakinessPerDeviceSummaryPrinter(){
+        return new AggregatedFlakinessPerDeviceSummaryPrinter(fileManager(),gson());
+    }
+
+    private static SummaryPrinter aggregatedFlakinessSummaryPrinter(){
+        return new AggregatedFlakinessSummaryPrinter(fileManager(),gson());
     }
 }
