@@ -1,13 +1,12 @@
 package com.shazam.fork.summary.flakiness
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.shazam.fork.summary.Summary
 import com.shazam.fork.summary.SummaryPrinter
 import com.shazam.fork.system.io.FileManager
 import java.io.FileWriter
 
-class AggregatedFlakinessPerDeviceSummaryPrinter(private val fileManager: FileManager,
-                                                 private val gson: Gson) : SummaryPrinter {
+class AggregatedFlakinessPerDeviceSummaryPrinter(private val fileManager: FileManager) : SummaryPrinter {
 
     data class TestSuccessPerDeviceRate(val serial: String, val successRate: Float)
 
@@ -21,7 +20,9 @@ class AggregatedFlakinessPerDeviceSummaryPrinter(private val fileManager: FileMa
         }
 
         FileWriter(fileManager.createSummaryFile("aggregated_flakiness_per_device")).use {
-            gson.toJson(aggregated, it)
+            GsonBuilder().setPrettyPrinting()
+                    .create()
+                    .toJson(aggregated,it)
             it.flush()
         }
     }

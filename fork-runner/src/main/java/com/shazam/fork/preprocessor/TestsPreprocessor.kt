@@ -9,7 +9,7 @@ class TestsPreprocessor(private val executionStrategy: CustomExecutionStrategy) 
             val count = executionStrategy.flakinessStrategy.count
 
             input.flatMap { test ->
-                (0..count).map { test }
+                (1..count).map { test }
             }
         } else {
             input

@@ -55,14 +55,14 @@ public class SummaryPrinterInjector {
     }
 
     private static SummaryPrinter flakinessSummaryPrinter() {
-        return new FlakinessSummaryPrinter(fileManager(), gson(), testCaseStore());
+        return new FlakinessSummaryPrinter(fileManager(), testCaseStore());
     }
 
     private static SummaryPrinter aggregatedFlakinessPerDeviceSummaryPrinter(){
-        return new AggregatedFlakinessPerDeviceSummaryPrinter(fileManager(),gson());
+        return new AggregatedFlakinessPerDeviceSummaryPrinter(fileManager());
     }
 
     private static SummaryPrinter aggregatedFlakinessSummaryPrinter(){
-        return new AggregatedFlakinessSummaryPrinter(fileManager(),gson());
+        return new AggregatedFlakinessSummaryPrinter(fileManager());
     }
 }

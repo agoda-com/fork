@@ -1,8 +1,11 @@
 package com.shazam.fork.store
 
+import com.google.gson.Gson
 import com.shazam.fork.model.TestCaseEvent
+import com.shazam.fork.system.io.FileManager
 
-class TestCaseStore {
+class TestCaseStore(private val fileManager: FileManager,
+                    private val gson: Gson) {
     val map = mutableMapOf<String, TestCaseEvent>()
 
     fun putAll(input: Collection<TestCaseEvent>) {

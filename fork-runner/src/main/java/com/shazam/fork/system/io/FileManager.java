@@ -77,6 +77,13 @@ public class FileManager {
         }
     }
 
+    public File[] getFiles(FileType fileType, String pool, String safeSerial) {
+        FileFilter fileFilter = new SuffixFileFilter(fileType.getSuffix());
+
+        File deviceDirectory = get(output.getAbsolutePath(), fileType.getDirectory(), pool, safeSerial).toFile();
+        return deviceDirectory.listFiles(fileFilter);
+    }
+
     public File[] getFiles(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier) {
         FileFilter fileFilter = new AndFileFilter(
                 new PrefixFileFilter(testIdentifier.toString()),

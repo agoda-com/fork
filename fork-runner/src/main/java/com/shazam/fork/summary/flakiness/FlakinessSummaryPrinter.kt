@@ -1,6 +1,6 @@
 package com.shazam.fork.summary.flakiness
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.shazam.fork.store.TestCaseStore
 import com.shazam.fork.summary.ResultStatus
 import com.shazam.fork.summary.Summary
@@ -9,7 +9,6 @@ import com.shazam.fork.system.io.FileManager
 import java.io.FileWriter
 
 class FlakinessSummaryPrinter(private val fileManager: FileManager,
-                              private val gson: Gson,
                               private val testCaseStore: TestCaseStore) : SummaryPrinter {
 
     private data class FlakinessReport(val testName: String,
@@ -34,9 +33,13 @@ class FlakinessSummaryPrinter(private val fileManager: FileManager,
                     ignored = true,
                     success = false,
                     failReason = "")
-        }).let {
+        }).let { items ->
             val file = fileManager.createSummaryFile("flakiness")
-            gson.toJson(it, FileWriter(file))
+            FileWriter(file).use {
+                GsonBuilder().setPrettyPrinting()
+                        .create()
+                        .toJson(items, it)
+            }
         }
     }
 }

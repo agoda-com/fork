@@ -1,12 +1,12 @@
 package com.shazam.fork.summary.flakiness
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.shazam.fork.summary.Summary
 import com.shazam.fork.summary.SummaryPrinter
 import com.shazam.fork.system.io.FileManager
 import java.io.FileWriter
 
-class AggregatedFlakinessSummaryPrinter(val fileManager: FileManager, val gson: Gson) : SummaryPrinter {
+class AggregatedFlakinessSummaryPrinter(val fileManager: FileManager) : SummaryPrinter {
 
     data class TestSuccessRate(val testName: String, val successRate: Float)
 
@@ -20,7 +20,9 @@ class AggregatedFlakinessSummaryPrinter(val fileManager: FileManager, val gson: 
         }
 
         FileWriter(fileManager.createSummaryFile("aggregated_flakiness")).use {
-            gson.toJson(aggregated, it)
+            GsonBuilder().setPrettyPrinting()
+                    .create()
+                    .toJson(aggregated,it)
             it.flush()
         }
     }
