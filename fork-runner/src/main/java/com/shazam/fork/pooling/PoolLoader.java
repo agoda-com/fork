@@ -71,22 +71,22 @@ public class PoolLoader {
     private DevicePoolLoader pickPoolLoader(Configuration configuration, DeviceLoader deviceLoader) throws NoPoolLoaderConfiguredException {
         PoolingStrategy poolingStrategy = configuration.getPoolingStrategy();
 
-//        if (poolingStrategy.manual != null) {
-//            return new SerialBasedDevicePoolLoader(poolingStrategy.manual);
-//        }
-//
-//        if (poolingStrategy.splitTablets != null && poolingStrategy.splitTablets) {
-//            return new DefaultAndTabletDevicePoolLoader();
-//        }
-//
-//        if (poolingStrategy.computed != null) {
-//            return new ComputedDevicePoolLoader(poolingStrategy.computed);
-//        }
-//
-//        if (poolingStrategy.eachDevice != null && poolingStrategy.eachDevice) {
-//            return new EveryoneGetsAPoolLoader();
-//        }
-//
+        if (poolingStrategy.manual != null) {
+            return new SerialBasedDevicePoolLoader(poolingStrategy.manual, deviceLoader);
+        }
+
+        if (poolingStrategy.splitTablets != null && poolingStrategy.splitTablets) {
+            return new DefaultAndTabletDevicePoolLoader(deviceLoader);
+        }
+
+        if (poolingStrategy.computed != null) {
+            return new ComputedDevicePoolLoader(poolingStrategy.computed, deviceLoader);
+        }
+
+        if (poolingStrategy.eachDevice != null && poolingStrategy.eachDevice) {
+            return new EveryoneGetsAPoolLoader(deviceLoader);
+        }
+        
         if (poolingStrategy.common != null && poolingStrategy.common) {
             return new CommonDevicePoolLoader(deviceLoader);
         }
