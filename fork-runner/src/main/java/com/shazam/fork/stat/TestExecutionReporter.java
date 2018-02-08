@@ -3,6 +3,7 @@ package com.shazam.fork.stat;
 import com.shazam.fork.model.Device;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,6 +20,7 @@ public class TestExecutionReporter {
     }
 
     public List<TestExecution> getTests(Device device) {
-        return tests.get(device);
+        List<TestExecution> list = tests.get(device);
+        return list == null ? Collections.emptyList() : list;
     }
 }

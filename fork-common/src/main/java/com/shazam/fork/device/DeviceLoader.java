@@ -69,7 +69,11 @@ public class DeviceLoader {
      */
     private List<IDevice> loadAllDevices() {
         List<IDevice> devices = new ArrayList<>();
-        for (IDevice device : adb.getDevices()) {
+        Collection<IDevice> adbDevices;
+        synchronized (adb) {
+            adbDevices = adb.getDevices();
+        }
+        for (IDevice device : adbDevices) {
             String serialNumber = device.getSerialNumber();
             if (!excludedSerials.contains(serialNumber)) {
                 devices.add(device);

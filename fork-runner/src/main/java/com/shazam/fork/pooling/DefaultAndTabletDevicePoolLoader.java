@@ -12,6 +12,9 @@
  */
 package com.shazam.fork.pooling;
 
+import com.google.common.collect.ImmutableSet;
+
+import com.shazam.fork.device.DeviceLoader;
 import com.shazam.fork.model.*;
 
 import java.util.ArrayList;
@@ -26,24 +29,26 @@ public class DefaultAndTabletDevicePoolLoader implements DevicePoolLoader {
 
 	private static final String DEFAULT_POOL_NAME = "default_pool";
 	private static final String TABLETS = "tablets";
+    private final DeviceLoader deviceLoader;
 
-	public DefaultAndTabletDevicePoolLoader() {
+    public DefaultAndTabletDevicePoolLoader(DeviceLoader deviceLoader) {
+        this.deviceLoader = deviceLoader;
     }
 
-	public Collection<Pool> loadPools(Devices devices) {
-        Collection<Pool> pools = new ArrayList<>();
-        Pool.Builder defaultPoolBuilder = aDevicePool().withName(DEFAULT_POOL_NAME);
-        Pool.Builder tabletPoolBuilder = aDevicePool().withName(TABLETS);
+    @Override public Collection<String> getPools() {
+        return new ImmutableSet.Builder<String>()
+                .add(DEFAULT_POOL_NAME)
+                .add(TABLETS)
+                .build();
+    }
 
-        for (Device device : devices.getDevices()) {
-            if (device.isTablet()) {
-                tabletPoolBuilder.addDevice(device);
-            } else {
-                defaultPoolBuilder.addDevice(device);
+    @Override public Devices getDevicesForPool(String name) {
+        Devices.Builder pool = new Devices.Builder();
+        for (Device device : deviceLoader.loadDevices().getDevices()) {
+            if (device.isTablet() == TABLETS.equals(name)) {
+                pool.putDevice(device.getSerial(), device);
             }
         }
-        defaultPoolBuilder.addIfNotEmpty(pools);
-        tabletPoolBuilder.addIfNotEmpty(pools);
-		return pools;
-	}
+        return pool.build();
+    }
 }

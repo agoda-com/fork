@@ -12,6 +12,9 @@
  */
 package com.shazam.fork.pooling;
 
+import com.google.common.collect.ImmutableSet;
+
+import com.shazam.fork.device.DeviceLoader;
 import com.shazam.fork.model.*;
 
 import java.util.ArrayList;
@@ -23,14 +26,33 @@ import static com.shazam.fork.model.Pool.Builder.aDevicePool;
  * Assigns one pool per device
  */
 public class EveryoneGetsAPoolLoader implements DevicePoolLoader {
+    private final DeviceLoader deviceLoader;
 
-	@Override
-	public Collection<Pool> loadPools(Devices devices) {
-        ArrayList<Pool> pools = new ArrayList<>();
-        for (Device device : devices.getDevices()) {
-            Pool pool = aDevicePool().addDevice(device).withName(device.getSerial()).build();
-            pools.add(pool);
+    public EveryoneGetsAPoolLoader(DeviceLoader deviceLoader) {
+        this.deviceLoader = deviceLoader;
+    }
+
+    @Override public Collection<String> getPools() {
+        ImmutableSet.Builder<String> poolList = new ImmutableSet.Builder<String>();
+        for (Device device : deviceLoader.loadDevices().getDevices()) {
+            poolList.add(getPoolNameForDevice(device));
         }
-		return pools;
-	}
+        return poolList.build();
+    }
+
+    @Override public Devices getDevicesForPool(String name) {
+        Devices.Builder deviceList = new Devices.Builder();
+
+        for (Device device : deviceLoader.loadDevices().getDevices()) {
+            if (name.equals(getPoolNameForDevice(device))) {
+                deviceList.putDevice(device.getSerial(), device);
+            }
+        }
+
+        return deviceList.build();
+    }
+
+    private String getPoolNameForDevice(Device device) {
+        return device.getSerial();
+    }
 }

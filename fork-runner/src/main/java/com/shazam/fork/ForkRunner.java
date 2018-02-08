@@ -73,7 +73,8 @@ public class ForkRunner {
 
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
             int totalTests = testCases.size();
-            int maxDevicesPerPool = pools.stream().mapToInt(i -> i.getDevices().size()).max().orElse(0);
+//            int maxDevicesPerPool = pools.stream().mapToInt(i -> i.getDevices().size()).max().orElse(0); // WTF?
+            int maxDevicesPerPool = 0;
             Queue<TestTask> testCasesQueue = queueProvider.create(maxDevicesPerPool, testCases);
 
             summaryGeneratorHook.registerHook(pools, testCases);

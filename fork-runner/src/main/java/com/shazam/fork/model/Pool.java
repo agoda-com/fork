@@ -12,9 +12,14 @@
  */
 package com.shazam.fork.model;
 
+import com.shazam.fork.pooling.DevicePoolLoader;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
@@ -24,63 +29,71 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
  * A grouping of {@link com.shazam.fork.model.Device}s.
  */
 public class Pool {
-	private final String name;
-	private final List<Device> devices;
+    private final String name;
+    private DevicePoolLoader devicePoolLoader;
+    private AppendCallback appendCallback;
+    private final HashMap<String, Device> historyDevices = new HashMap<>();
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public List<Device> getDevices() {
-		return devices;
-	}
+    public void update() {
+        Devices devices = devicePoolLoader.getDevicesForPool(name);
+        for (Device device : devices.getDevices()) {
+            String serial = device.getSafeSerial();
+            if (!historyDevices.containsKey(serial)) {
+                historyDevices.put(serial, device);
+                appendCallback.onAppend(device);
+            }
+        }
+    }
 
-	public int size() {
-		return devices.size();
-	}
+    public void setAppendCallback(AppendCallback appendCallback) {
+        this.appendCallback = appendCallback;
+    }
 
-	public boolean isEmpty() {
-		return devices.isEmpty();
-	}
+    public Collection<Device> getRetrospectiveDevices() {
+        return historyDevices.values();
+    }
 
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
         return reflectionToString(this, MULTI_LINE_STYLE);
-	}
+    }
 
-	public static class Builder {
-		private String name = "";
-		private final List<Device> devices = new ArrayList<>();
+    public static class Builder {
+        private String name = "";
+        private DevicePoolLoader devicePoolLoader;
 
-		public static Builder aDevicePool() {
-			return new Builder();
-		}
 
-		public Builder withName(String name) {
-			this.name = name;
-			return this;
-		}
+        public static Builder aDevicePool() {
+            return new Builder();
+        }
 
-		public Builder addDevice(Device device) {
-			devices.add(device);
-			return this;
-		}
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
 
-		public Pool build() {
-			checkNotNull(name, "Pool name cannot be null");
-			return new Pool(this);
-		}
+        public Builder withDeviceLoader(DevicePoolLoader devicePoolLoader) {
+            this.devicePoolLoader = devicePoolLoader;
+            return this;
+        }
 
-		public void addIfNotEmpty(Collection<Pool> pools) {
-			Pool pool = build();
-			if (!pool.isEmpty()) {
-				pools.add(pool);
-			}
-		}
-	}
+        public Pool build() {
+            checkNotNull(name, "Pool name cannot be null");
+            checkNotNull(devicePoolLoader, "DevicePoolLoader name cannot be null");
+            return new Pool(this);
+        }
+    }
 
-	private Pool(Builder builder) {
-		name = builder.name;
-		devices = builder.devices;
-	}
+    public interface AppendCallback {
+        void onAppend(Device device);
+    }
+
+    private Pool(Builder builder) {
+        name = builder.name;
+        devicePoolLoader = builder.devicePoolLoader;
+    }
 }
