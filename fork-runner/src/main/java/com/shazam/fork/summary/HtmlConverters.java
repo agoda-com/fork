@@ -12,20 +12,17 @@
  */
 package com.shazam.fork.summary;
 
-import com.android.ddmlib.logcat.LogCatMessage;
-
-import java.util.function.Function;
-
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Diagnostics;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static com.shazam.fork.summary.OutcomeAggregator.toPoolOutcome;
 import static com.shazam.fork.utils.ReadableNames.*;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 class HtmlConverters {
 
@@ -99,19 +96,5 @@ class HtmlConverters {
             result = "warn";
         }
         return result;
-    }
-
-    public static Function<LogCatMessage, HtmlLogCatMessage> toHtmlLogCatMessages() {
-        return logCatMessage -> {
-            HtmlLogCatMessage htmlLogCatMessage = new HtmlLogCatMessage();
-            htmlLogCatMessage.appName = logCatMessage.getAppName();
-            htmlLogCatMessage.logLevel = logCatMessage.getLogLevel().getStringValue();
-            htmlLogCatMessage.message = logCatMessage.getMessage();
-            htmlLogCatMessage.pid = logCatMessage.getPid();
-            htmlLogCatMessage.tag = logCatMessage.getTag();
-            htmlLogCatMessage.tid = logCatMessage.getTid();
-            htmlLogCatMessage.time = logCatMessage.getTimestamp().toString();
-            return htmlLogCatMessage;
-        };
     }
 }
