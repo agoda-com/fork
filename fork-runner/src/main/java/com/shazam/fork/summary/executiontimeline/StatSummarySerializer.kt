@@ -64,7 +64,7 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
         return poolSummary.testResults
                 .map { it.device }
                 .distinct()
-                .map { this.createMeasure(poolSummary.poolName, it) }
+                .map { createMeasure(poolSummary.poolName, it) }
     }
 
     private fun createMeasure(pool: String, device: Device): Measure {
