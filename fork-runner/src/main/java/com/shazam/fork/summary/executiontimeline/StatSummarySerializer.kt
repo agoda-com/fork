@@ -17,7 +17,7 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
     }
 
     private fun parseData(pool: String, device: Device): List<Data> {
-        val executions = reporter.getTests(pool,device)
+        val executions = reporter.getTests(pool, device)
         return executions.map { this.convertToData(it) }
     }
 
