@@ -10,6 +10,9 @@
 
 package com.shazam.fork.pooling;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableSet;
+
 import com.shazam.fork.Configuration;
 import com.shazam.fork.PoolingStrategy;
 import com.shazam.fork.device.DeviceLoader;
@@ -20,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
+import static com.shazam.fork.model.Pool.Builder.aDevicePool;
 import static java.lang.String.format;
 
 public class PoolLoader {
@@ -32,59 +36,59 @@ public class PoolLoader {
         this.configuration = configuration;
     }
 
-    public Collection<Pool> loadPools() throws NoDevicesForPoolException, NoPoolLoaderConfiguredException {
+    public ImmutableCollection<Pool> loadPools() throws NoDevicesForPoolException, NoPoolLoaderConfiguredException {
         Devices devices = deviceLoader.loadDevices();
         if (devices.getDevices().isEmpty()) {
             throw new NoDevicesForPoolException("No devices found.");
         }
 
-        DevicePoolLoader devicePoolLoader = pickPoolLoader(configuration);
+        DevicePoolLoader devicePoolLoader = pickPoolLoader(configuration, deviceLoader);
         logger.info("Picked {}", devicePoolLoader.getClass().getSimpleName());
-        Collection<Pool> pools = devicePoolLoader.loadPools(devices);
-        if (pools.isEmpty()) {
+        Collection<String> poolNames = devicePoolLoader.getPools();
+        if (poolNames.isEmpty()) {
             throw new IllegalArgumentException("No pools were found with your configuration. Please review connected devices");
         }
-        log(pools);
-        for (Pool pool : pools) {
-            if (pool.isEmpty()) {
-                throw new NoDevicesForPoolException(format("Pool %s is empty", pool.getName()));
-            }
+        log(poolNames);
+
+        ImmutableSet.Builder<Pool> builder = new ImmutableSet.Builder<>();
+        for (String name : poolNames) {
+            builder.add(aDevicePool().withName(name).withDeviceLoader(devicePoolLoader).build());
         }
 
-        return pools;
+        return builder.build();
     }
 
-    private void log(Collection<Pool> configuredPools) {
+    private void log(Collection<String> configuredPools) {
         logger.info("Number of device pools: " + configuredPools.size());
-        logger.info("Number of devices in pools: " + configuredPools.stream()
-                .map(Pool::size)
-                .reduce((a, b) -> a + b).orElse(0));
-        for (Pool pool : configuredPools) {
-            logger.debug(pool.toString());
+//        logger.info("Number of devices in pools: " + configuredPools.stream()
+//                .map(Pool::size)
+//                .reduce((a, b) -> a + b).orElse(0));
+        for (String pool : configuredPools) {
+            logger.debug(pool);
         }
     }
 
-    private DevicePoolLoader pickPoolLoader(Configuration configuration) throws NoPoolLoaderConfiguredException {
+    private DevicePoolLoader pickPoolLoader(Configuration configuration, DeviceLoader deviceLoader) throws NoPoolLoaderConfiguredException {
         PoolingStrategy poolingStrategy = configuration.getPoolingStrategy();
 
         if (poolingStrategy.manual != null) {
-            return new SerialBasedDevicePoolLoader(poolingStrategy.manual);
+            return new SerialBasedDevicePoolLoader(poolingStrategy.manual, deviceLoader);
         }
 
         if (poolingStrategy.splitTablets != null && poolingStrategy.splitTablets) {
-            return new DefaultAndTabletDevicePoolLoader();
+            return new DefaultAndTabletDevicePoolLoader(deviceLoader);
         }
 
         if (poolingStrategy.computed != null) {
-            return new ComputedDevicePoolLoader(poolingStrategy.computed);
+            return new ComputedDevicePoolLoader(poolingStrategy.computed, deviceLoader);
         }
 
         if (poolingStrategy.eachDevice != null && poolingStrategy.eachDevice) {
-            return new EveryoneGetsAPoolLoader();
+            return new EveryoneGetsAPoolLoader(deviceLoader);
         }
-
+        
         if (poolingStrategy.common != null && poolingStrategy.common) {
-            return new CommonDevicePoolLoader();
+            return new CommonDevicePoolLoader(deviceLoader);
         }
 
         throw new NoPoolLoaderConfiguredException("Could not determine which how to load pools to use based on your configuration");

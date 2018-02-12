@@ -15,10 +15,10 @@ class TestTaskQueueProvider(private val batchStrategy: BatchStrategy) {
 
     val logger = LoggerFactory.getLogger(TestTaskQueueProvider::class.java)
 
-    fun create(maxDevicesPerPool: Int, list: Collection<TestCaseEvent>): BatchTestQueue {
+    fun create(list: Collection<TestCaseEvent>): BatchTestQueue {
         val extractedStrategy = extractBatchStrategy(batchStrategy)
         val supportBatches = list.groupBy { it.permissionsToRevoke.isEmpty() }
-        val tasks = extractedStrategy.batches(maxDevicesPerPool, supportBatches[true] ?: emptyList())
+        val tasks = extractedStrategy.batches(supportBatches[true] ?: emptyList())
         val singleTestTasks = supportBatches[false]?.map { TestTask.SingleTestTask(it) } ?: emptyList()
         val queue = BatchTestQueue(tasks.size + singleTestTasks.size)
         queue.addAll(tasks)

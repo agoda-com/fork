@@ -21,13 +21,13 @@ import com.shazam.fork.system.io.RemoteFileManager.*
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.*
-import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicInteger
 
 class DeviceTestRunner(private val installer: Installer,
                        private val pool: Pool,
                        private val device: Device,
                        private val queueOfTestsInPool: Queue<TestTask>,
-                       private val deviceCountDownLatch: CountDownLatch,
+                       private val runCounter: AtomicInteger,
                        private val progressReporter: ProgressReporter,
                        private val testRunFactory: TestRunFactory) : Runnable {
 
@@ -48,35 +48,47 @@ class DeviceTestRunner(private val installer: Installer,
             createCoverageDirectory(deviceInterface)
             clearLogcat(deviceInterface)
 
-            while (queueOfTestsInPool.isNotEmpty()) {
-                queueOfTestsInPool.poll()?.run {
-                    if (hashCode() == lastEvent) {
-                        val next = queueOfTestsInPool.poll()
-                        if (next != null) {
-                            queueOfTestsInPool.add(this)
-                            runTest(next)
+            var checks = 0
+            while (checks < 5) { // wait while all tests will be finished and double check it a few times
+                if (queueOfTestsInPool.isNotEmpty() || runCounter.get() > 0) {
+                    checks = 0 // we detected unfinished tests
+                }
+
+                while (queueOfTestsInPool.isNotEmpty()) {
+                    queueOfTestsInPool.poll()?.run {
+                        if (hashCode() == lastEvent) {
+                            val next = queueOfTestsInPool.poll()
+                            if (next != null) {
+                                queueOfTestsInPool.add(this)
+                                runTest(next)
+                            } else {
+                                runTest(this)
+                            }
                         } else {
                             runTest(this)
                         }
-                    } else {
-                        runTest(this)
                     }
                 }
+
+                Thread.sleep(500)
+                checks++
+
             }
 
         } finally {
             logger.info("Device {} from pool {} finished", device.serial, pool.name)
-            deviceCountDownLatch.countDown()
         }
     }
 
     private fun runTest(testTask: TestTask) {
+        runCounter.incrementAndGet()
         lastEvent = testTask.hashCode()
         testRunFactory.createTestRun(testTask,
                 device,
                 pool,
                 progressReporter,
                 queueOfTestsInPool).execute()
+        runCounter.decrementAndGet()
     }
 
     private fun clearLogcat(device: IDevice) {

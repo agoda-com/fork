@@ -67,7 +67,13 @@ internal class TestRun(private val poolName: String,
         } catch (e: TimeoutException) {
             logger.warn("TestTask: $test  got stuck. You can increase the timeout in settings if it's too strict")
         } catch (e: AdbCommandRejectedException) {
-            throw RuntimeException("Error while running test task $test", e)
+
+            logger.warn("Temporary (I hope) error while running test $test")
+            try {
+                Thread.sleep(60 * 1000)
+            } catch (e1: InterruptedException) {
+                throw RuntimeException("Error while running test task $test", e)
+            }
         } catch (e: IOException) {
             throw RuntimeException("Error while running test task $test", e)
         } finally {
