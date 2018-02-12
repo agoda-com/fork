@@ -1,9 +1,13 @@
 package com.shazam.fork.model;
 
+import com.shazam.fork.pooling.DevicePoolLoader;
 import com.shazam.fork.stat.StatServiceLoader;
 import com.shazam.fork.stat.TestStatsLoader;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static java.util.Collections.emptyList;
@@ -21,13 +25,37 @@ public class PoolTestCaseAccumulatorTestFailure {
             .build();
 
     private final Pool A_POOL = Pool.Builder.aDevicePool()
+            .withDeviceLoader(new DevicePoolLoader() {
+                @Override
+                public Collection<String> getPools() {
+                    return Collections.singleton("a_pool");
+                }
+
+                @Override
+                public Devices getDevicesForPool(String name) {
+                    return new Devices.Builder()
+                            .putDevice(A_DEVICE.getSafeSerial(), A_DEVICE)
+                            .build();
+                }
+            })
             .withName("a_pool")
-            .addDevice(A_DEVICE)
             .build();
 
     private final Pool ANOTHER_POOL = Pool.Builder.aDevicePool()
+            .withDeviceLoader(new DevicePoolLoader() {
+                @Override
+                public Collection<String> getPools() {
+                    return Collections.singleton("another_pool");
+                }
+
+                @Override
+                public Devices getDevicesForPool(String name) {
+                    return new Devices.Builder()
+                            .putDevice(ANOTHER_DEVICE.getSafeSerial(), ANOTHER_DEVICE)
+                            .build();
+                }
+            })
             .withName("another_pool")
-            .addDevice(ANOTHER_DEVICE)
             .build();
 
     private final TestCaseEventFactory factory = new TestCaseEventFactory(new TestStatsLoader(new StatServiceLoader("")));
