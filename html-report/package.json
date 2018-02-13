@@ -34,6 +34,7 @@
     "randomcolor": "^0.5.3",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
+    "react-player": "^1.1.2",
     "react-router-dom": "^4.1.1",
     "uglifyjs-webpack-plugin": "^0.4.3",
     "webpack": "^2.7.0"

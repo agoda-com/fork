@@ -8,8 +8,8 @@ import java.io.File
 import java.util.*
 
 
-class HtmlSummaryPrinterV2(val gson: Gson,
-                           val rootOutput: File = configuredOutput()) : SummaryPrinter {
+class HtmlSummaryPrinter(private val gson: Gson,
+                         private val rootOutput: File = configuredOutput()) : SummaryPrinter {
     override fun print(summary: Summary) {
         writeHtmlReport(gson, summary, rootOutput, Date())
     }

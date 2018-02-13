@@ -12,19 +12,20 @@
  */
 package com.shazam.fork.injector.summary;
 
-import com.shazam.fork.summary.*;
+import com.shazam.fork.summary.CompositeSummaryPrinter;
+import com.shazam.fork.summary.JsonSummarySerializer;
+import com.shazam.fork.summary.LogSummaryPrinter;
+import com.shazam.fork.summary.SummaryPrinter;
 import com.shazam.fork.summary.flakiness.AggregatedFlakinessPerDeviceSummaryPrinter;
 import com.shazam.fork.summary.flakiness.AggregatedFlakinessSummaryPrinter;
 import com.shazam.fork.summary.flakiness.FlakinessSummaryPrinter;
-import com.shazam.fork.summary.html.HtmlSummaryPrinterV2;
+import com.shazam.fork.summary.html.HtmlSummaryPrinter;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
 import static com.shazam.fork.injector.GsonInjector.gson;
 import static com.shazam.fork.injector.stat.ExecutionTimeLineSummaryPrinterInjector.htmlStatsSummaryPrinter;
 import static com.shazam.fork.injector.stat.ExecutionTimeLineSummaryPrinterInjector.jsonSummaryStatsSerializer;
 import static com.shazam.fork.injector.store.TestCaseStoreInjector.testCaseStore;
-import static com.shazam.fork.injector.summary.HtmlGeneratorInjector.htmlGenerator;
-import static com.shazam.fork.injector.summary.LogCatRetrieverInjector.logCatRetriever;
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 public class SummaryPrinterInjector {
@@ -40,20 +41,15 @@ public class SummaryPrinterInjector {
                 htmlStatsSummaryPrinter(),
                 flakinessSummaryPrinter(),
                 aggregatedFlakinessPerDeviceSummaryPrinter(),
-                aggregatedFlakinessSummaryPrinter(),
-                htmlPrinterV2());
+                aggregatedFlakinessSummaryPrinter());
     }
 
-    private static SummaryPrinter htmlPrinterV2(){
-        return new HtmlSummaryPrinterV2(gson(),configuredOutput());
+    private static SummaryPrinter htmlSummaryPrinter(){
+        return new HtmlSummaryPrinter(gson(),configuredOutput());
     }
 
     private static SummaryPrinter consoleSummaryPrinter() {
         return new LogSummaryPrinter();
-    }
-
-    private static SummaryPrinter htmlSummaryPrinter() {
-        return new HtmlSummaryPrinter(configuredOutput(), logCatRetriever(), htmlGenerator());
     }
 
     private static SummaryPrinter jsonSummarySerializer() {

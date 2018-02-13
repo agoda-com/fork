@@ -15,7 +15,9 @@ import java.util.*
  * - suites/deviceId/testId.json
  */
 
-fun writeHtmlReport(gson: Gson, summary: Summary, outputDir: File, date: Date) {
+fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File, date: Date) {
+    val outputDir = File(rootOutput, "/html")
+    rootOutput.mkdirs()
     outputDir.mkdirs()
 
     val htmlIndexJson = gson.toJson(summary.toHtmlIndex())
@@ -49,9 +51,9 @@ fun writeHtmlReport(gson: Gson, summary: Summary, outputDir: File, date: Date) {
 
     val poolsDir = File(outputDir, "pools").apply { mkdirs() }
 
-    summary.poolSummaries.mapIndexed { poolId, pool ->
+    summary.poolSummaries.forEach { pool ->
         val poolJson = gson.toJson(pool.toHtmlPoolSummary())
-        val poolHtmlFile = File(poolsDir, "$poolId.html")
+        val poolHtmlFile = File(poolsDir, "${pool.poolName}.html")
 
         poolHtmlFile.writeText(indexHtml
                 .replace("\${relative_path}", poolHtmlFile.relativePathToHtmlDir())
@@ -60,8 +62,8 @@ fun writeHtmlReport(gson: Gson, summary: Summary, outputDir: File, date: Date) {
                 .replace("\${log}", "")
         )
 
-        pool.testResults.map { it to File(File(poolsDir, "$poolId"), it.device.safeSerial).apply { mkdirs() } }
-                .map { (test, testDir) -> Triple(test, test.toHtmlFullTest(poolId = "$poolId"), testDir) }
+        pool.testResults.map { it to File(File(poolsDir, pool.poolName), it.device.safeSerial).apply { mkdirs() } }
+                .map { (test, testDir) -> Triple(test, test.toHtmlFullTest(poolId = pool.poolName), testDir) }
                 .forEach { (test, htmlTest, testDir) ->
                     val testJson = gson.toJson(htmlTest)
                     val testHtmlFile = File(testDir, "${htmlTest.id}.html")
@@ -79,7 +81,6 @@ fun writeHtmlReport(gson: Gson, summary: Summary, outputDir: File, date: Date) {
 /*
  * Fixed version of `toRelativeString()` from Kotlin stdlib that forces use of absolute file paths.
  * See https://youtrack.jetbrains.com/issue/KT-14056
-
 */
 
 fun File.relativePathTo(base: File): String = absoluteFile.toRelativeString(base.absoluteFile)

@@ -1,6 +1,6 @@
 module.exports = {
-  fromIndexToSuite: (suiteId) => `./suites/${suiteId}.html`,
-  fromSuiteToIndex: '../index.html',
-  fromTestToSuite: (suiteId) => `../../${suiteId}.html`,
+  fromIndexToPool: (poolId) => `./pools/${poolId}.html`,
+  fromPoolToIndex: '../index.html',
+  fromTestToPool: (poolId) => `../../${poolId}.html`,
   fromTestToIndex: '../../../index.html',
 };

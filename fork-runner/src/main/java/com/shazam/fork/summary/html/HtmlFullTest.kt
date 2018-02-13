@@ -14,7 +14,6 @@ data class HtmlFullTest(
         @SerializedName("duration_millis") val durationMillis: Long,
         @SerializedName("status") val status: Status,
         @SerializedName("stacktrace") val stacktrace: String?,
-        @SerializedName("logcat_path") val logcatPath: String,
         @SerializedName("deviceId") val deviceId: String,
         @SerializedName("diagnostic_video") val diagnosticVideo: Boolean,
         @SerializedName("diagnostic_screenshots") val diagnosticScreenshots: Boolean,
@@ -38,26 +37,11 @@ fun TestResult.toHtmlFullTest(poolId: String) = HtmlFullTest(
         diagnosticVideo = device.supportedDiagnostics == Diagnostics.VIDEO,
         diagnosticScreenshots = device.supportedDiagnostics == Diagnostics.SCREENSHOTS,
         stacktrace = this.trace,
-        screenshot = when (device.supportedDiagnostics == Diagnostics.SCREENSHOTS) {
-            true -> ""
+        screenshot = when (device.supportedDiagnostics == Diagnostics.SCREENSHOTS && resultStatus != ResultStatus.PASS) {
+            true -> "../../../animation/$poolId/${device.safeSerial}/$testClass%23$testMethod.gif"
             false -> ""
         },
-        video = when (device.supportedDiagnostics == Diagnostics.VIDEO) {
-            true -> ""
+        video = when (device.supportedDiagnostics == Diagnostics.VIDEO && resultStatus != ResultStatus.PASS) {
+            true -> "../../../screenrecord/$poolId/${device.safeSerial}/$testClass%23$testMethod.mp4"
             false -> ""
-        },
-        logcatPath = ""
-)
-
-//{{#diagnosticVideo}}
-//<video class="diagnostic {{status}}" width="35%" height="35%" controls
-//src="../../../screenrecord/{{plainPoolName}}/{{deviceSafeSerial}}/{{plainClassName}}%23{{plainMethodName}}.mp4"
-//type="video/mp4">
-//Is video supported in this browser?
-//</video>
-//{{/diagnosticVideo}}
-//{{#diagnosticScreenshots}}
-//<img class="diagnostic {{status}}" width="35%" height="35%"
-//src="../../../animation/{{plainPoolName}}/{{deviceSafeSerial}}/{{plainClassName}}%23{{plainMethodName}}.gif"/>
-//{{/diagnosticScreenshots}}
-//<pre class="test {{status}}">{{#trace}}
+        })

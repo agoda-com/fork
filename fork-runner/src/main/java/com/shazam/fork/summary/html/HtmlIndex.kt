@@ -22,7 +22,7 @@ fun Summary.toHtmlIndex() = HtmlIndex(
         title = title,
         totalFailed = failedTests.size,
         totalIgnored = ignoredTests.size,
-        totalPassed = poolSummaries.map { it.testResults.filter { it.resultStatus == ResultStatus.PASS } }.count(),
+        totalPassed = poolSummaries.sumBy { it.testResults.count { it.resultStatus == ResultStatus.PASS } },
         totalDuration = totalDuration(poolSummaries),
         averageDuration = averageDuration(poolSummaries),
         maxDuration = maxDuration(poolSummaries).toLong(),

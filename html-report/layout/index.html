@@ -4,18 +4,16 @@
     <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta charset="utf-8">
     <title>Composer</title>
-    <link href="../build/app.min.css" rel="stylesheet">
+    <link href="${relative_path}app.min.css" rel="stylesheet">
     <script>
-        // window.mainData = {"suites":[{"id":"0","passed_count":4,"ignored_count":0,"failed_count":3,"duration_millis":2817,"devices":[{"id":"emulator-5554","logcat_path":"../logs/emulator-5554/full.logcat","instrumentation_output_path":"../logs/emulator-5554/instrumentation.output"}]}]}
-        window.mainData = {"title":"My acceptance tests","total_failed":0,"total_ignored":0,"total_passed":1,"pools":[{"id":"emulator-5554","tests":[{"id":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk.ExampleInstrumentedTestaddition_isCorrect4","package_name":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk","class_name":"ExampleInstrumentedTest","name":"addition_isCorrect4","duration_millis":1,"status":"passed","deviceId":"emulator-5554"},{"id":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk.ExampleInstrumentedTestaddition_isCorrect5","package_name":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk","class_name":"ExampleInstrumentedTest","name":"addition_isCorrect5","duration_millis":1,"status":"passed","deviceId":"emulator-5554"},{"id":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk.ExampleInstrumentedTestaddition_isCorrect6","package_name":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk","class_name":"ExampleInstrumentedTest","name":"addition_isCorrect6","duration_millis":1,"status":"passed","deviceId":"emulator-5554"},{"id":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk.ExampleInstrumentedTestaddition_isCorrect7","package_name":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk","class_name":"ExampleInstrumentedTest","name":"addition_isCorrect7","duration_millis":1,"status":"failed","deviceId":"emulator-5554"},{"id":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk.ExampleInstrumentedTestaddition_isCorrectFail5","package_name":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk","class_name":"ExampleInstrumentedTest","name":"addition_isCorrectFail5","duration_millis":1,"status":"failed","deviceId":"emulator-5554"},{"id":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk.ExampleInstrumentedTestaddition_isCorrectFail6","package_name":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk","class_name":"ExampleInstrumentedTest","name":"addition_isCorrectFail6","duration_millis":1,"status":"failed","deviceId":"emulator-5554"},{"id":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk.ExampleInstrumentedTestuseAppContext","package_name":"com.example.ibalaksha.asdajsdasjdbaskjdbaskjdbaksjdbaksjdbk","class_name":"ExampleInstrumentedTest","name":"useAppContext","duration_millis":3,"status":"passed","deviceId":"emulator-5554"}],"passed_count":4,"failed_count":3,"duration_millis":9,"devices":[{"apiLevel":"26","isTable":false,"serial":"emulator-5554","modelName":"Android SDK built for x86"}]}]}
-        // ${data_json}
+      ${data_json}
       // window.mainData / window.suite / window.test={ json }
     </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="text/javascript" src="../build/app.js"></script>
-
+    <script type="text/javascript" src="${relative_path}app.min.js"></script>
+    ${log}
     <div class="copy content">Generated with&nbsp;❤️&nbsp;&nbsp;by Juno at ${date}</div>
   </body>
 </html>
