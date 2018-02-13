@@ -31,17 +31,17 @@ fun TestResult.toHtmlFullTest(poolId: String) = HtmlFullTest(
         status = when (this.resultStatus) {
             ResultStatus.FAIL -> Status.Failed
             ResultStatus.PASS -> Status.Passed
-            ResultStatus.ERROR -> Status.Failed
+            ResultStatus.ERROR -> Status.Ignored
         },
         deviceId = this.device.safeSerial,
         diagnosticVideo = device.supportedDiagnostics == Diagnostics.VIDEO,
         diagnosticScreenshots = device.supportedDiagnostics == Diagnostics.SCREENSHOTS,
         stacktrace = this.trace,
         screenshot = when (device.supportedDiagnostics == Diagnostics.SCREENSHOTS && resultStatus != ResultStatus.PASS) {
-            true -> "../../../animation/$poolId/${device.safeSerial}/$testClass%23$testMethod.gif"
+            true -> "../../../../animation/$poolId/${device.safeSerial}/$testClass%23$testMethod.gif"
             false -> ""
         },
         video = when (device.supportedDiagnostics == Diagnostics.VIDEO && resultStatus != ResultStatus.PASS) {
-            true -> "../../../screenrecord/$poolId/${device.safeSerial}/$testClass%23$testMethod.mp4"
+            true -> "../../../../screenrecord/$poolId/${device.safeSerial}/$testClass%23$testMethod.mp4"
             false -> ""
         })
