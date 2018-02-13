@@ -16,6 +16,7 @@ import com.shazam.fork.summary.*;
 import com.shazam.fork.summary.flakiness.AggregatedFlakinessPerDeviceSummaryPrinter;
 import com.shazam.fork.summary.flakiness.AggregatedFlakinessSummaryPrinter;
 import com.shazam.fork.summary.flakiness.FlakinessSummaryPrinter;
+import com.shazam.fork.summary.html.HtmlSummaryPrinterV2;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
 import static com.shazam.fork.injector.GsonInjector.gson;
@@ -39,7 +40,12 @@ public class SummaryPrinterInjector {
                 htmlStatsSummaryPrinter(),
                 flakinessSummaryPrinter(),
                 aggregatedFlakinessPerDeviceSummaryPrinter(),
-                aggregatedFlakinessSummaryPrinter());
+                aggregatedFlakinessSummaryPrinter(),
+                htmlPrinterV2());
+    }
+
+    private static SummaryPrinter htmlPrinterV2(){
+        return new HtmlSummaryPrinterV2(gson(),configuredOutput());
     }
 
     private static SummaryPrinter consoleSummaryPrinter() {
