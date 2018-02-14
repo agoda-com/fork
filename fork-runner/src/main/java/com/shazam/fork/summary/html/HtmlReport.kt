@@ -5,8 +5,6 @@ import com.shazam.fork.summary.Summary
 import org.apache.commons.lang3.StringEscapeUtils
 import java.io.File
 import java.io.InputStream
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * Following file tree structure will be created:
@@ -15,14 +13,12 @@ import java.util.*
  * - suites/deviceId/testId.json
  */
 
-fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File, date: Date) {
+fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File) {
     val outputDir = File(rootOutput, "/html")
     rootOutput.mkdirs()
     outputDir.mkdirs()
 
     val htmlIndexJson = gson.toJson(summary.toHtmlIndex())
-
-    val formattedDate = SimpleDateFormat("HH:mm:ss z, MMM d yyyy").apply { timeZone = TimeZone.getTimeZone("UTC") }.format(date)
 
     val appJs = File(outputDir, "app.min.js")
     inputStreamFromResources("html-report/app.min.js").copyTo(appJs.outputStream())
@@ -45,7 +41,6 @@ fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File, date: Date) 
     indexHtmlFile.writeText(indexHtml
             .replace("\${relative_path}", indexHtmlFile.relativePathToHtmlDir())
             .replace("\${data_json}", "window.mainData = $htmlIndexJson")
-            .replace("\${date}", formattedDate)
             .replace("\${log}", "")
     )
 
@@ -58,7 +53,6 @@ fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File, date: Date) 
         poolHtmlFile.writeText(indexHtml
                 .replace("\${relative_path}", poolHtmlFile.relativePathToHtmlDir())
                 .replace("\${data_json}", "window.pool = $poolJson")
-                .replace("\${date}", formattedDate)
                 .replace("\${log}", "")
         )
 
@@ -71,7 +65,6 @@ fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File, date: Date) 
                     testHtmlFile.writeText(indexHtml
                             .replace("\${relative_path}", testHtmlFile.relativePathToHtmlDir())
                             .replace("\${data_json}", "window.test = $testJson")
-                            .replace("\${date}", formattedDate)
                             .replace("\${log}", generateLogcatHtml(test.trace))
                     )
                 }

@@ -5,12 +5,11 @@ import com.shazam.fork.injector.ConfigurationInjector.configuredOutput
 import com.shazam.fork.summary.Summary
 import com.shazam.fork.summary.SummaryPrinter
 import java.io.File
-import java.util.*
 
 
 class HtmlSummaryPrinter(private val gson: Gson,
                          private val rootOutput: File = configuredOutput()) : SummaryPrinter {
     override fun print(summary: Summary) {
-        writeHtmlReport(gson, summary, rootOutput, Date())
+        writeHtmlReport(gson, summary, rootOutput)
     }
 }

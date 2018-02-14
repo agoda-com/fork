@@ -14,10 +14,11 @@ package com.shazam.fork.summary;
 
 import com.google.common.collect.Lists;
 import com.shazam.fork.Configuration;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.PoolTestRunner;
 import com.shazam.fork.system.io.FileManager;
-
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
@@ -90,7 +91,7 @@ public class SummaryCompiler {
     private void addIgnoredTests(Collection<TestCaseEvent> testCases, Summary.Builder summaryBuilder) {
         for (TestCaseEvent testCase : testCases) {
             if (testCase.isIgnored()) {
-                summaryBuilder.addIgnoredTest(new IgnoredTest(testCase.getTestClass(),testCase.getTestMethod()));
+                summaryBuilder.addIgnoredTest(new IgnoredTest(testCase.getTestClass(), testCase.getTestMethod()));
             }
         }
     }
@@ -99,7 +100,12 @@ public class SummaryCompiler {
         for (TestResult testResult : testResults) {
             int totalFailureCount = testResult.getTotalFailureCount();
             if (totalFailureCount > 0) {
-                summaryBuilder.addFailedTests(new FailedTest(testResult,totalFailureCount));
+                int retryQuota = configuration.getRetryPerTestCaseQuota();
+                if (retryQuota > 0 && totalFailureCount < retryQuota) {
+                    summaryBuilder.addFlakyTest(new FlakyTest(testResult, totalFailureCount));
+                } else {
+                    summaryBuilder.addFailedTests(new FailedTest(testResult, totalFailureCount));
+                }
             }
         }
     }
@@ -130,7 +136,8 @@ public class SummaryCompiler {
                 .withTestMethod(testCase.getName())
                 .withTimeTaken(testCase.getTime())
                 .withErrorTrace(testCase.getError())
-                .withFailureTrace(testCase.getFailure());
+                .withFailureTrace(testCase.getFailure())
+                .withIgnore(testCase.isSkipped());
         if (testSuite.getProperties() != null) {
             testResultBuilder.withTestMetrics(testSuite.getProperties());
         }

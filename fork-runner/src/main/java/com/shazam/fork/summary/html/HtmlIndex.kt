@@ -10,6 +10,7 @@ import kotlin.math.roundToLong
 data class HtmlIndex(
         @SerializedName("title") val title: String,
         @SerializedName("total_failed") val totalFailed: Int,
+        @SerializedName("total_flaky") val totalFlaky: Int,
         @SerializedName("total_ignored") val totalIgnored: Int,
         @SerializedName("total_passed") val totalPassed: Int,
         @SerializedName("total_duration_millis") val totalDuration: Long,
@@ -20,9 +21,24 @@ data class HtmlIndex(
 
 fun Summary.toHtmlIndex() = HtmlIndex(
         title = title,
-        totalFailed = failedTests.size,
-        totalIgnored = ignoredTests.size,
-        totalPassed = poolSummaries.sumBy { it.testResults.count { it.resultStatus == ResultStatus.PASS } },
+        totalFailed = poolSummaries.sumBy {
+            it.testResults.filterNot {
+                it.isIgnored
+            }.count {
+                it.resultStatus != ResultStatus.PASS
+            }
+        },
+        totalFlaky = flakyTest.size,
+        totalIgnored = poolSummaries.sumBy {
+            it.testResults.count { it.isIgnored }
+        },
+        totalPassed = poolSummaries.sumBy {
+            it.testResults.filterNot {
+                it.isIgnored
+            }.count {
+                it.resultStatus == ResultStatus.PASS
+            }
+        },
         totalDuration = totalDuration(poolSummaries),
         averageDuration = averageDuration(poolSummaries),
         maxDuration = maxDuration(poolSummaries).toLong(),

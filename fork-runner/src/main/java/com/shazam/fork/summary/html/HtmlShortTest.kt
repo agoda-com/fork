@@ -20,9 +20,9 @@ fun TestResult.toHtmlShortSuite() = HtmlShortTest(
         className = testClass.substringAfterLast("."),
         name = testMethod,
         durationMillis = (timeTaken * 1000).toLong(),
-        status = when (this.resultStatus) {
-            ResultStatus.FAIL -> Status.Failed
-            ResultStatus.PASS -> Status.Passed
-            ResultStatus.ERROR -> Status.Failed
+        status = when{
+            isIgnored -> Status.Ignored
+            resultStatus == ResultStatus.PASS -> Status.Passed
+            else -> Status.Failed
         },
         deviceId = this.device.safeSerial)

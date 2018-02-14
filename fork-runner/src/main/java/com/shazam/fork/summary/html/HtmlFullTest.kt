@@ -28,10 +28,10 @@ fun TestResult.toHtmlFullTest(poolId: String) = HtmlFullTest(
         className = testClass.substringAfterLast("."),
         name = testMethod,
         durationMillis = (timeTaken * 1000).toLong(),
-        status = when (this.resultStatus) {
-            ResultStatus.FAIL -> Status.Failed
-            ResultStatus.PASS -> Status.Passed
-            ResultStatus.ERROR -> Status.Ignored
+        status = when{
+            isIgnored -> Status.Ignored
+            resultStatus == ResultStatus.PASS -> Status.Passed
+            else -> Status.Failed
         },
         deviceId = this.device.safeSerial,
         diagnosticVideo = device.supportedDiagnostics == Diagnostics.VIDEO,

@@ -20,6 +20,10 @@ export default class PoolsList extends Component {
                             <div className="card-info__content status-failed">{window.mainData.total_failed}</div>
                         </div>
                         <div className="card-info">
+                            <div className="text-sub-title-light">Flaky</div>
+                            <div className="card-info__content status-failed">{window.mainData.total_flaky}</div>
+                        </div>
+                        <div className="card-info">
                             <div className="text-sub-title-light">Ignored</div>
                             <div className="card-info__content status-ignored">{window.mainData.total_ignored}</div>
                         </div>
@@ -28,23 +32,6 @@ export default class PoolsList extends Component {
                             <div
                                 className="card-info__content">{convertTime(window.mainData.total_duration_millis)}</div>
                         </div>
-                        {!window.mainData.pools.length > 0 && <div>
-                            <div className="card-info">
-                                <div className="text-sub-title-light">Average Duration</div>
-                                <div
-                                    className="card-info__content">{convertTime(window.mainData.average_duration_millis)}</div>
-                            </div>
-                            < div className="card-info">
-                                <div className="text-sub-title-light">Min Duration</div>
-                                <div
-                                    className="card-info__content">{convertTime(window.mainData.min_duration_millis)}</div>
-                            </div>
-                            <div className="card-info">
-                                <div className="text-sub-title-light">Max Duration</div>
-                                <div
-                                    className="card-info__content">{convertTime(window.mainData.max_duration_millis)}</div>
-                            </div>
-                        </div>}
                     </div>
                 </div>
 

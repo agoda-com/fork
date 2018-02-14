@@ -12,6 +12,8 @@
  */
 package com.shazam.fork.summary;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,8 @@ public class Summary {
     private final String subtitle;
     private final ArrayList<IgnoredTest> ignoredTests;
     private final ArrayList<FailedTest> failedTests;
+    @NotNull
+    public final ArrayList<FlakyTest> flakyTest;
 
     @Nonnull
     public List<PoolSummary> getPoolSummaries() {
@@ -52,6 +56,7 @@ public class Summary {
         private String title = "Report Title";
         private String subtitle = "Report Subtitle";
         private ArrayList<FailedTest> failedTests =  new ArrayList<>();
+        public ArrayList<FlakyTest> flakyTests = new ArrayList<>();
 
         public static Builder aSummary() {
             return new Builder();
@@ -77,6 +82,11 @@ public class Summary {
             return this;
         }
 
+        public Builder addFlakyTest(FlakyTest s) {
+            this.flakyTests.add(s);
+            return this;
+        }
+
         public Builder addFailedTests(FailedTest failedTests) {
             this.failedTests.add(failedTests);
             return this;
@@ -92,6 +102,7 @@ public class Summary {
         title = builder.title;
         subtitle = builder.subtitle;
         ignoredTests = builder.ignoredTests;
+        flakyTest = builder.flakyTests;
         failedTests = builder.failedTests;
     }
 }
