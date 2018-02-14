@@ -90,7 +90,7 @@ public class SummaryCompiler {
     private void addIgnoredTests(Collection<TestCaseEvent> testCases, Summary.Builder summaryBuilder) {
         for (TestCaseEvent testCase : testCases) {
             if (testCase.isIgnored()) {
-                summaryBuilder.addIgnoredTest(testCase.getTestClass() + ":" + testCase.getTestMethod());
+                summaryBuilder.addIgnoredTest(new IgnoredTest(testCase.getTestClass(),testCase.getTestMethod()));
             }
         }
     }
@@ -99,9 +99,7 @@ public class SummaryCompiler {
         for (TestResult testResult : testResults) {
             int totalFailureCount = testResult.getTotalFailureCount();
             if (totalFailureCount > 0) {
-                String failedTest = totalFailureCount + " times " + testResult.getTestClass()
-                        + "#" + testResult.getTestMethod() + " on " + testResult.getDevice().getSerial() ;
-                summaryBuilder.addFailedTests(failedTest);
+                summaryBuilder.addFailedTests(new FailedTest(testResult,totalFailureCount));
             }
         }
     }
@@ -110,12 +108,12 @@ public class SummaryCompiler {
         try {
             TestSuite testSuite = serializer.read(TestSuite.class, file, STRICT);
             Collection<TestCase> testCases = testSuite.getTestCase();
-            List<TestResult> result  = Lists.newArrayList();
+            List<TestResult> result = Lists.newArrayList();
             if ((testCases == null)) {
                 return result;
             }
 
-            for(TestCase testCase : testCases){
+            for (TestCase testCase : testCases) {
                 TestResult testResult = getTestResult(device, testSuite, testCase);
                 result.add(testResult);
             }

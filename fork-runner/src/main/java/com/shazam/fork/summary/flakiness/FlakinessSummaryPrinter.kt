@@ -28,7 +28,7 @@ class FlakinessSummaryPrinter(private val fileManager: FileManager,
                         failReason = it.trace)
             }
         }.plus(summary.ignoredTests.map {
-            FlakinessReport(testName = it,
+            FlakinessReport(testName = "${it.testClass}.${it.testMethod}",
                     deviceSerial = "",
                     ignored = true,
                     success = false,

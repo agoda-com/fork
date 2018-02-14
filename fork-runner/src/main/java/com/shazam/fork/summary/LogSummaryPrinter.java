@@ -41,13 +41,13 @@ public class LogSummaryPrinter implements SummaryPrinter {
         for (PoolSummary poolSummary : summary.getPoolSummaries()) {
             printMiniSummary(poolSummary);
         }
-		ArrayList<String> suppressedTests = summary.getIgnoredTests();
+		ArrayList<IgnoredTest> suppressedTests = summary.getIgnoredTests();
 		if (suppressedTests.isEmpty()) {
             logger.info("No suppressed tests.");
 		} else {
             logger.info("Suppressed tests:");
-			for (String s : suppressedTests) {
-                logger.info(s);
+			for (IgnoredTest s : suppressedTests) {
+                logger.info(s.toString());
 			}
 		}
 	}
