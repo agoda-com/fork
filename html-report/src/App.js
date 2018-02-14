@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import Pool from './components/Pool'
-import PoolsList from './components/PoolsList'
+import HomePage from './components/HomePage'
 import TestItem from './components/TestItem'
 
 class App extends Component {
   renderComponent() {
     if (window.mainData) {
-      return <PoolsList />
+      return <HomePage />
     }
     if (window.test) {
       return <TestItem />

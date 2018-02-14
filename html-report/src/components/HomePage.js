@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import convertTime from './../utils/convertTime';
 import paths from './../utils/paths';
 
-export default class PoolsList extends Component {
+export default class HomePage extends Component {
     render() {
         return (
             <div className="content margin-top-20">
