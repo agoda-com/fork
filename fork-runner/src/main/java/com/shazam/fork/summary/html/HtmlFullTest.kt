@@ -18,7 +18,8 @@ data class HtmlFullTest(
         @SerializedName("diagnostic_video") val diagnosticVideo: Boolean,
         @SerializedName("diagnostic_screenshots") val diagnosticScreenshots: Boolean,
         @SerializedName("screenshot") val screenshot: String,
-        @SerializedName("video") val video: String
+        @SerializedName("video") val video: String,
+        @SerializedName("log_file") val logFile : String
 )
 
 fun TestResult.toHtmlFullTest(poolId: String) = HtmlFullTest(
@@ -44,4 +45,9 @@ fun TestResult.toHtmlFullTest(poolId: String) = HtmlFullTest(
         video = when (device.supportedDiagnostics == Diagnostics.VIDEO && resultStatus != ResultStatus.PASS) {
             true -> "../../../../screenrecord/$poolId/${device.safeSerial}/$testClass%23$testMethod.mp4"
             false -> ""
-        })
+        },
+        logFile = "../../../../logcat/$poolId/${device.safeSerial}/$testClass%23$testMethod.log")
+//        logFile = when(resultStatus != ResultStatus.PASS){
+//            true -> "../../../../logcat/$poolId/${device.safeSerial}/$testClass%23$testMethod.log"
+//            false -> ""
+//        })

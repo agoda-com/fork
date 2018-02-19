@@ -33,6 +33,9 @@ export default class TestItem extends Component {
                             <div className="margin-bottom-5">{data.package_name}</div>
                         </div>
                         <div className="card-info__content">{convertTime(data.duration_millis)}</div>
+                        <div className="card-info__content">
+                            <a href={data.log_file}>Log file</a>
+                        </div>
                     </div>
 
                     {!!data.video && <div className='card row full'>
