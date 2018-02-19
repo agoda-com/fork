@@ -10,7 +10,12 @@ import java.util.function.Predicate
 
 abstract class StatBasedFactoryStrategy(private val level: Int,
                                         private val extract: (TestCaseEvent) -> (Double)) : BatchFactoryStrategy {
-    override fun batches(poolSize: Int, input: Collection<TestCaseEvent>): List<TestTask> {
+
+    companion object {
+        private const val DEFAULT_BATCH_COUNT = 10
+    }
+
+    override fun batches(input: Collection<TestCaseEvent>): List<TestTask> {
         val expectedValues = input.sortedBy { extract(it) }
         val percentile = expectedValues[((expectedValues.size * level) / 100)].let { extract(it) }
 
@@ -18,7 +23,7 @@ abstract class StatBasedFactoryStrategy(private val level: Int,
         val short = LinkedList(grouped[true].orEmpty().sortedByDescending { extract(it) })
         val single = grouped[false].orEmpty().map { TestTask.SingleTestTask(it) }
 
-        val list = ArrayList<Batch>(poolSize)
+        val list = ArrayList<Batch>(DEFAULT_BATCH_COUNT)
         val predicate: Predicate<List<TestCaseEvent>> = Predicate {
             percentile > it.sumByDouble { extract(it) }
         }

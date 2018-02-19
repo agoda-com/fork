@@ -12,22 +12,16 @@
  */
 package com.shazam.fork.summary;
 
-import com.android.ddmlib.logcat.LogCatMessage;
-import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.io.Resources;
 import com.shazam.fork.io.HtmlGenerator;
-
 import org.lesscss.LessCompiler;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.List;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.shazam.fork.io.Files.copyResource;
-import static com.shazam.fork.summary.HtmlConverters.toHtmlLogCatMessages;
 import static com.shazam.fork.summary.HtmlConverters.toHtmlSummary;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 
 public class HtmlSummaryPrinter implements SummaryPrinter {
@@ -118,15 +112,8 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
             poolTestsDir.mkdirs();
             for (HtmlTestResult testResult : pool.testResults) {
                 String fileName = testResult.plainClassName + "__" + testResult.plainMethodName + ".html";
-                addLogcats(testResult, pool);
                 htmlGenerator.generateHtml("forkpages/pooltest.html", poolTestsDir, fileName, testResult, pool);
             }
         }
 	}
-
-    private void addLogcats(HtmlTestResult testResult, HtmlPoolSummary pool) {
-        TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
-        List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSafeSerial, testIdentifier);
-        testResult.logcatMessages = logCatMessages.stream().map(toHtmlLogCatMessages()).collect(toList());
-    }
 }

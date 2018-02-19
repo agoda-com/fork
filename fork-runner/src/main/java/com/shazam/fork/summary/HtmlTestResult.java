@@ -12,8 +12,6 @@
  */
 package com.shazam.fork.summary;
 
-import java.util.Collection;
-
 /**
  * Plain bean class, to feed to Moustache markup files.
  */
@@ -27,7 +25,6 @@ public class HtmlTestResult {
 	public String deviceModelDespaced;
 	public String plainClassName;
 	public String poolName;
-	public Collection<HtmlLogCatMessage> logcatMessages;
 	public String timeTaken;
 	public String[] trace;
     public boolean diagnosticVideo;

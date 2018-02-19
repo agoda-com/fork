@@ -12,14 +12,16 @@
  */
 package com.shazam.fork;
 
-import com.shazam.fork.batch.TestTaskQueueProvider;
+import com.shazam.fork.execution.TestTaskQueueProvider;
 import com.shazam.fork.batch.tasks.TestTask;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.pooling.*;
+import com.shazam.fork.preprocessor.TestsPreprocessor;
 import com.shazam.fork.runner.PoolTestRunnerFactory;
 import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.stat.TestStatsLoader;
+import com.shazam.fork.store.TestCaseStore;
 import com.shazam.fork.suite.NoTestCasesFoundException;
 import com.shazam.fork.suite.TestSuiteLoader;
 import com.shazam.fork.summary.SummaryGeneratorHook;
@@ -44,6 +46,8 @@ public class ForkRunner {
     private final SummaryGeneratorHook summaryGeneratorHook;
     private final TestStatsLoader testStatsLoader;
     private final TestTaskQueueProvider queueProvider;
+    private final TestsPreprocessor preprocessor;
+    private final TestCaseStore testCaseStore;
 
     public ForkRunner(PoolLoader poolLoader,
                       TestSuiteLoader testClassLoader,
@@ -51,7 +55,9 @@ public class ForkRunner {
                       ProgressReporter progressReporter,
                       SummaryGeneratorHook summaryGeneratorHook,
                       TestStatsLoader testStatsLoader,
-                      TestTaskQueueProvider queueProvider) {
+                      TestTaskQueueProvider queueProvider,
+                      TestsPreprocessor preprocessor,
+                      TestCaseStore testCaseStore) {
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
         this.poolTestRunnerFactory = poolTestRunnerFactory;
@@ -59,6 +65,8 @@ public class ForkRunner {
         this.summaryGeneratorHook = summaryGeneratorHook;
         this.testStatsLoader = testStatsLoader;
         this.queueProvider = queueProvider;
+        this.testCaseStore = testCaseStore;
+        this.preprocessor = preprocessor;
     }
 
     public boolean run() {
@@ -71,13 +79,15 @@ public class ForkRunner {
 
             testStatsLoader.load();
 
-            Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
-            int totalTests = testCases.size();
-//            int maxDevicesPerPool = pools.stream().mapToInt(i -> i.getDevices().size()).max().orElse(0); // WTF?
-            int maxDevicesPerPool = 0;
-            Queue<TestTask> testCasesQueue = queueProvider.create(maxDevicesPerPool, testCases);
+            final Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
+            testCaseStore.putAll(testCases);
+            final Collection<TestCaseEvent> preparedTestCases = preprocessor.process(testCases);
 
-            summaryGeneratorHook.registerHook(pools, testCases);
+            int totalTests = preparedTestCases.size();
+
+            Queue<TestTask> testCasesQueue = queueProvider.create(preparedTestCases);
+
+            summaryGeneratorHook.registerHook(pools, preparedTestCases);
 
             progressReporter.start();
             for (Pool pool : pools) {

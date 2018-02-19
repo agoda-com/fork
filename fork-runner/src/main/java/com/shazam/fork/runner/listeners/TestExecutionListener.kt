@@ -4,11 +4,12 @@ import com.android.ddmlib.testrunner.TestIdentifier
 import com.android.ddmlib.testrunner.TestResult
 import com.android.ddmlib.testrunner.TestRunResult
 import com.shazam.fork.model.Device
+import com.shazam.fork.model.Pool
 import com.shazam.fork.stat.TestExecution
 import com.shazam.fork.stat.TestExecutionReporter
-import org.slf4j.LoggerFactory
 
-class TestExecutionListener(private val device: Device,
+class TestExecutionListener(private val pool: Pool,
+                            private val device: Device,
                             private val executionReporter: TestExecutionReporter) : NoOpITestRunListener() {
 
     private val runResult = TestRunResult()
@@ -64,6 +65,6 @@ class TestExecutionListener(private val device: Device,
             else -> TestExecution.Status.FAILED
         }
         val execution = TestExecution(test, value.startTime, endedAfter, status)
-        executionReporter.add(device, execution)
+        executionReporter.add(pool, device, execution)
     }
 }

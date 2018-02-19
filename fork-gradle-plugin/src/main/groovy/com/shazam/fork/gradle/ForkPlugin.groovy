@@ -86,6 +86,7 @@ class ForkPlugin implements Plugin<Project> {
                 includedAnnotation = config.includedAnnotation
                 sortingStrategy = config.sortingStrategy
                 batchStrategy = config.batchStrategy
+                customExecutionStrategy = config.customExecutionStrategy
 
                 applicationApk = new File(baseVariantOutput.packageApplication.outputDirectory.path + "/" + baseVariantOutput.outputFileName)
 

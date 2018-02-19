@@ -8,6 +8,7 @@ public enum FileType {
     ANIMATION ("animation", "gif"),
     SCREENRECORD ("screenrecord", "mp4"),
     COVERAGE ("coverage", "ec"),
+    TEST_EXECUTION_REPORT("test_execution_report", "json")
     ;
 
     private final String directory;

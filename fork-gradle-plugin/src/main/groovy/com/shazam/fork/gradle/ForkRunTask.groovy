@@ -14,6 +14,7 @@ package com.shazam.fork.gradle
 
 import com.shazam.fork.BatchStrategy
 import com.shazam.fork.Configuration
+import com.shazam.fork.CustomExecutionStrategy
 import com.shazam.fork.Fork
 import com.shazam.fork.PoolingStrategy
 import com.shazam.fork.SortingStrategy
@@ -85,6 +86,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     BatchStrategy batchStrategy
 
+    CustomExecutionStrategy customExecutionStrategy
+
     @TaskAction
     void runFork() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
@@ -113,6 +116,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withIncludedAnnotation(includedAnnotation)
                 .withSortingStrategy(sortingStrategy)
                 .withBatchStrategy(batchStrategy)
+                .withCustomExecutionStrategy(customExecutionStrategy)
                 .build();
 
         boolean success = new Fork(configuration).run()
