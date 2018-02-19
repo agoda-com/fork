@@ -18,6 +18,9 @@ import java.util.Collection;
 public class PoolSummary {
 	private final String poolName;
 	private final Collection<TestResult> testResults;
+	private final ArrayList<TestResult> ignoredTests;
+	private final ArrayList<TestResult> failedTests;
+	private final ArrayList<FlakyTest> flakyTest;
 
 	public String getPoolName() {
 		return poolName;
@@ -27,9 +30,24 @@ public class PoolSummary {
 		return testResults;
 	}
 
+	public ArrayList<TestResult> getIgnoredTests() {
+		return ignoredTests;
+	}
+
+	public ArrayList<TestResult> getFailedTests() {
+		return failedTests;
+	}
+
+	public ArrayList<FlakyTest> getFlakyTest() {
+		return flakyTest;
+	}
+
 	public static class Builder {
 		private String poolName;
 		private final Collection<TestResult> testResults = new ArrayList<>();
+		private final ArrayList<TestResult> ignoredTests = new ArrayList<>();
+		private ArrayList<TestResult> failedTests =  new ArrayList<>();
+		public ArrayList<FlakyTest> flakyTests = new ArrayList<>();
 
 		public static Builder aPoolSummary() {
 			return new Builder();
@@ -45,6 +63,21 @@ public class PoolSummary {
 			return this;
 		}
 
+		public Builder addFlakyTest(FlakyTest s) {
+			this.flakyTests.add(s);
+			return this;
+		}
+
+		public Builder addFailedTests(TestResult failedTests) {
+			this.failedTests.add(failedTests);
+			return this;
+		}
+
+		public Builder addIgnoredTest(TestResult s) {
+			this.ignoredTests.add(s);
+			return this;
+		}
+
 		public PoolSummary build() {
 			return new PoolSummary(this);
 		}
@@ -53,5 +86,8 @@ public class PoolSummary {
 	private PoolSummary(Builder builder) {
 		testResults = builder.testResults;
 		poolName = builder.poolName;
+		failedTests = builder.failedTests;
+		flakyTest = builder.flakyTests;
+		ignoredTests = builder.ignoredTests;
 	}
 }

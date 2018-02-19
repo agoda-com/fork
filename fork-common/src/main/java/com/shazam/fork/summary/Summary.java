@@ -12,18 +12,15 @@
  */
 package com.shazam.fork.summary;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nonnull;
 
 
 public class Summary {
     private final List<PoolSummary> poolSummaries;
     private final String title;
     private final String subtitle;
-    private final ArrayList<String> ignoredTests;
-    private final ArrayList<String> failedTests;
 
     @Nonnull
     public List<PoolSummary> getPoolSummaries() {
@@ -38,21 +35,10 @@ public class Summary {
         return subtitle;
     }
 
-    @Nonnull
-    public ArrayList<String> getIgnoredTests() {
-        return ignoredTests;
-    }
-
-    public ArrayList<String> getFailedTests() {
-        return failedTests;
-    }
-
     public static class Builder {
         private final List<PoolSummary> poolSummaries = new ArrayList<>();
-        private final ArrayList<String> ignoredTests = new ArrayList<>();
         private String title = "Report Title";
         private String subtitle = "Report Subtitle";
-        private ArrayList<String> failedTests =  new ArrayList<>();
 
         public static Builder aSummary() {
             return new Builder();
@@ -73,16 +59,6 @@ public class Summary {
             return this;
         }
 
-        public Builder addIgnoredTest(String s) {
-            this.ignoredTests.add(s);
-            return this;
-        }
-
-        public Builder addFailedTests(String failedTests) {
-            this.failedTests.add(failedTests);
-            return this;
-        }
-
         public Summary build() {
             return new Summary(this);
         }
@@ -92,7 +68,5 @@ public class Summary {
         poolSummaries = builder.poolSummaries;
         title = builder.title;
         subtitle = builder.subtitle;
-        ignoredTests = builder.ignoredTests;
-        failedTests = builder.failedTests;
     }
 }

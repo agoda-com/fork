@@ -26,14 +26,14 @@ class FlakinessSummaryPrinter(private val fileManager: FileManager,
                         ignored = testCaseStore.get(testName)?.isIgnored ?: false,
                         success = it.resultStatus == ResultStatus.PASS,
                         failReason = it.trace)
-            }
-        }.plus(summary.ignoredTests.map {
-            FlakinessReport(testName = it,
-                    deviceSerial = "",
-                    ignored = true,
-                    success = false,
-                    failReason = "")
-        }).let { items ->
+            }.plus(it.ignoredTests.map {
+                FlakinessReport(testName = "${it.testClass}.${it.testMethod}",
+                        deviceSerial = "",
+                        ignored = true,
+                        success = false,
+                        failReason = "")
+            })
+        }.let { items ->
             val file = fileManager.createSummaryFile("flakiness")
             FileWriter(file).use {
                 GsonBuilder().setPrettyPrinting()

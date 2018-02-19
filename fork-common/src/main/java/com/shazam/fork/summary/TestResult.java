@@ -14,10 +14,9 @@ package com.shazam.fork.summary;
 
 import com.shazam.fork.model.Device;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.Nonnull;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
@@ -31,6 +30,7 @@ public class TestResult {
     private final String errorTrace;
     private final String failureTrace;
     private final Map<String, String> testMetrics;
+    private final boolean ignored;
 
     public Device getDevice() {
         return device;
@@ -46,6 +46,10 @@ public class TestResult {
 
     public String getTestMethod() {
         return testMethod;
+    }
+
+    public boolean isIgnored() {
+        return ignored;
     }
 
     public int getTotalFailureCount() {
@@ -88,6 +92,7 @@ public class TestResult {
         private String errorTrace;
         private String failureTrace;
         private Map<String, String> testMetrics = new HashMap<>();
+        private boolean ignored;
 
         public static Builder aTestResult() {
             return new Builder();
@@ -133,10 +138,14 @@ public class TestResult {
             return this;
         }
 
+        public Builder withIgnore(boolean ignored) {
+            this.ignored = ignored;
+            return this;
+        }
+
         public TestResult build() {
             return new TestResult(this);
         }
-
     }
 
     private TestResult(Builder builder) {
@@ -147,5 +156,6 @@ public class TestResult {
         errorTrace = builder.errorTrace;
         failureTrace = builder.failureTrace;
         this.testMetrics = builder.testMetrics;
+        this.ignored = builder.ignored;
     }
 }

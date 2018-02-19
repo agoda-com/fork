@@ -15,22 +15,21 @@ package com.shazam.fork.summary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static com.google.common.collect.Collections2.filter;
-import static com.shazam.fork.summary.ResultStatus.ERROR;
-import static com.shazam.fork.summary.ResultStatus.FAIL;
-import static com.shazam.fork.summary.ResultStatus.PASS;
+import static com.shazam.fork.summary.ResultStatus.*;
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 public class LogSummaryPrinter implements SummaryPrinter {
 
     private static final Logger logger = LoggerFactory.getLogger(LogSummaryPrinter.class);
 
-	@Override
-	public void print(Summary summary) {
-        for (ResultStatus resultStatus : new ResultStatus[] { FAIL, ERROR }) {
+    @Override
+    public void print(Summary summary) {
+        for (ResultStatus resultStatus : new ResultStatus[]{FAIL, ERROR}) {
             for (PoolSummary poolSummary : summary.getPoolSummaries()) {
                 StringBuilder out = getPoolSummary(poolSummary, resultStatus);
                 if (out.length() != 0) {
@@ -41,16 +40,20 @@ public class LogSummaryPrinter implements SummaryPrinter {
         for (PoolSummary poolSummary : summary.getPoolSummaries()) {
             printMiniSummary(poolSummary);
         }
-		ArrayList<String> suppressedTests = summary.getIgnoredTests();
-		if (suppressedTests.isEmpty()) {
+        List<TestResult> suppressedTests = summary
+                .getPoolSummaries()
+                .stream()
+                .flatMap(a -> a.getIgnoredTests().stream())
+                .collect(toList());
+        if (suppressedTests.isEmpty()) {
             logger.info("No suppressed tests.");
-		} else {
+        } else {
             logger.info("Suppressed tests:");
-			for (String s : suppressedTests) {
-                logger.info(s);
-			}
-		}
-	}
+            for (TestResult s : suppressedTests) {
+                logger.info(s.toString());
+            }
+        }
+    }
 
     private void printMiniSummary(PoolSummary poolSummary) {
         logger.info(format("% 3d E  % 3d F  % 3d P: %s",
@@ -69,9 +72,9 @@ public class LogSummaryPrinter implements SummaryPrinter {
             summary.insert(0, "____________________________________________________________________________________\n");
         }
         return summary;
-	}
+    }
 
-	private StringBuilder printTestsWithStatus(PoolSummary poolSummary, ResultStatus status) {
+    private StringBuilder printTestsWithStatus(PoolSummary poolSummary, ResultStatus status) {
         StringBuilder summary = new StringBuilder();
         final Collection<TestResult> resultsWithStatus = getResultsWithStatus(poolSummary.getTestResults(), status);
         if (!resultsWithStatus.isEmpty()) {
@@ -87,7 +90,7 @@ public class LogSummaryPrinter implements SummaryPrinter {
         return summary;
     }
 
-	private Collection<TestResult> getResultsWithStatus(Collection<TestResult> testResults, final ResultStatus resultStatus) {
-		return filter(testResults, testResult -> testResult.getResultStatus().equals(resultStatus));
-	}
+    private Collection<TestResult> getResultsWithStatus(Collection<TestResult> testResults, final ResultStatus resultStatus) {
+        return filter(testResults, testResult -> testResult.getResultStatus().equals(resultStatus));
+    }
 }
