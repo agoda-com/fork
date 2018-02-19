@@ -47,7 +47,3 @@ fun TestResult.toHtmlFullTest(poolId: String) = HtmlFullTest(
             false -> ""
         },
         logFile = "../../../../logcat/$poolId/${device.safeSerial}/$testClass%23$testMethod.log")
-//        logFile = when(resultStatus != ResultStatus.PASS){
-//            true -> "../../../../logcat/$poolId/${device.safeSerial}/$testClass%23$testMethod.log"
-//            false -> ""
-//        })
