@@ -7,6 +7,7 @@ import com.shazam.fork.stat.TestExecution
 import com.shazam.fork.stat.TestExecutionReporter
 import com.shazam.fork.stat.TestStatsLoader
 import com.shazam.fork.summary.PoolSummary
+import com.shazam.fork.summary.ResultStatus
 import com.shazam.fork.summary.Summary
 
 class StatSummarySerializer(private val reporter: TestExecutionReporter,
@@ -78,6 +79,7 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
 
     private fun extractIdentifiers(summary: PoolSummary): List<TestIdentifier> {
         return summary.testResults
+                .filter { it.resultStatus == ResultStatus.PASS }
                 .map { result -> TestIdentifier(result.testClass, result.testMethod) }
     }
 
@@ -100,8 +102,8 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
     }
 
     fun parse(summary: Summary): ExecutionResult {
-        val failedTests = summary.failedTests.size
-        val ignoredTests = summary.ignoredTests.size
+        val failedTests = summary.poolSummaries.sumBy { it.failedTests.size }
+        val ignoredTests = summary.poolSummaries.sumBy { it.ignoredTests.size }
         val passedTestCount = passedTestCount(summary)
         val measures = parseList(summary.poolSummaries)
         return ExecutionResult(passedTestCount, failedTests, aggregateExecutionStats(measures), measures)

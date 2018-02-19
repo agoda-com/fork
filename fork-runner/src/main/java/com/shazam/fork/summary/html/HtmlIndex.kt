@@ -28,7 +28,7 @@ fun Summary.toHtmlIndex() = HtmlIndex(
                 it.resultStatus != ResultStatus.PASS
             }
         },
-        totalFlaky = flakyTest.size,
+        totalFlaky = poolSummaries.sumBy { it.flakyTest.size },
         totalIgnored = poolSummaries.sumBy {
             it.testResults.count { it.isIgnored }
         },

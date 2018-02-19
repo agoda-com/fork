@@ -51,7 +51,6 @@ public class SummaryCompiler {
             PoolSummary poolSummary = compilePoolSummary(pool, summaryBuilder);
             summaryBuilder.addPoolSummary(poolSummary);
         }
-        addIgnoredTests(testCases, summaryBuilder);
         summaryBuilder.withTitle(configuration.getTitle());
         summaryBuilder.withSubtitle(configuration.getSubtitle());
 
@@ -76,7 +75,16 @@ public class SummaryCompiler {
         for (File file : deviceResultFiles) {
             Collection<TestResult> testResult = parseTestResultsFromFile(file, device);
             poolSummaryBuilder.addTestResults(testResult);
-            addFailedTests(testResult, summaryBuilder);
+            addFailedTests(testResult, poolSummaryBuilder);
+            addIgnoredTests(testResult, poolSummaryBuilder);
+        }
+    }
+
+    private void addIgnoredTests(Collection<TestResult> testResults, PoolSummary.Builder poolSummaryBuilder) {
+        for (TestResult testResult : testResults) {
+            if(testResult.isIgnored()){
+                poolSummaryBuilder.addIgnoredTest(testResult);
+            }
         }
     }
 
@@ -88,15 +96,7 @@ public class SummaryCompiler {
                 .build();
     }
 
-    private void addIgnoredTests(Collection<TestCaseEvent> testCases, Summary.Builder summaryBuilder) {
-        for (TestCaseEvent testCase : testCases) {
-            if (testCase.isIgnored()) {
-                summaryBuilder.addIgnoredTest(new IgnoredTest(testCase.getTestClass(), testCase.getTestMethod()));
-            }
-        }
-    }
-
-    private void addFailedTests(Collection<TestResult> testResults, Summary.Builder summaryBuilder) {
+    private void addFailedTests(Collection<TestResult> testResults, PoolSummary.Builder summaryBuilder) {
         for (TestResult testResult : testResults) {
             int totalFailureCount = testResult.getTotalFailureCount();
             if (totalFailureCount > 0) {
@@ -104,7 +104,7 @@ public class SummaryCompiler {
                 if (retryQuota > 0 && totalFailureCount < retryQuota) {
                     summaryBuilder.addFlakyTest(new FlakyTest(testResult, totalFailureCount));
                 } else {
-                    summaryBuilder.addFailedTests(new FailedTest(testResult, totalFailureCount));
+                    summaryBuilder.addFailedTests(testResult);
                 }
             }
         }

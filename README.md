@@ -402,4 +402,5 @@ The system could then provide a systrace & GPU profiling reports for the duratio
 
  [1]: https://github.com/square/spoon
  [2]: https://wiki.jenkins-ci.org/display/JENKINS/HTML+Publisher+Plugin
+ [3]: https://github.com/gojuno/composer
 

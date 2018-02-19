@@ -16,8 +16,6 @@ import com.shazam.fork.summary.CompositeSummaryPrinter;
 import com.shazam.fork.summary.JsonSummarySerializer;
 import com.shazam.fork.summary.LogSummaryPrinter;
 import com.shazam.fork.summary.SummaryPrinter;
-import com.shazam.fork.summary.flakiness.AggregatedFlakinessPerDeviceSummaryPrinter;
-import com.shazam.fork.summary.flakiness.AggregatedFlakinessSummaryPrinter;
 import com.shazam.fork.summary.flakiness.FlakinessSummaryPrinter;
 import com.shazam.fork.summary.html.HtmlSummaryPrinter;
 
@@ -39,9 +37,7 @@ public class SummaryPrinterInjector {
                 jsonSummarySerializer(),
                 jsonSummaryStatsSerializer(),
                 htmlStatsSummaryPrinter(),
-                flakinessSummaryPrinter(),
-                aggregatedFlakinessPerDeviceSummaryPrinter(),
-                aggregatedFlakinessSummaryPrinter());
+                flakinessSummaryPrinter());
     }
 
     private static SummaryPrinter htmlSummaryPrinter(){
@@ -58,13 +54,5 @@ public class SummaryPrinterInjector {
 
     private static SummaryPrinter flakinessSummaryPrinter() {
         return new FlakinessSummaryPrinter(fileManager(), testCaseStore());
-    }
-
-    private static SummaryPrinter aggregatedFlakinessPerDeviceSummaryPrinter(){
-        return new AggregatedFlakinessPerDeviceSummaryPrinter(fileManager());
-    }
-
-    private static SummaryPrinter aggregatedFlakinessSummaryPrinter(){
-        return new AggregatedFlakinessSummaryPrinter(fileManager());
     }
 }

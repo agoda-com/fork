@@ -5,6 +5,8 @@ import com.shazam.fork.summary.Summary
 import org.apache.commons.lang3.StringEscapeUtils
 import java.io.File
 import java.io.InputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Following file tree structure will be created:
@@ -19,6 +21,8 @@ fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File) {
     outputDir.mkdirs()
 
     val htmlIndexJson = gson.toJson(summary.toHtmlIndex())
+
+    val formattedDate = SimpleDateFormat("HH:mm:ss z, MMM d yyyy").apply { timeZone = TimeZone.getTimeZone("UTC") }.format(Date())
 
     val appJs = File(outputDir, "app.min.js")
     inputStreamFromResources("html-report/app.min.js").copyTo(appJs.outputStream())
@@ -42,6 +46,7 @@ fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File) {
             .replace("\${relative_path}", indexHtmlFile.relativePathToHtmlDir())
             .replace("\${data_json}", "window.mainData = $htmlIndexJson")
             .replace("\${log}", "")
+            .replace("\${date}", formattedDate)
     )
 
     val poolsDir = File(outputDir, "pools").apply { mkdirs() }
@@ -54,6 +59,7 @@ fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File) {
                 .replace("\${relative_path}", poolHtmlFile.relativePathToHtmlDir())
                 .replace("\${data_json}", "window.pool = $poolJson")
                 .replace("\${log}", "")
+                .replace("\${date}", formattedDate)
         )
 
         pool.testResults.map { it to File(File(poolsDir, pool.poolName), it.device.safeSerial).apply { mkdirs() } }
@@ -66,6 +72,7 @@ fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File) {
                             .replace("\${relative_path}", testHtmlFile.relativePathToHtmlDir())
                             .replace("\${data_json}", "window.test = $testJson")
                             .replace("\${log}", generateLogcatHtml(test.trace))
+                            .replace("\${date}", formattedDate)
                     )
                 }
     }
