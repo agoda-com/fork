@@ -74,6 +74,20 @@ fun writeHtmlReport(gson: Gson, summary: Summary, rootOutput: File) {
                             .replace("\${log}", generateLogcatHtml(test.trace))
                             .replace("\${date}", formattedDate)
                     )
+
+                    val logDir = File(testDir, "logs")
+                    logDir.mkdirs()
+
+                    val testLogDetails = toHtmlTestLogDetails(pool.poolName, htmlTest)
+                    val testLogJson = gson.toJson(testLogDetails)
+                    val testLogHtmlFile = File(logDir, "${htmlTest.id}.html")
+
+                    testLogHtmlFile.writeText(indexHtml
+                            .replace("\${relative_path}", testLogHtmlFile.relativePathToHtmlDir())
+                            .replace("\${data_json}", "window.logs = $testLogJson")
+                            .replace("\${log}", "")
+                            .replace("\${date}", formattedDate)
+                    )
                 }
     }
 }

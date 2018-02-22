@@ -20,7 +20,7 @@ fun TestResult.toHtmlShortSuite() = HtmlShortTest(
         className = testClass.substringAfterLast("."),
         name = testMethod,
         durationMillis = (timeTaken * 1000).toLong(),
-        status = when{
+        status = when {
             isIgnored -> Status.Ignored
             resultStatus == ResultStatus.PASS -> Status.Passed
             else -> Status.Failed

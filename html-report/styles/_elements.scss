@@ -524,3 +524,32 @@ $button-height: 34px;
     transform: rotate(-135deg)
   }
 }
+
+.logcat {
+  table-layout: auto;
+  width:100%;
+  font-size: 12px;
+
+  .line {
+    &.debug {
+      background-color: #6897BB;
+    }
+    &.assert {
+      background-color: #9876AA;
+    }
+    &.error {
+      background-color: #FF6B68;
+    }
+    &.info {
+      background-color: #6A8759;
+    }
+    &.warn {
+      background-color: #BBB529;
+    }
+
+    td {
+      padding: 4px;
+      word-wrap: break-word;
+    }
+  }
+}
