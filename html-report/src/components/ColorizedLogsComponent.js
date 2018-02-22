@@ -73,9 +73,14 @@ export default class ColorizedLogsComponent extends Component {
                                         case "INFO": {
                                             return "line info";
                                         }
+                                        case "ASSERT":{
+                                            return "line assert";
+                                        }
+                                        case "VERBOSE":{
+                                            return "line verbose";
+                                        }
                                     }
                                 }
-
 
                                 return (<tr className={selectStyle(level)}>
                                     <td>
@@ -85,7 +90,7 @@ export default class ColorizedLogsComponent extends Component {
                                         {tag}
                                     </td>
                                     <td>{level}</td>
-                                    <td>{time}</td>
+                                    <td className="formatted-time">{time}</td>
                                     <td>{message}</td>
                                 </tr>);
                             }

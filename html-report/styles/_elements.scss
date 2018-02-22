@@ -23,10 +23,13 @@
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
 }
 
-@media $large-screen {
-  .card {
-    padding: $side-padding-desktop;
-  }
+@media
+
+$large-screen{
+.card {
+  padding: $side-padding-desktop;
+}
+
 }
 
 /* Card with info */
@@ -481,7 +484,7 @@ $button-height: 34px;
   }
 
   &.danger,
-  // deprecated
+    // deprecated
   &.alert {
     background-color: $red;
   }
@@ -525,26 +528,39 @@ $button-height: 34px;
   }
 }
 
+.formatted-time {
+  white-space: nowrap;
+}
+
 .logcat {
   table-layout: auto;
-  width:100%;
+  width: 100%;
   font-size: 12px;
 
   .line {
+    &.verbose {
+      color: white;
+      background-color: black;
+    }
     &.debug {
-      background-color: #6897BB;
+      color: black;
+      background-color: #42a5f5;
     }
     &.assert {
-      background-color: #9876AA;
+      color: black;
+      background-color: #ff1744;
     }
     &.error {
-      background-color: #FF6B68;
+      color: black;
+      background-color: #ef5350;
     }
     &.info {
-      background-color: #6A8759;
+      color: black;
+      background-color: #66bb6a;
     }
     &.warn {
-      background-color: #BBB529;
+      color: black;
+      background-color: #ffee58;
     }
 
     td {
