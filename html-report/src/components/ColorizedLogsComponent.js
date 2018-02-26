@@ -1,4 +1,5 @@
-import React, {Component} from 'react'
+import React, {Component} from 'react';
+import ReactLoading from 'react-loading';
 import paths from "../utils/paths";
 
 export default class ColorizedLogsComponent extends Component {
@@ -43,6 +44,7 @@ export default class ColorizedLogsComponent extends Component {
                     Logs
                 </div>
 
+
                 <div className="card">
                     <table className="table logcat">
                         <tr>
@@ -73,10 +75,10 @@ export default class ColorizedLogsComponent extends Component {
                                         case "INFO": {
                                             return "line info";
                                         }
-                                        case "ASSERT":{
+                                        case "ASSERT": {
                                             return "line assert";
                                         }
-                                        case "VERBOSE":{
+                                        case "VERBOSE": {
                                             return "line verbose";
                                         }
                                     }
@@ -96,6 +98,10 @@ export default class ColorizedLogsComponent extends Component {
                             }
                         )}
                     </table>
+                    {this.state.logs.length === 0 && <ReactLoading className="center"
+                                                                   type="bubbles"
+                                                                   color="#ff0000"
+                                                                   delay="1"/>}
                 </div>
             </div>
         );
