@@ -7,6 +7,7 @@ import com.shazam.fork.stat.TestExecution
 import com.shazam.fork.stat.TestExecutionReporter
 import com.shazam.fork.stat.TestStatsLoader
 import com.shazam.fork.summary.PoolSummary
+import com.shazam.fork.summary.ResultStatus
 import com.shazam.fork.summary.Summary
 
 class StatSummarySerializer(private val reporter: TestExecutionReporter,
@@ -16,8 +17,8 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
         return fullTestName.substring(fullTestName.lastIndexOf('.') + 1)
     }
 
-    private fun parseData(device: Device): List<Data> {
-        val executions = reporter.getTests(device)
+    private fun parseData(pool: String, device: Device): List<Data> {
+        val executions = reporter.getTests(pool, device)
         return executions.map { this.convertToData(it) }
     }
 
@@ -52,20 +53,24 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
 
     private fun calculateIdle(data: List<Data>): Long {
         return data.stream().collect(SlidingCollector(2, 1)).map {
-            it[1].startDate - it[0].endDate
+            if (it.size == 2) {
+                it[1].startDate - it[0].endDate
+            } else {
+                0
+            }
         }.sum()
-    }
-
-    private fun createMeasure(device: Device): Measure {
-        val data = parseData(device)
-        return Measure(device.serial, calculateExecutionStats(data), data)
     }
 
     private fun parsePoolSummary(poolSummary: PoolSummary): List<Measure> {
         return poolSummary.testResults
                 .map { it.device }
                 .distinct()
-                .map { this.createMeasure(it) }
+                .map { createMeasure(poolSummary.poolName, it) }
+    }
+
+    private fun createMeasure(pool: String, device: Device): Measure {
+        val data = parseData(pool, device)
+        return Measure(device.serial, calculateExecutionStats(data), data)
     }
 
     private fun parseList(poolSummaries: List<PoolSummary>): List<Measure> {
@@ -74,6 +79,7 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
 
     private fun extractIdentifiers(summary: PoolSummary): List<TestIdentifier> {
         return summary.testResults
+                .filter { it.resultStatus == ResultStatus.PASS }
                 .map { result -> TestIdentifier(result.testClass, result.testMethod) }
     }
 
@@ -96,9 +102,9 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
     }
 
     fun parse(summary: Summary): ExecutionResult {
-        val failedTests = summary.failedTests.size
-        val ignoredTests = summary.ignoredTests.size
-        val passedTestCount = passedTestCount(summary) - failedTests
+        val failedTests = summary.poolSummaries.sumBy { it.failedTests.size }
+        val ignoredTests = summary.poolSummaries.sumBy { it.ignoredTests.size }
+        val passedTestCount = passedTestCount(summary)
         val measures = parseList(summary.poolSummaries)
         return ExecutionResult(passedTestCount, failedTests, aggregateExecutionStats(measures), measures)
     }

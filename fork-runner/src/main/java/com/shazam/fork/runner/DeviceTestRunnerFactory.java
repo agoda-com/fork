@@ -11,11 +11,12 @@
 package com.shazam.fork.runner;
 
 import com.shazam.fork.batch.tasks.TestTask;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
 import com.shazam.fork.system.adb.Installer;
 
 import java.util.Queue;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DeviceTestRunnerFactory {
 
@@ -29,7 +30,7 @@ public class DeviceTestRunnerFactory {
 
     public Runnable createDeviceTestRunner(Pool pool,
                                            Queue<TestTask> testClassQueue,
-                                           CountDownLatch deviceInPoolCountDownLatch,
+                                           AtomicInteger runningCounter,
                                            Device device,
                                            ProgressReporter progressReporter
                                            ) {
@@ -38,7 +39,7 @@ public class DeviceTestRunnerFactory {
                 pool,
                 device,
                 testClassQueue,
-                deviceInPoolCountDownLatch,
+                runningCounter,
                 progressReporter,
                 testRunFactory);
     }

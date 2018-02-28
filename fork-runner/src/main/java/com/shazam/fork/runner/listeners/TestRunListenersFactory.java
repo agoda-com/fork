@@ -59,7 +59,7 @@ public class TestRunListenersFactory {
                         device.getModelName(), progressReporter),
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
-                new TestExecutionListener(device, testExecutionReporter),
+                new TestExecutionListener(pool, device, testExecutionReporter),
                 getScreenTraceTestRunListener(fileManager, pool, device),
                 new RetryListener(pool, device, testCaseEventQueue, progressReporter, testCase, fileManager, factory),
                 getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));

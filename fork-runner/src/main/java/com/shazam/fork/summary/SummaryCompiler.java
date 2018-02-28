@@ -14,10 +14,11 @@ package com.shazam.fork.summary;
 
 import com.google.common.collect.Lists;
 import com.shazam.fork.Configuration;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.PoolTestRunner;
 import com.shazam.fork.system.io.FileManager;
-
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
@@ -50,7 +51,6 @@ public class SummaryCompiler {
             PoolSummary poolSummary = compilePoolSummary(pool, summaryBuilder);
             summaryBuilder.addPoolSummary(poolSummary);
         }
-        addIgnoredTests(testCases, summaryBuilder);
         summaryBuilder.withTitle(configuration.getTitle());
         summaryBuilder.withSubtitle(configuration.getSubtitle());
 
@@ -59,7 +59,7 @@ public class SummaryCompiler {
 
     private PoolSummary compilePoolSummary(Pool pool, Summary.Builder summaryBuilder) {
         PoolSummary.Builder poolSummaryBuilder = aPoolSummary().withPoolName(pool.getName());
-        for (Device device : pool.getDevices()) {
+        for (Device device : pool.getRetrospectiveDevices()) {
             compileResultsForDevice(pool, poolSummaryBuilder, summaryBuilder, device);
         }
         Device watchdog = getPoolWatchdog(pool.getName());
@@ -75,7 +75,16 @@ public class SummaryCompiler {
         for (File file : deviceResultFiles) {
             Collection<TestResult> testResult = parseTestResultsFromFile(file, device);
             poolSummaryBuilder.addTestResults(testResult);
-            addFailedTests(testResult, summaryBuilder);
+            addFailedTests(testResult, poolSummaryBuilder);
+            addIgnoredTests(testResult, poolSummaryBuilder);
+        }
+    }
+
+    private void addIgnoredTests(Collection<TestResult> testResults, PoolSummary.Builder poolSummaryBuilder) {
+        for (TestResult testResult : testResults) {
+            if(testResult.isIgnored()){
+                poolSummaryBuilder.addIgnoredTest(testResult);
+            }
         }
     }
 
@@ -87,21 +96,16 @@ public class SummaryCompiler {
                 .build();
     }
 
-    private void addIgnoredTests(Collection<TestCaseEvent> testCases, Summary.Builder summaryBuilder) {
-        for (TestCaseEvent testCase : testCases) {
-            if (testCase.isIgnored()) {
-                summaryBuilder.addIgnoredTest(testCase.getTestClass() + ":" + testCase.getTestMethod());
-            }
-        }
-    }
-
-    private void addFailedTests(Collection<TestResult> testResults, Summary.Builder summaryBuilder) {
+    private void addFailedTests(Collection<TestResult> testResults, PoolSummary.Builder summaryBuilder) {
         for (TestResult testResult : testResults) {
             int totalFailureCount = testResult.getTotalFailureCount();
             if (totalFailureCount > 0) {
-                String failedTest = totalFailureCount + " times " + testResult.getTestClass()
-                        + "#" + testResult.getTestMethod() + " on " + testResult.getDevice().getSerial() ;
-                summaryBuilder.addFailedTests(failedTest);
+                int retryQuota = configuration.getRetryPerTestCaseQuota();
+                if (retryQuota > 0 && totalFailureCount < retryQuota) {
+                    summaryBuilder.addFlakyTest(new FlakyTest(testResult, totalFailureCount));
+                } else {
+                    summaryBuilder.addFailedTests(testResult);
+                }
             }
         }
     }
@@ -110,12 +114,12 @@ public class SummaryCompiler {
         try {
             TestSuite testSuite = serializer.read(TestSuite.class, file, STRICT);
             Collection<TestCase> testCases = testSuite.getTestCase();
-            List<TestResult> result  = Lists.newArrayList();
+            List<TestResult> result = Lists.newArrayList();
             if ((testCases == null)) {
                 return result;
             }
 
-            for(TestCase testCase : testCases){
+            for (TestCase testCase : testCases) {
                 TestResult testResult = getTestResult(device, testSuite, testCase);
                 result.add(testResult);
             }
@@ -132,7 +136,8 @@ public class SummaryCompiler {
                 .withTestMethod(testCase.getName())
                 .withTimeTaken(testCase.getTime())
                 .withErrorTrace(testCase.getError())
-                .withFailureTrace(testCase.getFailure());
+                .withFailureTrace(testCase.getFailure())
+                .withIgnore(testCase.isSkipped());
         if (testSuite.getProperties() != null) {
             testResultBuilder.withTestMetrics(testSuite.getProperties());
         }

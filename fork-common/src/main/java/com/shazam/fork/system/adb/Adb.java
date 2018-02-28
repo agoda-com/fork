@@ -46,6 +46,7 @@ public class Adb {
     }
 
     public void terminate() {
+        AndroidDebugBridge.disconnectBridge();
         AndroidDebugBridge.terminate();
     }
 

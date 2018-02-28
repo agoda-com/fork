@@ -16,19 +16,17 @@ import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.shazam.fork.system.axmlparser.ApplicationInfo;
 import com.shazam.fork.system.axmlparser.ApplicationInfoFactory;
 import com.shazam.fork.system.axmlparser.InstrumentationInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -63,6 +61,7 @@ public class Configuration {
     private ApplicationInfo applicationInfo;
     private SortingStrategy sortingStrategy;
     private BatchStrategy batchStrategy;
+    private CustomExecutionStrategy customExecutionStrategy;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -90,6 +89,7 @@ public class Configuration {
         this.applicationInfo = builder.applicationInfo;
         this.sortingStrategy = builder.sortingStrategy;
         this.batchStrategy = builder.batchStrategy;
+        this.customExecutionStrategy = builder.customExecutionStrategy;
     }
 
     @Nonnull
@@ -205,6 +205,10 @@ public class Configuration {
         return batchStrategy;
     }
 
+    public CustomExecutionStrategy getCustomExecutionStrategy() {
+        return customExecutionStrategy;
+    }
+
     public static class Builder {
         private File androidSdk;
         private File applicationApk;
@@ -231,6 +235,7 @@ public class Configuration {
         private ApplicationInfo applicationInfo;
         private SortingStrategy sortingStrategy;
         private BatchStrategy batchStrategy;
+        private CustomExecutionStrategy customExecutionStrategy;
 
         public static Builder configuration() {
             return new Builder();
@@ -341,6 +346,10 @@ public class Configuration {
             return this;
         }
 
+        public Builder withCustomExecutionStrategy(@Nullable CustomExecutionStrategy executionStrategy) {
+            this.customExecutionStrategy = executionStrategy;
+            return this;
+        }
 
         public Configuration build() {
             checkNotNull(androidSdk, "SDK is required.");
@@ -371,8 +380,22 @@ public class Configuration {
             poolingStrategy = validatePoolingStrategy(poolingStrategy);
             sortingStrategy = validateSortingStrategy(sortingStrategy);
             batchStrategy = validateBatchStrategy(batchStrategy, sortingStrategy);
+            customExecutionStrategy = validateExecutionStrategy(customExecutionStrategy);
             applicationInfo = ApplicationInfoFactory.parseFromFile(applicationApk);
             return new Configuration(this);
+        }
+
+        private CustomExecutionStrategy validateExecutionStrategy(CustomExecutionStrategy executionStrategy) {
+            if (executionStrategy == null) {
+                executionStrategy = new CustomExecutionStrategy();
+                executionStrategy.defaultStrategy = true;
+            } else {
+                if (executionStrategy.defaultStrategy != null && executionStrategy.flakinessStrategy != null) {
+                    throw new IllegalArgumentException("You have selected more than one strategies in configuration. " +
+                            "You can only select up to one.");
+                }
+            }
+            return executionStrategy;
         }
 
         private BatchStrategy validateBatchStrategy(BatchStrategy batchStrategy,

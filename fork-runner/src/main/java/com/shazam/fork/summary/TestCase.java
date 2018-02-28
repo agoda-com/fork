@@ -16,44 +16,51 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
-@Root(name="testcase", strict=false)
+@Root(name = "testcase", strict = false)
 public class TestCase {
 
-	@Attribute
-	private String name;
+    @Attribute
+    private String name;
 
-	@Attribute
-	private String classname;
+    @Attribute
+    private String classname;
 
-	@Attribute
-	private float time;
+    @Attribute
+    private float time;
 
-	@Element(required=false)
-	private String failure;
+    @Element(required = false)
+    private String failure;
 
-	@Element(required=false)
-	private String error;
+    @Element(required = false)
+    private String error;
+
+    @Element(name = "skipped", required = false)
+    private Object skipped;
 
     TestCase() {
     }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getClassname() {
-		return classname;
-	}
+    public String getClassname() {
+        return classname;
+    }
 
-	public float getTime() {
-		return time;
-	}
+    public float getTime() {
+        return time;
+    }
 
-	public String getError() {
-		return error;
-	}
+    public String getError() {
+        return error;
+    }
 
-	public String getFailure() {
-		return failure;
-	}
+    public String getFailure() {
+        return failure;
+    }
+
+    public boolean isSkipped() {
+        return skipped != null;
+    }
 }

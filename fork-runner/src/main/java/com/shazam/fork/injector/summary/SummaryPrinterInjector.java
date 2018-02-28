@@ -12,37 +12,47 @@
  */
 package com.shazam.fork.injector.summary;
 
-import com.shazam.fork.summary.*;
+import com.shazam.fork.summary.CompositeSummaryPrinter;
+import com.shazam.fork.summary.JsonSummarySerializer;
+import com.shazam.fork.summary.LogSummaryPrinter;
+import com.shazam.fork.summary.SummaryPrinter;
+import com.shazam.fork.summary.flakiness.FlakinessSummaryPrinter;
+import com.shazam.fork.summary.html.HtmlSummaryPrinter;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
 import static com.shazam.fork.injector.GsonInjector.gson;
 import static com.shazam.fork.injector.stat.ExecutionTimeLineSummaryPrinterInjector.htmlStatsSummaryPrinter;
 import static com.shazam.fork.injector.stat.ExecutionTimeLineSummaryPrinterInjector.jsonSummaryStatsSerializer;
-import static com.shazam.fork.injector.summary.HtmlGeneratorInjector.htmlGenerator;
-import static com.shazam.fork.injector.summary.LogCatRetrieverInjector.logCatRetriever;
+import static com.shazam.fork.injector.store.TestCaseStoreInjector.testCaseStore;
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 public class SummaryPrinterInjector {
 
-    private SummaryPrinterInjector() {}
+    private SummaryPrinterInjector() {
+    }
 
     public static SummaryPrinter summaryPrinter() {
         return new CompositeSummaryPrinter(consoleSummaryPrinter(),
                 htmlSummaryPrinter(),
                 jsonSummarySerializer(),
                 jsonSummaryStatsSerializer(),
-                htmlStatsSummaryPrinter());
+                htmlStatsSummaryPrinter(),
+                flakinessSummaryPrinter());
+    }
+
+    private static SummaryPrinter htmlSummaryPrinter(){
+        return new HtmlSummaryPrinter(gson(),configuredOutput());
     }
 
     private static SummaryPrinter consoleSummaryPrinter() {
         return new LogSummaryPrinter();
     }
 
-    private static SummaryPrinter htmlSummaryPrinter() {
-        return new HtmlSummaryPrinter(configuredOutput(), logCatRetriever(), htmlGenerator());
-    }
-
     private static SummaryPrinter jsonSummarySerializer() {
         return new JsonSummarySerializer(fileManager(), gson());
+    }
+
+    private static SummaryPrinter flakinessSummaryPrinter() {
+        return new FlakinessSummaryPrinter(fileManager(), testCaseStore());
     }
 }
