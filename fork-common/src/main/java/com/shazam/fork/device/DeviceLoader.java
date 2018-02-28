@@ -14,9 +14,11 @@ import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Devices;
 import com.shazam.fork.system.adb.Adb;
 
-import java.util.*;
-
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.Devices.Builder.devices;
@@ -84,7 +86,7 @@ public class DeviceLoader {
 
     private Device loadDeviceCharacteristics(IDevice device) {
         return aDevice()
-                .withSerial(device.getSerialNumber())
+                .withSerial(device.getProperty("ro.boot.serialno"))
                 .withManufacturer(device.getProperty("ro.product.manufacturer"))
                 .withModel(device.getProperty("ro.product.model"))
                 .withApiLevel(device.getProperty("ro.build.version.sdk"))
