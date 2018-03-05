@@ -7,6 +7,7 @@ import com.shazam.fork.model.Device
 import com.shazam.fork.model.Pool
 import com.shazam.fork.stat.TestExecution
 import com.shazam.fork.stat.TestExecutionReporter
+import com.shazam.fork.stat.toTestExecutionStatus
 
 class TestExecutionListener(private val pool: Pool,
                             private val device: Device,
@@ -59,11 +60,7 @@ class TestExecutionListener(private val pool: Pool,
 
     private fun reportStatus(test: TestIdentifier, value: TestResult) {
         val endedAfter = value.endTime - value.startTime
-        val status = when (value.status) {
-            TestResult.TestStatus.IGNORED -> TestExecution.Status.IGNORED
-            TestResult.TestStatus.PASSED -> TestExecution.Status.PASSED
-            else -> TestExecution.Status.FAILED
-        }
+        val status = value.status.toTestExecutionStatus()
         val execution = TestExecution(test, value.startTime, endedAfter, status)
         executionReporter.add(pool, device, execution)
     }
