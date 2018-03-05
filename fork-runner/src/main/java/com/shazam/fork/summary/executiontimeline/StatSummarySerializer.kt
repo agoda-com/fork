@@ -31,7 +31,7 @@ class StatSummarySerializer(private val reporter: TestExecutionReporter,
     private fun createData(execution: TestExecution, status: TestExecution.Status, preparedTestName: String, testMetric: TestMetric): Data {
         return Data(preparedTestName, status,
                 execution.startTime,
-                execution.startTime + execution.endTime,
+                execution.endTime,
                 testMetric.expectedValue, testMetric.variance)
     }
 

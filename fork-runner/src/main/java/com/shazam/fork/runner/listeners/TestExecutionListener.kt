@@ -59,9 +59,8 @@ class TestExecutionListener(private val pool: Pool,
     }
 
     private fun reportStatus(test: TestIdentifier, value: TestResult) {
-        val endedAfter = value.endTime - value.startTime
         val status = value.status.toTestExecutionStatus()
-        val execution = TestExecution(test, value.startTime, endedAfter, status)
+        val execution = TestExecution(test, value.startTime, value.endTime, status)
         executionReporter.add(pool, device, execution)
     }
 }

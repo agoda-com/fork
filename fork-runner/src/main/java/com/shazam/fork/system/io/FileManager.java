@@ -17,6 +17,7 @@ import com.shazam.fork.model.*;
 
 import org.apache.commons.io.filefilter.*;
 
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.file.Path;
 
@@ -38,10 +39,18 @@ public class FileManager {
     }
 
     public File createFile(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier, int sequenceNumber) {
+        return getFile(fileType, pool, device, createFilenameForTest(testIdentifier, fileType, sequenceNumber));
+    }
+
+    public File createFile(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier, long timestamp) {
+        return getFile(fileType, pool, device, createFilenameForTest(testIdentifier, timestamp, fileType));
+    }
+
+    @Nonnull
+    private File getFile(FileType fileType, Pool pool, Device device, String filenameForTest) {
         try {
             Path directory = createDirectory(fileType, pool, device);
-            String filename = createFilenameForTest(testIdentifier, fileType, sequenceNumber);
-            return createFile(directory, filename);
+            return createFile(directory, filenameForTest);
         } catch (IOException e) {
             throw new CouldNotCreateDirectoryException(e);
         }
@@ -113,6 +122,10 @@ public class FileManager {
 
     private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType) {
         return String.format("%s.%s", testIdentifier.toString(), fileType.getSuffix());
+    }
+
+    private String createFilenameForTest(TestIdentifier testIdentifier, long timestamp, FileType fileType) {
+        return String.format("%s-%s.%s", testIdentifier.toString(), String.valueOf(timestamp), fileType.getSuffix());
     }
 
     private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType, int sequenceNumber) {
