@@ -88,6 +88,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     CustomExecutionStrategy customExecutionStrategy
 
+    Boolean ignoreFailedTests
+
     @TaskAction
     void runFork() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
@@ -120,8 +122,10 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .build();
 
         boolean success = new Fork(configuration).run()
-        if (!success && !ignoreFailures) {
-            throw new GradleException("Tests failed! See ${output}/html/index.html")
+        if(ignoreFailedTests == null || !ignoreFailedTests){
+            if (!success && !ignoreFailures) {
+                throw new GradleException("Tests failed! See ${output}/html/index.html")
+            }
         }
     }
 }
