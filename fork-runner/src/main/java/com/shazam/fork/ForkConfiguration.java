@@ -119,6 +119,12 @@ public class ForkConfiguration {
      */
     public CustomExecutionStrategy customExecutionStrategy;
 
+
+    /**
+     *
+     */
+    public Boolean ignoreFailedTests;
+
     public void sortingStrategy(Closure<?> sortingStrategyClosure) {
         sortingStrategy = new SortingStrategy();
         sortingStrategyClosure.setDelegate(sortingStrategy);
