@@ -16,7 +16,7 @@ class TestExecutionReporter(val fileManager: FileManager,
     }
 
     fun add(pool: Pool, device: Device, execution: TestExecution) {
-        val file = fileManager.createFile(filetype, pool, device, execution.test)
+        val file = fileManager.createFile(filetype, pool, device, execution.test, execution.endTime)
         FileWriter(file).use {
             gson.toJson(execution, it)
             it.flush()

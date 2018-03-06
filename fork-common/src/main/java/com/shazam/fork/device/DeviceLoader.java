@@ -14,9 +14,8 @@ import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Devices;
 import com.shazam.fork.system.adb.Adb;
 
-import java.util.*;
-
 import javax.annotation.Nonnull;
+import java.util.*;
 
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.Devices.Builder.devices;
@@ -82,9 +81,21 @@ public class DeviceLoader {
         return devices;
     }
 
+    private String extractUniqueIdentifier(IDevice device) {
+        String serialNumber = device.getProperty("ro.boot.serialno");
+        if (serialNumber != null && !serialNumber.isEmpty()) {
+            return serialNumber;
+        }
+        String hostName = device.getProperty("net.hostname");
+        if (hostName != null && !hostName.isEmpty()) {
+            return hostName;
+        }
+        return UUID.randomUUID().toString();
+    }
+
     private Device loadDeviceCharacteristics(IDevice device) {
         return aDevice()
-                .withSerial(device.getSerialNumber())
+                .withSerial(extractUniqueIdentifier(device))
                 .withManufacturer(device.getProperty("ro.product.manufacturer"))
                 .withModel(device.getProperty("ro.product.model"))
                 .withApiLevel(device.getProperty("ro.build.version.sdk"))
