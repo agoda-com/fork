@@ -87,6 +87,7 @@ class ForkPlugin implements Plugin<Project> {
                 sortingStrategy = config.sortingStrategy
                 batchStrategy = config.batchStrategy
                 customExecutionStrategy = config.customExecutionStrategy
+                ignoreFailedTests = config.ignoreFailedTests
 
                 applicationApk = new File(baseVariantOutput.packageApplication.outputDirectory.path + "/" + baseVariantOutput.outputFileName)
 
