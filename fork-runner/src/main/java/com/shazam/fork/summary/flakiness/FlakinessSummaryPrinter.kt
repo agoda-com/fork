@@ -1,6 +1,7 @@
 package com.shazam.fork.summary.flakiness
 
 import com.google.gson.GsonBuilder
+import com.google.gson.annotations.SerializedName
 import com.shazam.fork.stat.TestExecution
 import com.shazam.fork.stat.TestExecutionReporter
 import com.shazam.fork.store.TestCaseStore
@@ -13,7 +14,9 @@ class FlakinessSummaryPrinter(private val fileManager: FileManager,
                               private val testCaseStore: TestCaseStore,
                               private val reporter: TestExecutionReporter) : SummaryPrinter {
 
-    private data class FlakinessReport(val testName: String,
+    private data class FlakinessReport(@SerializedName("package") val testPackage: String,
+                                       @SerializedName("class") val testClass: String,
+                                       @SerializedName("method") val testMethod: String,
                                        val deviceSerial: String,
                                        val ignored: Boolean,
                                        val success: Boolean,
@@ -21,14 +24,18 @@ class FlakinessSummaryPrinter(private val fileManager: FileManager,
 
     override fun print(summary: Summary) {
         summary.poolSummaries.flatMap {
-            val poolname = it.poolName
+            val poolName = it.poolName
             it.testResults.map { it.device }.distinctBy { it.safeSerial }.flatMap { device ->
-                reporter.getTests(poolname, device).map { report ->
+                reporter.getTests(poolName, device).map { report ->
                     val test = report.test
-                    val testName = "${test.className}#${test.testName}"
-                    FlakinessReport(testName = testName,
+                    val testPackage = test.className.substringBeforeLast('.')
+                    val testClass = test.className.substringAfterLast('.')
+                    FlakinessReport(
+                            testPackage = testPackage,
+                            testClass = testClass,
+                            testMethod = test.testName,
                             deviceSerial = device.safeSerial,
-                            ignored = testCaseStore.get(testName)?.isIgnored ?: false,
+                            ignored = testCaseStore.get(testClass)?.isIgnored ?: false,
                             success = report.status == TestExecution.Status.PASSED,
                             timestamp = report.endTime)
                 }
