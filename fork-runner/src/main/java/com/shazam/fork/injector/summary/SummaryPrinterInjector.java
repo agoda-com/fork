@@ -24,7 +24,7 @@ import static com.shazam.fork.injector.GsonInjector.gson;
 import static com.shazam.fork.injector.stat.ExecutionTimeLineSummaryPrinterInjector.htmlStatsSummaryPrinter;
 import static com.shazam.fork.injector.stat.ExecutionTimeLineSummaryPrinterInjector.jsonSummaryStatsSerializer;
 import static com.shazam.fork.injector.stat.TestExecutionReporterInjector.testExecutionReporter;
-import static com.shazam.fork.injector.store.TestCaseStoreInjector.testCaseStore;
+
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 public class SummaryPrinterInjector {
@@ -54,6 +54,6 @@ public class SummaryPrinterInjector {
     }
 
     private static SummaryPrinter flakinessSummaryPrinter() {
-        return new FlakinessSummaryPrinter(fileManager(), testCaseStore(), testExecutionReporter());
+        return new FlakinessSummaryPrinter(fileManager(), testExecutionReporter());
     }
 }
