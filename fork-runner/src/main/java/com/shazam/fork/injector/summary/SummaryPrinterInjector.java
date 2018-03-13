@@ -24,6 +24,7 @@ import static com.shazam.fork.injector.GsonInjector.gson;
 import static com.shazam.fork.injector.stat.ExecutionTimeLineSummaryPrinterInjector.htmlStatsSummaryPrinter;
 import static com.shazam.fork.injector.stat.ExecutionTimeLineSummaryPrinterInjector.jsonSummaryStatsSerializer;
 import static com.shazam.fork.injector.stat.TestExecutionReporterInjector.testExecutionReporter;
+
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 public class SummaryPrinterInjector {
