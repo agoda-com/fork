@@ -4,14 +4,12 @@ import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import com.shazam.fork.stat.TestExecution
 import com.shazam.fork.stat.TestExecutionReporter
-import com.shazam.fork.store.TestCaseStore
 import com.shazam.fork.summary.Summary
 import com.shazam.fork.summary.SummaryPrinter
 import com.shazam.fork.system.io.FileManager
 import java.io.FileWriter
 
 class FlakinessSummaryPrinter(private val fileManager: FileManager,
-                              private val testCaseStore: TestCaseStore,
                               private val reporter: TestExecutionReporter) : SummaryPrinter {
 
     private data class FlakinessReport(@SerializedName("package") val testPackage: String,
@@ -30,12 +28,13 @@ class FlakinessSummaryPrinter(private val fileManager: FileManager,
                     val test = report.test
                     val testPackage = test.className.substringBeforeLast('.')
                     val testClass = test.className.substringAfterLast('.')
+
                     FlakinessReport(
                             testPackage = testPackage,
                             testClass = testClass,
                             testMethod = test.testName,
                             deviceSerial = device.safeSerial,
-                            ignored = testCaseStore.get(testClass)?.isIgnored ?: false,
+                            ignored = report.status == TestExecution.Status.IGNORED,
                             success = report.status == TestExecution.Status.PASSED,
                             timestamp = report.endTime)
                 }
