@@ -29,11 +29,13 @@ public final class Fork {
     private static final Logger logger = LoggerFactory.getLogger(Fork.class);
 
     private final ForkRunner forkRunner;
+    private final Configuration configuration;
     private final File output;
 
     public Fork(Configuration configuration) {
         this.output = configuration.getOutput();
         setConfiguration(configuration);
+        this.configuration = configuration;
         this.forkRunner = forkRunner();
     }
 
@@ -50,7 +52,9 @@ public final class Fork {
 		} finally {
             long duration = millisSinceNanoTime(startOfTestsMs);
             logger.info(formatPeriod(0, duration, "'Total time taken:' H 'hours' m 'minutes' s 'seconds'"));
-            adb().terminate();
+            if(configuration.terminateAdb()) {
+                adb().terminate();
+            }
 		}
 	}
 }

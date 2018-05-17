@@ -62,6 +62,7 @@ public class Configuration {
     private SortingStrategy sortingStrategy;
     private BatchStrategy batchStrategy;
     private CustomExecutionStrategy customExecutionStrategy;
+    private final boolean terminateAdb;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -90,6 +91,7 @@ public class Configuration {
         this.sortingStrategy = builder.sortingStrategy;
         this.batchStrategy = builder.batchStrategy;
         this.customExecutionStrategy = builder.customExecutionStrategy;
+        this.terminateAdb = builder.terminateAdb;
     }
 
     @Nonnull
@@ -209,7 +211,12 @@ public class Configuration {
         return customExecutionStrategy;
     }
 
+    public boolean terminateAdb() {
+        return terminateAdb;
+    }
+
     public static class Builder {
+        public boolean terminateAdb = true;
         private File androidSdk;
         private File applicationApk;
         private File instrumentationApk;
@@ -348,6 +355,11 @@ public class Configuration {
 
         public Builder withCustomExecutionStrategy(@Nullable CustomExecutionStrategy executionStrategy) {
             this.customExecutionStrategy = executionStrategy;
+            return this;
+        }
+
+        public Builder withTerminateAdb(boolean terminate){
+            this.terminateAdb = terminate;
             return this;
         }
 
