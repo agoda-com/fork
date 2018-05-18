@@ -88,6 +88,7 @@ class ForkPlugin implements Plugin<Project> {
                 batchStrategy = config.batchStrategy
                 customExecutionStrategy = config.customExecutionStrategy
                 ignoreFailedTests = config.ignoreFailedTests
+                terminateAdb = config.terminateAdb
 
                 applicationApk = new File(baseVariantOutput.packageApplication.outputDirectory.path + "/" + baseVariantOutput.outputFileName)
 
