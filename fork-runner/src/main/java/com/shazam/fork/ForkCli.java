@@ -104,6 +104,7 @@ public class ForkCli {
                     .withSortingStrategy(forkConfiguration.sortingStrategy)
                     .withBatchStrategy(forkConfiguration.batchStrategy)
                     .withCustomExecutionStrategy(forkConfiguration.customExecutionStrategy)
+                    .withTerminateAdb(forkConfiguration.terminateAdb)
                     .build();
 
             Fork fork = new Fork(configuration);

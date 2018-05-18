@@ -90,6 +90,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     Boolean ignoreFailedTests
 
+    boolean terminateAdb
+
     @TaskAction
     void runFork() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
@@ -119,6 +121,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withSortingStrategy(sortingStrategy)
                 .withBatchStrategy(batchStrategy)
                 .withCustomExecutionStrategy(customExecutionStrategy)
+                .withTerminateAdb(terminateAdb)
                 .build();
 
         boolean success = new Fork(configuration).run()

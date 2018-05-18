@@ -124,6 +124,7 @@ public class ForkConfiguration {
      *
      */
     public Boolean ignoreFailedTests;
+    public boolean terminateAdb = true;
 
     public void sortingStrategy(Closure<?> sortingStrategyClosure) {
         sortingStrategy = new SortingStrategy();
